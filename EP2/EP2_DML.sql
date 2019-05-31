@@ -159,17 +159,17 @@ INSERT INTO b09_perfil VALUES (7,'intern');
 INSERT INTO b09_perfil VALUES (4,'admin');
 INSERT INTO b09_perfil VALUES (5,'superadmin');
 
---b10_usuario (us_id, us_email, us_password)
-INSERT INTO b10_usuario VALUES (1,'decio@mail.com', crypt('deciopassword', gen_salt('bf')));
-INSERT INTO b10_usuario VALUES (2,'alberto@mail.com', crypt('albertopassword', gen_salt('bf')));
-INSERT INTO b10_usuario VALUES (3,'roberto@mail.com', crypt('robertopassword', gen_salt('bf')));
-INSERT INTO b10_usuario VALUES (4,'manuel@mail.com', crypt('manuelpassword', gen_salt('bf')));
-INSERT INTO b10_usuario VALUES (5,'laura@mail.com', crypt('laurapassword', gen_salt('bf')));
-INSERT INTO b10_usuario VALUES (6,'lecia@mail.com', crypt('leciapassword', gen_salt('bf')));
-INSERT INTO b10_usuario VALUES (7,'sara@mail.com', crypt('sarapassword', gen_salt('bf')));
-INSERT INTO b10_usuario VALUES (8,'ricardo@mail.com', crypt('ricardopassword', gen_salt('bf')));
-INSERT INTO b10_usuario VALUES (9,'clara@mail.com', crypt('clarapassword', gen_salt('bf')));
-INSERT INTO b10_usuario VALUES (10,'edinaldo@mail.com', crypt('edinaldopassword', gen_salt('bf')));
+--b10_usuario (us_id, us_login, us_email, us_password)
+INSERT INTO b10_usuario VALUES (1,'decio','decio@mail.com', crypt('deciopassword', gen_salt('bf')));
+INSERT INTO b10_usuario VALUES (2,'alberto','alberto@mail.com', crypt('albertopassword', gen_salt('bf')));
+INSERT INTO b10_usuario VALUES (3,'roberto','roberto@mail.com', crypt('robertopassword', gen_salt('bf')));
+INSERT INTO b10_usuario VALUES (4,'manuel','manuel@mail.com', crypt('manuelpassword', gen_salt('bf')));
+INSERT INTO b10_usuario VALUES (5,'laura','laura@mail.com', crypt('laurapassword', gen_salt('bf')));
+INSERT INTO b10_usuario VALUES (6,'lecia','lecia@mail.com', crypt('leciapassword', gen_salt('bf')));
+INSERT INTO b10_usuario VALUES (7,'sara','sara@mail.com', crypt('sarapassword', gen_salt('bf')));
+INSERT INTO b10_usuario VALUES (8,'ricardo','ricardo@mail.com', crypt('ricardopassword', gen_salt('bf')));
+INSERT INTO b10_usuario VALUES (9,'clara','clara@mail.com', crypt('clarapassword', gen_salt('bf')));
+INSERT INTO b10_usuario VALUES (10,'edinaldo','edinaldo@mail.com', crypt('edinaldopassword', gen_salt('bf')));
 
 --b11_servico (serv_ID, serv_Codigo, serv_Nome)
 INSERT INTO b11_servico VALUES (1,'insert_student','inserir um aluno');
@@ -208,9 +208,9 @@ INSERT INTO b13a_rel_pe_us VALUES (DEFAULT,886902161,9);
 INSERT INTO b13a_rel_pe_us VALUES (DEFAULT,344149328,10);
 
 --b13b_rel_us_pf (rel_uspf_ID, rel_uspf_us_ID, rel_uspf_serv_ID,perf_inicio)
-INSERT INTO b13b_rel_us_pf VALUES (DEFAULT,1,10,'12-3-2018' );
-INSERT INTO b13b_rel_us_pf VALUES (DEFAULT,2,9 ,'14-8-2015' );
-INSERT INTO b13b_rel_us_pf VALUES (DEFAULT,3,8 ,'11-8-2012' );
+INSERT INTO b13b_rel_us_pf VALUES (DEFAULT,1,2,'12-3-2018' );
+INSERT INTO b13b_rel_us_pf VALUES (DEFAULT,2,3 ,'14-8-2015' );
+INSERT INTO b13b_rel_us_pf VALUES (DEFAULT,3,4 ,'11-8-2012' );
 INSERT INTO b13b_rel_us_pf VALUES (DEFAULT,4,7 ,'7-4-2019'  );
 INSERT INTO b13b_rel_us_pf VALUES (DEFAULT,5,6 ,'24-10-2011');
 INSERT INTO b13b_rel_us_pf VALUES (DEFAULT,6,5 ,'3-9-2011'  );

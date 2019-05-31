@@ -109,11 +109,13 @@ CREATE TABLE b09_perfil (
 --DROP TABLE IF EXISTS b10_usuario CASCADE;
 CREATE TABLE b10_usuario(
 	us_ID				SERIAL,
+	us_login			TEXT,
 	us_email			TEXT,
 	us_password			TEXT NOT NULL,	
 
 	CONSTRAINT pk_user PRIMARY KEY (us_ID),
-	CONSTRAINT sk_user UNIQUE (us_email)
+	CONSTRAINT sk1_user UNIQUE (us_login),
+	CONSTRAINT sk2_user UNIQUE (us_email)
 );
 
 --DROP TABLE IF EXISTS b11_servico CASCADE;
