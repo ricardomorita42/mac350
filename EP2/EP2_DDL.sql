@@ -111,7 +111,6 @@ CREATE TABLE b10_usuario(
 	us_ID				SERIAL,
 	us_email			TEXT,
 	us_password			TEXT NOT NULL,	
-	us_pessoa_id			INTEGER,
 
 	CONSTRAINT pk_user PRIMARY KEY (us_ID),
 	CONSTRAINT sk_user UNIQUE (us_email)
