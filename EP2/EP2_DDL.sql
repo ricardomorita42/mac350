@@ -156,14 +156,14 @@ CREATE TABLE b13a_rel_pe_us (
 CREATE TABLE b13b_rel_us_pf (
 	rel_uspf_ID			SERIAL NOT NULL,
 	rel_uspf_us_ID			INTEGER NOT NULL,
-	rel_uspf_serv_ID		INTEGER NOT NULL,
-	perf_inicio			date,
+	rel_uspf_perfil_ID		INTEGER NOT NULL,
+	perfil_inicio			date,
 
 	CONSTRAINT pk_rel_us_pf PRIMARY KEY (rel_uspf_ID),
 	CONSTRAINT fk_rel_uspf1 FOREIGN KEY (rel_uspf_us_ID)
 		REFERENCES b10_usuario (us_ID),
-	CONSTRAINT fk_rel_uspf2 FOREIGN KEY (rel_uspf_serv_ID)
-		REFERENCES b11_servico (serv_ID)
+	CONSTRAINT fk_rel_uspf2 FOREIGN KEY (rel_uspf_perfil_ID)
+		REFERENCES b09_perfil (perfil_ID)
 );
 
 --DROP TABLE IF EXISTS b14_rel_pf_se CASCADE;

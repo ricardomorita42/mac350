@@ -19,10 +19,12 @@ CREATE DOMAIN email AS citext
 
 DROP FUNCTION insert_person(int,text,text,text,date,VARCHAR);
 DROP FUNCTION insert_student(int,text,text);
+DROP FUNCTION insert_role(text);
 --DROP FUNCTION priv_insert_user(int,text,text);
 --DROP FUNCTION ins_student_trigg() CASCADE;
 TRUNCATE b01_pessoa CASCADE;
 TRUNCATE b10_usuario CASCADE;
+TRUNCATE b09_perfil CASCADE;
 
 --adicionado por um superadmin ou alguém da graduacao
 --b01_pessoa = t(NUSP,CPF,PNome,SNome,DataNasc,Sexo)
@@ -37,50 +39,45 @@ $$
 $$
 LANGUAGE sql;
 
-/* Um aluno que tenha dado em b01_pessoa pode criar uma
-conta de aluno com esta função, informando NUSP para associar 
-b10_usuario com alguem de b01_pessoa na relação b13a_rel_pe_us.
-CREATE OR REPLACE FUNCTION insert_student
-(INOUT NUSP int, INOUT email text, INOUT password text,OUT us_ID int)
-AS $$
-	--SELECT priv_insert_user(NUSP, us_email, password);
-	INSERT INTO b10_usuario (us_ID,us_email,us_password)
-	VALUES (DEFAULT,email,password)
-	RETURNING NUSP, email,password,us_ID;
+CREATE OR REPLACE FUNCTION insert_role 
+(OUT perfil_ID int, INOUT pefil_Nome text)
+AS
+$$
+	INSERT INTO b09_perfil
+	VALUES (DEFAULT, $1)
+	RETURNING perfil_ID, perfil_Nome
+$$
+LANGUAGE sql;
 
-$$ LANGUAGE sql;
-*/
 CREATE OR REPLACE FUNCTION insert_student
 (NUSP int, email text, password text)
 RETURNS INTEGER AS $$
+DECLARE
+	idperf  int := (SELECT perfil_ID FROM b09_perfil WHERE perfil_Nome = 'student');
+	date_atm date := (SELECT TO_CHAR(NOW() :: DATE,'dd-mm-yyyy'));
 BEGIN
 	WITH ins1 AS (
 	INSERT INTO b10_usuario (us_ID,us_email,us_password)
 	VALUES (DEFAULT,email,crypt(password,gen_salt('bf')))
 	RETURNING us_ID)
 
+	, ins2 AS (
 	INSERT INTO b13a_rel_pe_us 
-	VALUES(DEFAULT,NUSP,(select us_ID from ins1));
-	RETURN NUSP;
+	VALUES(DEFAULT,NUSP,(select us_ID from ins1))
+	RETURNING rel_peus_ID)
+	
+	INSERT INTO b13b_rel_us_pf
+	VALUES(DEFAULT, (select us_ID from ins1), idperf, date_atm);
+
+	--raise notice 'Value %', idperf;
+
+	RETURN 1;
 END;
 $$ LANGUAGE plpgsql;
 
-/*
-CREATE OR REPLACE FUNCTION ins_student_trigg() 
-RETURNS trigger AS $stu_stamp$
-BEGIN
-	INSERT INTO b13a_rel_pe_us
-	VALUES (DEFAULT,NEW.NUSP,NEW.us_ID);
-	RETURN NEW;
-END; 
-$stu_stamp$ LANGUAGE plpgsql;
-
-CREATE TRIGGER create_rel_pe_us
-	AFTER INSERT ON b10_usuario
-	FOR EACH ROW
-	EXECUTE PROCEDURE ins_student_trigg();
-*/
 -------------------------------------------------------------------
+
+select * from insert_role('student');
 
 select * from insert_person(227705861,'579.652.564-14','Tonya','Thibault','15-3-1974','F');
 select * from insert_student(227705861,'tonya@email.com','secret');
