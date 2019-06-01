@@ -18,7 +18,7 @@ CREATE TABLE b02_aluno (
 	al_NUSP				INTEGER,
 	al_Curso			TEXT NOT NULL,
 
-	CONSTRAINT pk_aluno PRIMARY KEY (al_NUSP),
+	CONSTRAINT pk_aluno PRIMARY KEY (al_NUSP, al_Curso),
 	CONSTRAINT pf_al FOREIGN KEY (al_NUSP) REFERENCES b01_pessoa (NUSP)
 );
 

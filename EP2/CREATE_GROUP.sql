@@ -49,16 +49,13 @@ $$
 $$
 LANGUAGE sql;
 
-/*
-  Insere um estudante como usuário que tenha um nusp válido (i.e. está em b01_pessoa).
+/* Insere um estudante como usuário que tenha um nusp válido (i.e. está em b01_pessoa).
 também liga este usuário a b01_pessoa e b09_perfil, criando entradas em
 b13a_rel_pe_us e b13b_rel_us_pf.
-
   Importante que haja um perfil com nome 'student' em b09_perfil ou esta função falhará.
-(i.e. executar inserv_role('student') primeiro
- */
+(i.e. executar inserv_role('student') primeiro  */
 CREATE OR REPLACE FUNCTION insert_student
-(NUSP int, nickname text, email text, password text)
+(NUSP int, curso text, nickname text, email text, password text)
 RETURNS INTEGER AS $$
 DECLARE
 	idperf  int := (SELECT perfil_ID FROM b09_perfil WHERE perfil_Nome = 'student');
@@ -79,15 +76,59 @@ BEGIN
 	INSERT INTO b13b_rel_us_pf
 	VALUES(DEFAULT, (select us_ID from ins1), idperf, date_atm);
 
+	INSERT INTO b02_aluno
+	VALUES(NUSP, curso);
+
 	--raise notice 'Value %', idperf;
 
 	RETURN 1;
 END;
 $$ LANGUAGE plpgsql;
 
+/* Insere um professor como usuário que tenha um nusp válido (i.e. está em b01_pessoa).
+também liga este usuário a b01_pessoa e b09_perfil, criando entradas em
+b13a_rel_pe_us e b13b_rel_us_pf.
+  Importante que haja um perfil com nome 'teacher' em b09_perfil ou esta função falhará.
+(i.e. executar inserv_role('teacher') primeiro */
+CREATE OR REPLACE FUNCTION insert_teacher
+(NUSP int, unidade text, nickname text, email text, password text)
+RETURNS INTEGER AS $$
+DECLARE
+	idperf  int := (SELECT perfil_ID FROM b09_perfil WHERE perfil_Nome = 'teacher');
+	date_atm date := (SELECT TO_CHAR(NOW() :: DATE,'dd-mm-yyyy'));
+	--gerando com numeros aleatorios para auxiliar ao testar, evitando colisao de logins
+	login_nick text := TRIM(BOTH FROM nickname) || TRIM(BOTH FROM to_char(floor(random() * 100 + 1),'99'));
+BEGIN
+	WITH ins1 AS (
+	INSERT INTO b10_usuario (us_ID,us_login,us_email,us_password)
+	VALUES (DEFAULT,login_nick,email,crypt(password,gen_salt('bf')))
+	RETURNING us_ID)
+
+	, ins2 AS (
+	INSERT INTO b13a_rel_pe_us 
+	VALUES(DEFAULT,NUSP,(select us_ID from ins1))
+	RETURNING rel_peus_ID)
+	
+	INSERT INTO b13b_rel_us_pf
+	VALUES(DEFAULT, (select us_ID from ins1), idperf, date_atm);
+
+	INSERT INTO b03_professor
+	VALUES(NUSP, unidade);
+
+	--raise notice 'Value %', idperf;
+
+	RETURN 1;
+END;
+$$ LANGUAGE plpgsql;
 -------------------------------------------------------------------
-
+--Inserting roles
 select * from insert_role('student');
+select * from insert_role('teacher');
 
+--Inserting person and then adding her as student
 select * from insert_person(227705861,'579.652.564-14','Tonya','Thibault','15-3-1974','F');
-select * from insert_student(227705861,'tonya','tonya@email.com','secret');
+select * from insert_student(227705861,'bcc','tonya','tonya@email.com','secret');
+
+--Inserting person and then adding him as teacher 
+select * from insert_person(344149328,'774.313.118-03','Raymond','Ho','14-2-1992','M');
+select * from insert_teacher(344149328,'ime','raymond','raymond@email.com','secret');
