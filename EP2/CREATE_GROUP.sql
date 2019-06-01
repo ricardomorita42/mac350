@@ -237,7 +237,18 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+/* Cria um oferecimento de uma disciplina por um professor. Caso uma data não seja
+ adicionada, usa-se a data atual como ministra_data. */
+CREATE OR REPLACE FUNCTION insert_planeja
+(planeja_aluno_nusp int, planeja_disciplina_sigla text)
+RETURNS INTEGER AS $$
+BEGIN
+	INSERT INTO planeja VALUES ($1,$2);
+
+	RETURN 1;
+END;
+$$ LANGUAGE plpgsql;
 -------------------------------------------------------------------
 \i EP2_DDL_CLEAN.sql
 \i EP2_DDL.sql
-\i DML.sql
+\i test_cases.sql

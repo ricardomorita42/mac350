@@ -13,6 +13,8 @@ select * from insert_service(NULL,'teste','testando');
 --!! Inserting person and then adding her as student!!--
 select * from insert_person(227705861,'579.652.564-14','Tonya','Thibault','15-3-1974','F');
 select * from insert_student(227705861,'BCC','tonya','tonya@email.com','aluno_secret');
+select * from insert_person(386930905,'290.027.844-46','Felipe','Derby','27-8-1986','M');
+select * from insert_student(386930905,'BMAT','felipe','felipe@email.com','aluno2_secret');
 
 --!! Inserting person and then adding him as teacher !!--
 select * from insert_person(344149328,'774.313.118-03','Raymond','Ho','14-2-1992','M');
@@ -71,3 +73,12 @@ select * from insert_oferecimento(344149328,'MAC0102','01-01-2018');
 
 --inserindo outro professor na mesma matéria
 select * from insert_oferecimento(588508512,'MAC0101',NULL);
+
+--!! Inserting planeja !!--
+select * from insert_planeja(227705861,'MAC0101');
+
+--testando se mesmo nusp pode planejar mais de uma disciplina
+select * from insert_planeja(227705861,'MAC0102');
+
+--testando se dois nusps podem planejar a mesma matéria
+select * from insert_planeja(386930905,'MAC0101');
