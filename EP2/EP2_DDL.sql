@@ -47,11 +47,11 @@ CREATE TABLE admnistrador (
 --pode existir curriculo com mesmo nomes mas terão siglas diferentes 
 CREATE TABLE curriculo (
 	curriculo_sigla			TEXT NOT NULL,
-	curriculo_unidade		TEXT NOT NULL,
-	curriculo_nome			TEXT NOT NULL,
-	curriculo_cred_obrig		INTEGER,
-	curriculo_cred_opt_elet		INTEGER,
-	curriculo_cred_opt_liv		INTEGER,
+	curriculo_unidade		TEXT ,
+	curriculo_nome			TEXT ,
+	curriculo_cred_obrig		INTEGER NOT NULL,
+	curriculo_cred_opt_elet		INTEGER NOT NULL,
+	curriculo_cred_opt_liv		INTEGER NOT NULL,
 	
 	CONSTRAINT pk_curriculo PRIMARY KEY (curriculo_sigla),
 	CHECK (curriculo_cred_obrig > 0 AND curriculo_cred_obrig < 10000),
@@ -62,18 +62,15 @@ CREATE TABLE curriculo (
 --DROP TABLE IF EXISTS trilha CASCADE;
 CREATE TABLE trilha (
 	trilha_nome			TEXT NOT NULL,
-	trilha_curriculo_sigla		TEXT NOT NULL,
+	trilha_descricao		TEXT,
 
-	CONSTRAINT pk_trilha PRIMARY KEY (trilha_nome ,trilha_curriculo_sigla),
-	CONSTRAINT sk_trilha UNIQUE (trilha_nome),
-	CONSTRAINT fk_trilha FOREIGN KEY (trilha_curriculo_sigla)
-		REFERENCES curriculo (curriculo_sigla)
+	CONSTRAINT pk_trilha PRIMARY KEY (trilha_nome)
 );
 
 --DROP TABLE IF EXISTS modulo CASCADE;
 CREATE TABLE modulo (
 	modulo_nome			TEXT NOT NULL,
-	modulo_descricao		TEXT NOT NULL,
+	modulo_descricao		TEXT,
 
 	CONSTRAINT pk_modulo PRIMARY KEY (modulo_nome)
 );
@@ -82,7 +79,7 @@ CREATE TABLE modulo (
 CREATE TABLE disciplina (
 	disciplina_sigla		TEXT NOT NULL,
 	disciplina_unidade		TEXT NOT NULL,
-	disciplina_nome			TEXT NOT NULL,
+	disciplina_nome			TEXT,
 	disciplina_cred_aula		INTEGER,
 	disciplina_cred_trabalho	INTEGER,
 
@@ -105,7 +102,7 @@ CREATE TABLE usuario(
 --DROP TABLE IF EXISTS perfil CASCADE;
 CREATE TABLE perfil (
 	perfil_nome			TEXT NOT NULL,
-	perfil_descricao		TEXT NOT NULL,
+	perfil_descricao		TEXT,
 
 	CONSTRAINT pk_perfil PRIMARY KEY (perfil_nome)
 );
@@ -113,7 +110,7 @@ CREATE TABLE perfil (
 --DROP TABLE IF EXISTS servico CASCADE;
 CREATE TABLE service (
 	service_nome			TEXT NOT NULL,
-	service_descricao		TEXT NOT NULL,
+	service_descricao		TEXT NULL,
 
 	CONSTRAINT pk_service PRIMARY KEY (service_nome)
 );
@@ -205,6 +202,8 @@ CREATE TABLE tr_mod(
 
 	CONSTRAINT pk_tr_mod 
 		PRIMARY KEY (tr_mod_trilha_nome,tr_mod_modulo_nome),
+	CONSTRAINT sk_tr_mod 
+		UNIQUE (tr_mod_trilha_nome),
 	CONSTRAINT fk_tr_mod1 FOREIGN KEY (tr_mod_trilha_nome)
 		REFERENCES trilha (trilha_nome),
 	CONSTRAINT fk_tr_mod2 FOREIGN KEY (tr_mod_modulo_nome)

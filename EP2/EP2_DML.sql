@@ -7,205 +7,204 @@ DROP DOMAIN IF EXISTS email CASCADE;
 CREATE DOMAIN email AS citext
   CHECK ( value ~ '^[a-zA-Z0-9.!#$%&''*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$' );
 
---b01_pessoa (NUSP, CPF, PNome, SNome, DataNasc, Sexo)
+--pessoa (NUSP, CPF, PNome, SNome, DataNasc, Sexo)
 --alunos
-INSERT INTO b01_pessoa VALUES (227705861,'579.652.564-14','Tonya','Thibault','15-3-1974','F');
-INSERT INTO b01_pessoa VALUES (386930905,'290.027.844-46','Felipe','Derby','27-8-1986','M');
-INSERT INTO b01_pessoa VALUES (859852130,'100.538.773-74','Danny','Gaston','28-6-1978','M');
-INSERT INTO b01_pessoa VALUES (310554114,'205.904.185-04','Lauryn','Slattery','1-7-1950','F');
-INSERT INTO b01_pessoa VALUES (613923368,'948.503.790-51','Lillian','Moilanen','16-4-1963','F');
-INSERT INTO b01_pessoa VALUES (311285463,'642.726.481-09','Jessica','Beck','30-1-1993','F');
-INSERT INTO b01_pessoa VALUES (991002548,'343.678.948-39','Joann','Demmons','13-6-1992','F');
-INSERT INTO b01_pessoa VALUES (158298846,'291.962.071-14','Robert','Hogan','7-11-1963','M');
-INSERT INTO b01_pessoa VALUES (761213416,'467.354.008-36','Rodney','Twombley','16-1-1951','M');
-INSERT INTO b01_pessoa VALUES (702391605,'927.817.720-15','James','Sims','11-10-1960','M');
-INSERT INTO b01_pessoa VALUES (559853740,'315.581.410-54','Jeana','Hinman','2-7-1958','F');
-INSERT INTO b01_pessoa VALUES (994567006,'193.565.251-02','Heather','Obrien','10-2-1958','F');
-INSERT INTO b01_pessoa VALUES (230057892,'655.514.390-88','Otis','Sumner','30-4-1953','M');
-INSERT INTO b01_pessoa VALUES (961065297,'773.246.643-22','Gregory','Exum','10-3-1996','M');
-INSERT INTO b01_pessoa VALUES (162109146,'292.436.018-99','Kelly','Grant','17-2-1964','F');
-INSERT INTO b01_pessoa VALUES (939847659,'672.773.696-97','Marie','Harris','8-6-1981','F');
-INSERT INTO b01_pessoa VALUES (489997003,'894.893.268-76','Elliott','Jones','30-6-1959','M');
-INSERT INTO b01_pessoa VALUES (365513041,'483.551.084-52','David','Rodgers','12-8-1955','M');
-INSERT INTO b01_pessoa VALUES (300606205,'343.742.070-97','Chester','Madril','1-8-1991','M');
-INSERT INTO b01_pessoa VALUES (815705605,'375.709.244-84','David','Turner','2-9-1951','M');
+INSERT INTO pessoa VALUES (227705861,'579.652.564-14','Tonya','Thibault','15-3-1974','F');
+INSERT INTO pessoa VALUES (386930905,'290.027.844-46','Felipe','Derby','27-8-1986','M');
+INSERT INTO pessoa VALUES (859852130,'100.538.773-74','Danny','Gaston','28-6-1978','M');
+INSERT INTO pessoa VALUES (310554114,'205.904.185-04','Lauryn','Slattery','1-7-1950','F');
+INSERT INTO pessoa VALUES (613923368,'948.503.790-51','Lillian','Moilanen','16-4-1963','F');
+INSERT INTO pessoa VALUES (311285463,'642.726.481-09','Jessica','Beck','30-1-1993','F');
+INSERT INTO pessoa VALUES (991002548,'343.678.948-39','Joann','Demmons','13-6-1992','F');
+INSERT INTO pessoa VALUES (158298846,'291.962.071-14','Robert','Hogan','7-11-1963','M');
+INSERT INTO pessoa VALUES (761213416,'467.354.008-36','Rodney','Twombley','16-1-1951','M');
+INSERT INTO pessoa VALUES (702391605,'927.817.720-15','James','Sims','11-10-1960','M');
+INSERT INTO pessoa VALUES (559853740,'315.581.410-54','Jeana','Hinman','2-7-1958','F');
+INSERT INTO pessoa VALUES (994567006,'193.565.251-02','Heather','Obrien','10-2-1958','F');
+INSERT INTO pessoa VALUES (230057892,'655.514.390-88','Otis','Sumner','30-4-1953','M');
+INSERT INTO pessoa VALUES (961065297,'773.246.643-22','Gregory','Exum','10-3-1996','M');
+INSERT INTO pessoa VALUES (162109146,'292.436.018-99','Kelly','Grant','17-2-1964','F');
+INSERT INTO pessoa VALUES (939847659,'672.773.696-97','Marie','Harris','8-6-1981','F');
+INSERT INTO pessoa VALUES (489997003,'894.893.268-76','Elliott','Jones','30-6-1959','M');
+INSERT INTO pessoa VALUES (365513041,'483.551.084-52','David','Rodgers','12-8-1955','M');
+INSERT INTO pessoa VALUES (300606205,'343.742.070-97','Chester','Madril','1-8-1991','M');
+INSERT INTO pessoa VALUES (815705605,'375.709.244-84','David','Turner','2-9-1951','M');
 
 --professores
-INSERT INTO b01_pessoa VALUES (588508512,'610.661.507-97','Ismael','Brown','7-10-1950','M');
-INSERT INTO b01_pessoa VALUES (217525199,'705.516.821-01','Virginia','Mattingly','22-2-1959','F');
-INSERT INTO b01_pessoa VALUES (403856584,'614.793.727-54','Virginia','Phillips','24-2-1957','F');
-INSERT INTO b01_pessoa VALUES (629091676,'718.883.731-33','Roland','Cox','23-9-1977','M');
-INSERT INTO b01_pessoa VALUES (914806276,'935.664.937-77','Charles','Mishar','1-8-1965','M');
-INSERT INTO b01_pessoa VALUES (442932985,'489.656.198-67','Michelle','Grawe','7-11-1966','F');
-INSERT INTO b01_pessoa VALUES (292003247,'255.625.153-09','Laurence','Gibson','5-9-1980','M');
-INSERT INTO b01_pessoa VALUES (388414429,'271.414.864-10','Ray','Cromer','16-8-1983','M');
-INSERT INTO b01_pessoa VALUES (886902161,'823.449.865-83','Shane','Atkins','25-3-1959','M');
-INSERT INTO b01_pessoa VALUES (344149328,'774.313.118-03','Raymond','Ho','14-2-1992','M');
+INSERT INTO pessoa VALUES (588508512,'610.661.507-97','Ismael'	,'Brown','7-10-1950','M');
+INSERT INTO pessoa VALUES (217525199,'705.516.821-01','Virginia	','Mattingly','22-2-1959','F');
+INSERT INTO pessoa VALUES (403856584,'614.793.727-54','Virginia	','Phillips','24-2-1957','F');
+INSERT INTO pessoa VALUES (629091676,'718.883.731-33','Roland',	'Cox','23-9-1977','M');
+INSERT INTO pessoa VALUES (914806276,'935.664.937-77','Charles'	,'Mishar','1-8-1965','M');
+INSERT INTO pessoa VALUES (442932985,'489.656.198-67','Michelle','Grawe','7-11-1966','F');
+INSERT INTO pessoa VALUES (292003247,'255.625.153-09','Laurence','Gibson','5-9-1980','M');
+INSERT INTO pessoa VALUES (388414429,'271.414.864-10','Ray'	,'Cromer','16-8-1983','M');
+INSERT INTO pessoa VALUES (886902161,'823.449.865-83','Shane'	,'Atkins','25-3-1959','M');
+INSERT INTO pessoa VALUES (344149328,'774.313.118-03','Raymond'	,'Ho','14-2-1992','M');
 
 --admnistradores
-INSERT INTO b01_pessoa VALUES (933545064,'157.039.387-49','Ellen','Denney','28-3-1956','F');
-INSERT INTO b01_pessoa VALUES (169779300,'341.805.458-23','Ronald','Goyette','12-1-1996','M');
-INSERT INTO b01_pessoa VALUES (180318059,'879.023.781-32','Brenda','Cruz','12-3-1956','F');
-INSERT INTO b01_pessoa VALUES (813824779,'843.666.950-35','Jean','Mullis','25-4-1950','F');
-INSERT INTO b01_pessoa VALUES (704437879,'364.834.511-48','Katherine','Hayslip','2-4-1989','F');
-INSERT INTO b01_pessoa VALUES (773718543,'121.708.156-99','Zachary','Garrett','25-3-1958','M');
-INSERT INTO b01_pessoa VALUES (377913230,'497.067.626-10','Elizabeth','Mease','1-2-1975','F');
-INSERT INTO b01_pessoa VALUES (306625659,'444.190.340-59','Melanie','Parker','21-1-1969','F');
-INSERT INTO b01_pessoa VALUES (295230948,'237.426.428-81','Christy','Hinsley','13-8-1974','F');
-INSERT INTO b01_pessoa VALUES (897719693,'862.691.319-32','Karen','Mcraney','28-9-1950','F');
+INSERT INTO pessoa VALUES (933545064,'157.039.387-49','Ellen','Denney','28-3-1956','F');
+INSERT INTO pessoa VALUES (169779300,'341.805.458-23','Ronald','Goyette','12-1-1996','M');
+INSERT INTO pessoa VALUES (180318059,'879.023.781-32','Brenda','Cruz','12-3-1956','F');
+INSERT INTO pessoa VALUES (813824779,'843.666.950-35','Jean','Mullis','25-4-1950','F');
+INSERT INTO pessoa VALUES (704437879,'364.834.511-48','Katherine','Hayslip','2-4-1989','F');
+INSERT INTO pessoa VALUES (773718543,'121.708.156-99','Zachary','Garrett','25-3-1958','M');
+INSERT INTO pessoa VALUES (377913230,'497.067.626-10','Elizabeth','Mease','1-2-1975','F');
+INSERT INTO pessoa VALUES (306625659,'444.190.340-59','Melanie','Parker','21-1-1969','F');
+INSERT INTO pessoa VALUES (295230948,'237.426.428-81','Christy','Hinsley','13-8-1974','F');
+INSERT INTO pessoa VALUES (897719693,'862.691.319-32','Karen','Mcraney','28-9-1950','F');
 
---b02_aluno (al_NUSP, al_Curso)
-INSERT INTO b02_aluno VALUES (227705861,'BCC');
-INSERT INTO b02_aluno VALUES (386930905,'BCC');
-INSERT INTO b02_aluno VALUES (859852130,'BCC');
-INSERT INTO b02_aluno VALUES (310554114,'BCC');
-INSERT INTO b02_aluno VALUES (613923368,'BCC');
-INSERT INTO b02_aluno VALUES (311285463,'BCC');
-INSERT INTO b02_aluno VALUES (991002548,'BCC');
-INSERT INTO b02_aluno VALUES (158298846,'BCC');
-INSERT INTO b02_aluno VALUES (761213416,'BCC');
-INSERT INTO b02_aluno VALUES (702391605,'BCC');
-INSERT INTO b02_aluno VALUES (559853740,'BCC');
-INSERT INTO b02_aluno VALUES (994567006,'BCC');
-INSERT INTO b02_aluno VALUES (230057892,'BMAT');
-INSERT INTO b02_aluno VALUES (961065297,'BMAT');
-INSERT INTO b02_aluno VALUES (162109146,'BMAE');
-INSERT INTO b02_aluno VALUES (939847659,'BMAE');
-INSERT INTO b02_aluno VALUES (489997003,'BMAE');
-INSERT INTO b02_aluno VALUES (365513041,'BMAE');
-INSERT INTO b02_aluno VALUES (300606205,'BMAE');
-INSERT INTO b02_aluno VALUES (815705605,'BMAE');
+--aluno (aluno_NUSP, aluno_Curso)
+INSERT INTO aluno VALUES (227705861,'BCC');
+INSERT INTO aluno VALUES (386930905,'BCC');
+INSERT INTO aluno VALUES (859852130,'BCC');
+INSERT INTO aluno VALUES (310554114,'BCC');
+INSERT INTO aluno VALUES (613923368,'BCC');
+INSERT INTO aluno VALUES (311285463,'BCC');
+INSERT INTO aluno VALUES (991002548,'BCC');
+INSERT INTO aluno VALUES (158298846,'BCC');
+INSERT INTO aluno VALUES (761213416,'BCC');
+INSERT INTO aluno VALUES (702391605,'BCC');
+INSERT INTO aluno VALUES (559853740,'BCC');
+INSERT INTO aluno VALUES (994567006,'BCC');
+INSERT INTO aluno VALUES (230057892,'BMAT');
+INSERT INTO aluno VALUES (961065297,'BMAT');
+INSERT INTO aluno VALUES (162109146,'BMAE');
+INSERT INTO aluno VALUES (939847659,'BMAE');
+INSERT INTO aluno VALUES (489997003,'BMAE');
+INSERT INTO aluno VALUES (365513041,'BMAE');
+INSERT INTO aluno VALUES (300606205,'BMAE');
+INSERT INTO aluno VALUES (815705605,'BMAE');
 
---b03_professor (prof_NUSP,prof_Unidade)
-INSERT INTO b03_professor VALUES (588508512,'IME');
-INSERT INTO b03_professor VALUES (217525199,'IME');
-INSERT INTO b03_professor VALUES (403856584,'IME');
-INSERT INTO b03_professor VALUES (629091676,'IME');
-INSERT INTO b03_professor VALUES (914806276,'IME');
-INSERT INTO b03_professor VALUES (442932985,'IME');
-INSERT INTO b03_professor VALUES (292003247,'EACH');
-INSERT INTO b03_professor VALUES (388414429,'FEA');
-INSERT INTO b03_professor VALUES (886902161,'POLI');
-INSERT INTO b03_professor VALUES (344149328,'POLI');
+--professor (prof_NUSP,prof_Unidade)
+INSERT INTO professor VALUES (588508512,'IME');
+INSERT INTO professor VALUES (217525199,'IME');
+INSERT INTO professor VALUES (403856584,'IME');
+INSERT INTO professor VALUES (629091676,'IME');
+INSERT INTO professor VALUES (914806276,'IME');
+INSERT INTO professor VALUES (442932985,'IME');
+INSERT INTO professor VALUES (292003247,'EACH');
+INSERT INTO professor VALUES (388414429,'FEA');
+INSERT INTO professor VALUES (886902161,'POLI');
+INSERT INTO professor VALUES (344149328,'POLI');
 
---b04_admnistrador (adm_NUSP, adm_Unidade)
-INSERT INTO b04_admnistrador VALUES (933545064,'IME');
-INSERT INTO b04_admnistrador VALUES (169779300,'IME');
-INSERT INTO b04_admnistrador VALUES (180318059,'IME');
-INSERT INTO b04_admnistrador VALUES (813824779,'IME');
-INSERT INTO b04_admnistrador VALUES (704437879,'IME');
-INSERT INTO b04_admnistrador VALUES (773718543,'POLI');
-INSERT INTO b04_admnistrador VALUES (377913230,'POLI');
-INSERT INTO b04_admnistrador VALUES (306625659,'IME');
-INSERT INTO b04_admnistrador VALUES (295230948,'POLI');
-INSERT INTO b04_admnistrador VALUES (897719693,'IME');
+--admnistrador (admin_NUSP, admin_Unidade)
+INSERT INTO admnistrador VALUES (933545064,'IME');
+INSERT INTO admnistrador VALUES (169779300,'IME');
+INSERT INTO admnistrador VALUES (180318059,'IME');
+INSERT INTO admnistrador VALUES (813824779,'IME');
+INSERT INTO admnistrador VALUES (704437879,'IME');
+INSERT INTO admnistrador VALUES (773718543,'POLI');
+INSERT INTO admnistrador VALUES (377913230,'POLI');
+INSERT INTO admnistrador VALUES (306625659,'IME');
+INSERT INTO admnistrador VALUES (295230948,'POLI');
+INSERT INTO admnistrador VALUES (897719693,'IME');
 
---b05_curriculo (cur_ID, cur_Unidade, cur_Nome, cur_cred_Obrig,cur_Cred_OptElet,cur_Cred_OptLiv)
-INSERT INTO b05_curriculo VALUES (1,'IME','Bacharelado em Ciencia da Computacao',111,52,24);
-INSERT INTO b05_curriculo VALUES (2,'IME','Bacharelado em Estatistica',121,40,20);
-INSERT INTO b05_curriculo VALUES (3,'IME','Bacharelado em Matematica',131,42,28);
-INSERT INTO b05_curriculo VALUES (4,'IME','Licenciatura em Matematica ',110,32,19);
-INSERT INTO b05_curriculo VALUES (5,'IME','Bacharelado em Matematica Aplicada ',150,23,45);
-INSERT INTO b05_curriculo VALUES (6,'IME','Bacharelado em Matematica Aplicada e Computacional',90,22,44);
-INSERT INTO b05_curriculo VALUES (7,'IME','Bacharelado em Engenharia de Software',100,52,14);
-INSERT INTO b05_curriculo VALUES (8,'IME','Bacharelado em Tecnologia da Informacao',123,22,40);
-INSERT INTO b05_curriculo VALUES (9,'IME','Bacharelado em Sistemas',91,52,50);
-INSERT INTO b05_curriculo VALUES (10,'IME','Bacharelado em Biologia Computacional',141,22,64);
+--curriculo (cur_sigla,cur_Unidade, cur_Nome, cur_cred_Obrig,cur_Cred_OptElet,cur_Cred_OptLiv)
+INSERT INTO curriculo VALUES ('BCC' ,'IME','Bacharelado em Ciencia da Computacao'		,111,52,24);
+INSERT INTO curriculo VALUES ('BEST','IME','Bacharelado em Estatistica'				,121,40,20);
+INSERT INTO curriculo VALUES ('BMAT','IME','Bacharelado em Matematica'				,131,42,28);
+INSERT INTO curriculo VALUES ('LIC' ,'IME','Licenciatura em Matematica'				,110,32,19);
+INSERT INTO curriculo VALUES ('BMA' ,'IME','Bacharelado em Matematica Aplicada '		,150,23,45);
+INSERT INTO curriculo VALUES ('BMAC','IME','Bacharelado em Matematica Aplicada e Computacional'	,90 ,22,44);
+INSERT INTO curriculo VALUES ('BES' ,'IME','Bacharelado em Engenharia de Software'		,100,52,14);
+INSERT INTO curriculo VALUES ('BTI' ,'IME','Bacharelado em Tecnologia da Informacao'		,123,22,40);
+INSERT INTO curriculo VALUES ('BS'  ,'IME','Bacharelado em Sistemas'				,91 ,52,50);
+INSERT INTO curriculo VALUES ('BBC' ,'IME','Bacharelado em Biologia Computacional'		,141,22,64);
 
---b06_trilha (trilha_ID, trilha_Nome, trilha_Curriculo_Codigo)
-INSERT INTO b06_trilha VALUES (1,'Sistemas',10);
-INSERT INTO b06_trilha VALUES (2,'Redes',9);
-INSERT INTO b06_trilha VALUES (3,'Ciencia de dadods',8);
-INSERT INTO b06_trilha VALUES (4,'Inteligencia Artificial',7);
-INSERT INTO b06_trilha VALUES (5,'Teoria da Computacao',6);
-INSERT INTO b06_trilha VALUES (6,'Big Data',5);
-INSERT INTO b06_trilha VALUES (7,'Fisica Computacional',4);
-INSERT INTO b06_trilha VALUES (8,'Metereologia',3);
-INSERT INTO b06_trilha VALUES (9,'Astronomia',2);
-INSERT INTO b06_trilha VALUES (10,'Teoria dos Jogos',1);
+--trilha (trilha_Nome, trilha_descricao)
+INSERT INTO trilha (trilha_nome) VALUES ('Sistemas'			);
+INSERT INTO trilha (trilha_nome) VALUES ('Redes'			);
+INSERT INTO trilha (trilha_nome) VALUES ('Ciencia de dadods'		);
+INSERT INTO trilha (trilha_nome) VALUES ('Inteligencia Artificial'	);
+INSERT INTO trilha (trilha_nome) VALUES ('Teoria da Computacao'	);
+INSERT INTO trilha (trilha_nome) VALUES ('Big Data'			);
+INSERT INTO trilha (trilha_nome) VALUES ('Fisica Computacional'	);
+INSERT INTO trilha (trilha_nome) VALUES ('Metereologia'		);
+INSERT INTO trilha (trilha_nome) VALUES ('Astronomia'			);
+INSERT INTO trilha (trilha_nome) VALUES ('Teoria dos Jogos'		);
 
---b07_modulo (mod_ID,mod_Curriculo,mod_Nome,mod_Trilha_Codigo)
-INSERT INTO b07_modulo VALUES (1,1,'modulo bcc',1);
-INSERT INTO b07_modulo VALUES (2,2,'modulo estatistica',2);
-INSERT INTO b07_modulo VALUES (3,3,'modulo matematica',3);
-INSERT INTO b07_modulo VALUES (4,4,'modulo licenciatura',4);
-INSERT INTO b07_modulo VALUES (5,5,'modulo mat. aplicada',5);
-INSERT INTO b07_modulo VALUES (6,6,'modulo mat. comp.',6);
-INSERT INTO b07_modulo VALUES (7,7,'modulo engsoft',7);
-INSERT INTO b07_modulo VALUES (8,8,'modulo ti',8);
-INSERT INTO b07_modulo VALUES (9,9,'modulo sistemas',9);
-INSERT INTO b07_modulo VALUES (10,10,'modulo biocomp',10);
+--_modulo (modulo_nome, modulo_descricao)
+INSERT INTO modulo (modulo_nome) VALUES ('modulo bcc');
+INSERT INTO modulo (modulo_nome) VALUES ('modulo estatistica');
+INSERT INTO modulo (modulo_nome) VALUES ('modulo matematica');
+INSERT INTO modulo (modulo_nome) VALUES ('modulo licenciatura');
+INSERT INTO modulo (modulo_nome) VALUES ('modulo mat. aplicada');
+INSERT INTO modulo (modulo_nome) VALUES ('modulo mat. comp.');
+INSERT INTO modulo (modulo_nome) VALUES ('modulo engsoft');
+INSERT INTO modulo (modulo_nome) VALUES ('modulo TI');
+INSERT INTO modulo (modulo_nome) VALUES ('modulo sistemas');
+INSERT INTO modulo (modulo_nome) VALUES ('modulo biocomp');
 
---b08_disciplina (disc_ID, disc_Unidade, disc_Sigla, disc_Nome, disc_CredAula, disc_CredTrabalho)
-INSERT INTO b08_disciplina VALUES (1,'IME',  'MAC0101','Topicos basicos de computação',4,0);
-INSERT INTO b08_disciplina VALUES (2,'IME',  'MAC0102','Teoria de computação',4,0);
-INSERT INTO b08_disciplina VALUES (3,'IME',  'MAC0110','Computação intermediario',4,2);
-INSERT INTO b08_disciplina VALUES (4,'IME',  'MAC0350','Banco de Dados',4,2);
-INSERT INTO b08_disciplina VALUES (5,'IME',  'MAC0210','Laboratório de Programação',4,0);
-INSERT INTO b08_disciplina VALUES (6,'IME',  'MAC0420','Autômatos',4,1);
-INSERT INTO b08_disciplina VALUES (7,'MAT',  'MAT0101','Calculo I',4,0);
-INSERT INTO b08_disciplina VALUES (8,'MAT',  'MAT0102','Calculo II',4,0);
-INSERT INTO b08_disciplina VALUES (9,'MAT',  'MAT0103','Calculo III',4,0);
-INSERT INTO b08_disciplina VALUES (10,'EACH','7974123','Leitura Dramatica',2,2);
+--disciplina (disciplina_sigla, disciplina_Unidade, disciplina_Nome, disciplina_Cred_Aula, disciplina_Cred_Trabalho)
+INSERT INTO disciplina VALUES ('MAC0101','IME' ,'Topicos basicos de computação'	,4,0);
+INSERT INTO disciplina VALUES ('MAC0102','IME' ,'Teoria de computação'		,4,0);
+INSERT INTO disciplina VALUES ('MAC0110','IME' ,'Computação intermediario'	,4,2);
+INSERT INTO disciplina VALUES ('MAC0350','IME' ,'Banco de Dados'		,4,2);
+INSERT INTO disciplina VALUES ('MAC0210','IME' ,'Laboratório de Programação'	,4,0);
+INSERT INTO disciplina VALUES ('MAC0420','IME' ,'Autômatos'			,4,1);
+INSERT INTO disciplina VALUES ('MAT0101','MAT' ,'Calculo I'			,4,0);
+INSERT INTO disciplina VALUES ('MAT0102','MAT' ,'Calculo II'			,4,0);
+INSERT INTO disciplina VALUES ('MAT0103','MAT' ,'Calculo III'			,4,0);
+INSERT INTO disciplina VALUES ('7974123','EACH','Leitura Dramatica'		,2,2);
 
---b09_perfil (perfil_id, perfil_Nome)
---admin handles curriculum-related stuff
---superadmin can do everything
-INSERT INTO b09_perfil VALUES (1,'guest');
-INSERT INTO b09_perfil VALUES (2,'student');
-INSERT INTO b09_perfil VALUES (3,'teacher');
-INSERT INTO b09_perfil VALUES (6,'exchange_student');
-INSERT INTO b09_perfil VALUES (7,'intern');
-INSERT INTO b09_perfil VALUES (4,'admin');
-INSERT INTO b09_perfil VALUES (5,'superadmin');
+--perfil (perfil_Nome,perfil_descricao)
+INSERT INTO perfil VALUES ('guest');
+INSERT INTO perfil VALUES ('student');
+INSERT INTO perfil VALUES ('teacher');
+INSERT INTO perfil VALUES ('exchange_student');
+INSERT INTO perfil VALUES ('intern');
+INSERT INTO perfil VALUES ('admin');
+INSERT INTO perfil VALUES ('superadmin');
 
---b10_usuario (us_id, us_login, us_email, us_password)
-INSERT INTO b10_usuario VALUES (1,'decio','decio@mail.com', crypt('deciopassword', gen_salt('bf')));
-INSERT INTO b10_usuario VALUES (2,'alberto','alberto@mail.com', crypt('albertopassword', gen_salt('bf')));
-INSERT INTO b10_usuario VALUES (3,'roberto','roberto@mail.com', crypt('robertopassword', gen_salt('bf')));
-INSERT INTO b10_usuario VALUES (4,'manuel','manuel@mail.com', crypt('manuelpassword', gen_salt('bf')));
-INSERT INTO b10_usuario VALUES (5,'laura','laura@mail.com', crypt('laurapassword', gen_salt('bf')));
-INSERT INTO b10_usuario VALUES (6,'lecia','lecia@mail.com', crypt('leciapassword', gen_salt('bf')));
-INSERT INTO b10_usuario VALUES (7,'sara','sara@mail.com', crypt('sarapassword', gen_salt('bf')));
-INSERT INTO b10_usuario VALUES (8,'ricardo','ricardo@mail.com', crypt('ricardopassword', gen_salt('bf')));
-INSERT INTO b10_usuario VALUES (9,'clara','clara@mail.com', crypt('clarapassword', gen_salt('bf')));
-INSERT INTO b10_usuario VALUES (10,'edinaldo','edinaldo@mail.com', crypt('edinaldopassword', gen_salt('bf')));
+--usuario (user_login, user_email, user_password)
+INSERT INTO usuario VALUES ('Ismael'	,'ismael@mail.com'	,crypt('ismaelpassword'	 ,gen_salt('bf')));
+INSERT INTO usuario VALUES ('Virginia'	,'virginia1@mail.com'	,crypt('virginia1topassword' ,gen_salt('bf')));
+INSERT INTO usuario VALUES ('Virginia'	,'virginia2@mail.com'	,crypt('virginia2password' ,gen_salt('bf')));
+INSERT INTO usuario VALUES ('Roland'	,'roland@mail.com'	,crypt('rolandpassword'	 ,gen_salt('bf')));
+INSERT INTO usuario VALUES ('Charles'	,'charles@mail.com'	,crypt('charlespassword' ,gen_salt('bf')));
+INSERT INTO usuario VALUES ('Michelle'	,'michelle@mail.com'	,crypt('michellepassword',gen_salt('bf')));
+INSERT INTO usuario VALUES ('Laurence'	,'laurence@mail.com'	,crypt('laurencepassword' ,gen_salt('bf')));
+INSERT INTO usuario VALUES ('Ray'	,'ray@mail.com'		,crypt('raypassword' ,gen_salt('bf')));
+INSERT INTO usuario VALUES ('Shane'	,'shane@mail.com'	,crypt('shanepassword'	 ,gen_salt('bf')));
+INSERT INTO usuario VALUES ('Raymond'	,'raymond@mail.com'	,crypt('raymondpassword',gen_salt('bf')));
 
---b11_servico (serv_ID, serv_Codigo, serv_Nome)
-INSERT INTO b11_servico VALUES (1,'insert_student','inserir um aluno');
-INSERT INTO b11_servico VALUES (2,'insert_teacher','inserir um professor');
-INSERT INTO b11_servico VALUES (3,'insert_admin','inserir um admin');
-INSERT INTO b11_servico VALUES (4,'insert_guest','inserir um visitante');
-INSERT INTO b11_servico VALUES (5,'blah','ver disciplinas feitas');
-INSERT INTO b11_servico VALUES (6,'blah','postar nota');
-INSERT INTO b11_servico VALUES (7,'blah','ver info de curso');
-INSERT INTO b11_servico VALUES (8,'blah','ver presenca');
-INSERT INTO b11_servico VALUES (9,'blah','ver info disciplina');
-INSERT INTO b11_servico VALUES (10,'blah','ver disciplinas oferecidas');
+--service (service_nome, service_descricao)
+INSERT INTO service VALUES ('insert_student','inserir um aluno');
+INSERT INTO service VALUES ('insert_teacher','inserir um professor');
+INSERT INTO service VALUES ('insert_admin','inserir um admin');
+INSERT INTO service VALUES ('insert_guest','inserir um visitante');
+INSERT INTO service VALUES ('update_grade','atualizar nota');
+INSERT INTO service VALUES ('update_ministra','atualiza materia com professor disponivel');
+INSERT INTO service VALUES ('delete_student','apaga um aluno');
+INSERT INTO service VALUES ('retrieve_aluno_presenca','recebe presenca do aluno');
+INSERT INTO service VALUES ('retrieve_aluno_nota','recebe nota do aluno');
+INSERT INTO service VALUES ('insert_disciplina','insere disciplina');
+INSERT INTO service VALUES ('update_cursa','atualiza tabela cursa');
 
---b12_oferecimento (ofer_ID, ofer_NUSP,ofer_disc_Codigo,ofer_ministra_Data)
-INSERT INTO b12_oferecimento VALUES (DEFAULT, 588508512,1, '4-6-2019');
-INSERT INTO b12_oferecimento VALUES (DEFAULT, 217525199,2, '23-4-2019');
-INSERT INTO b12_oferecimento VALUES (DEFAULT, 403856584,3, '2-4-2019');
-INSERT INTO b12_oferecimento VALUES (DEFAULT, 629091676,4, '27-9-2018');
-INSERT INTO b12_oferecimento VALUES (DEFAULT, 914806276,5, '8-11-2018');
-INSERT INTO b12_oferecimento VALUES (DEFAULT, 442932985,6, '7-7-2018');
-INSERT INTO b12_oferecimento VALUES (DEFAULT, 292003247,7, '21-11-2018');
-INSERT INTO b12_oferecimento VALUES (DEFAULT, 388414429,8, '15-3-2018');
-INSERT INTO b12_oferecimento VALUES (DEFAULT, 886902161,9, '12-1-2019');
-INSERT INTO b12_oferecimento VALUES (DEFAULT, 344149328,10,'30-4-2019');
+-- oferecimento (ofer_prof_nusp,ofer_disciplina_sigla,ofer_ministra_data)
+INSERT INTO oferecimento VALUES (588508512,'MAC0101','4-6-2019');
+INSERT INTO oferecimento VALUES (217525199,'MAC0102','23-4-2019');
+INSERT INTO oferecimento VALUES (403856584,'MAC0110','2-4-2019');
+INSERT INTO oferecimento VALUES (629091676,'MAC0350','27-9-2018');
+INSERT INTO oferecimento VALUES (914806276,'MAC0210','8-11-2018');
+INSERT INTO oferecimento VALUES (442932985,'MAC0420','7-7-2018');
+INSERT INTO oferecimento VALUES (292003247,'MAT0101','21-11-2018');
+INSERT INTO oferecimento VALUES (388414429,'MAT0102','15-3-2018');
+INSERT INTO oferecimento VALUES (886902161,'MAT0103','12-1-2019');
+INSERT INTO oferecimento VALUES (344149328,'7974123','30-4-2019');
 
---b13a_rel_pe_us (rel_peus_ID, rel_peus_NUSP, rel_peus_us_ID
-INSERT INTO b13a_rel_pe_us VALUES (DEFAULT,588508512,1);
-INSERT INTO b13a_rel_pe_us VALUES (DEFAULT,217525199,2);
-INSERT INTO b13a_rel_pe_us VALUES (DEFAULT,403856584,3);
-INSERT INTO b13a_rel_pe_us VALUES (DEFAULT,629091676,4);
-INSERT INTO b13a_rel_pe_us VALUES (DEFAULT,914806276,5);
-INSERT INTO b13a_rel_pe_us VALUES (DEFAULT,442932985,6);
-INSERT INTO b13a_rel_pe_us VALUES (DEFAULT,292003247,7);
-INSERT INTO b13a_rel_pe_us VALUES (DEFAULT,388414429,8);
-INSERT INTO b13a_rel_pe_us VALUES (DEFAULT,886902161,9);
-INSERT INTO b13a_rel_pe_us VALUES (DEFAULT,344149328,10);
+--pe_us (pe_us_NUSP, pe_us_user_login)
+INSERT INTO rel_pe_us VALUES (588508512,'Ismael');
+INSERT INTO rel_pe_us VALUES (217525199,'Virginia1');
+INSERT INTO rel_pe_us VALUES (403856584,'Virginia2');
+INSERT INTO rel_pe_us VALUES (629091676,'Roland');
+INSERT INTO rel_pe_us VALUES (914806276,'Charles');
+INSERT INTO rel_pe_us VALUES (442932985,'Michelle');
+INSERT INTO rel_pe_us VALUES (292003247,'Laurence');
+INSERT INTO rel_pe_us VALUES (388414429,'Ray');
+INSERT INTO rel_pe_us VALUES (886902161,'Shane');
+INSERT INTO rel_pe_us VALUES (344149328,'Raymond');
 
 --b13b_rel_us_pf (rel_uspf_ID, rel_uspf_us_ID, rel_uspf_serv_ID,perf_inicio)
 INSERT INTO b13b_rel_us_pf VALUES (DEFAULT,1,2,'12-3-2018' );
