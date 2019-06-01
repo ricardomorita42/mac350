@@ -248,6 +248,35 @@ BEGIN
 	RETURN 1;
 END;
 $$ LANGUAGE plpgsql;
+
+/* Insere uma entrada para um aluno que vai cursar uma disciplina oferecida.
+Primeiro verifica-se se o aluno tem esta matéria no planejamento. Depois
+é necessária uma checagem para ver se a disciplina está sendo oferecida 
+(i.e. o curso está em oferecimento).
+ */
+CREATE OR REPLACE FUNCTION insert_cursa
+(cursa_aluno_nusp int, cursa_prof_nusp int, cursa_disciplina_sigla text,
+cursa_nota numeric, cursa_presenca numeric)
+RETURNS INTEGER AS $$
+BEGIN
+	IF (SELECT count(*) from oferecimento WHERE
+		ofer_prof_nusp = cursa_prof_nusp AND
+		ofer_disciplina_sigla = cursa_disciplina_sigla) = 1
+	THEN
+		IF (SELECT count(*) from planeja WHERE
+			planeja_aluno_nusp = cursa_aluno_nusp AND
+			planeja_disciplina_sigla = cursa_disciplina_sigla) = 1
+		THEN
+			INSERT INTO cursa VALUES ($1,$2,$3,$4,$5);
+			RETURN 1;
+		ELSE
+			RETURN 0;
+		END IF;
+	ELSE
+		RETURN 0;
+	END IF;
+END;
+$$ LANGUAGE plpgsql;
 -------------------------------------------------------------------
 \i EP2_DDL_CLEAN.sql
 \i EP2_DDL.sql
