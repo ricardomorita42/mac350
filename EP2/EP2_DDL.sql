@@ -67,12 +67,17 @@ CREATE TABLE trilha (
 	CONSTRAINT pk_trilha PRIMARY KEY (trilha_nome)
 );
 
+--Relacionamento trilha - modulo é 1:N logo 1a de trilha vai para modulo
 --DROP TABLE IF EXISTS modulo CASCADE;
 CREATE TABLE modulo (
 	modulo_nome			TEXT NOT NULL,
 	modulo_descricao		TEXT,
+	modulo_trilha_nome		TEXT,
 
-	CONSTRAINT pk_modulo PRIMARY KEY (modulo_nome)
+	CONSTRAINT pk_modulo PRIMARY KEY (modulo_nome),
+	CONSTRAINT sk_modulo UNIQUE (modulo_trilha_nome),
+	CONSTRAINT fk_modulo FOREIGN KEY (modulo_trilha_nome)
+		REFERENCES trilha (trilha_nome)
 );
 
 --DROP TABLE IF EXISTS disciplina CASCADE;
@@ -192,22 +197,6 @@ CREATE TABLE cur_tril (
 		REFERENCES curriculo (curriculo_sigla),
 	CONSTRAINT fk_cur_tril2 FOREIGN KEY (cur_tril_trilha_nome)
 		REFERENCES trilha (trilha_nome)
-);
-
---Esta certo este 1 :N? Uma trilha pode ter diversos modulos.
---DROP TABLE IF EXISTS tr_mod CASCADE;
-CREATE TABLE tr_mod(
-	tr_mod_trilha_nome		TEXT NOT NULL,
-	tr_mod_modulo_nome		TEXT NOT NULL,
-
-	CONSTRAINT pk_tr_mod 
-		PRIMARY KEY (tr_mod_trilha_nome,tr_mod_modulo_nome),
-	CONSTRAINT sk_tr_mod 
-		UNIQUE (tr_mod_trilha_nome),
-	CONSTRAINT fk_tr_mod1 FOREIGN KEY (tr_mod_trilha_nome)
-		REFERENCES trilha (trilha_nome),
-	CONSTRAINT fk_tr_mod2 FOREIGN KEY (tr_mod_modulo_nome)
-		REFERENCES modulo (modulo_nome)
 );
 
 --DROP TABLE IF EXISTS dis_mod CASCADE;
