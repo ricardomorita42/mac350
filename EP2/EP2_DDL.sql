@@ -83,7 +83,7 @@ CREATE TABLE modulo (
 --DROP TABLE IF EXISTS disciplina CASCADE;
 CREATE TABLE disciplina (
 	disciplina_sigla		TEXT NOT NULL,
-	disciplina_unidade		TEXT NOT NULL,
+	disciplina_unidade		TEXT,
 	disciplina_nome			TEXT,
 	disciplina_cred_aula		INTEGER,
 	disciplina_cred_trabalho	INTEGER,
@@ -234,19 +234,6 @@ CREATE TABLE planeja (
 	CONSTRAINT fk_planeja1 FOREIGN KEY (planeja_aluno_nusp)
 		REFERENCES aluno (aluno_nusp),
 	CONSTRAINT fk_planeja2 FOREIGN KEY (planeja_disciplina_sigla)
-		REFERENCES disciplina (disciplina_sigla)
-);
-
---DROP TABLE IF EXISTS ministra CASCADE;
-CREATE TABLE ministra (
-	ministra_prof_nusp		INTEGER NOT NULL,
-	ministra_disciplina_sigla	TEXT NOT NULL,
-
-	CONSTRAINT pk_ministra
-		PRIMARY KEY (ministra_prof_nusp, ministra_disciplina_sigla),
-	CONSTRAINT fk_ministra1 FOREIGN KEY (ministra_prof_nusp)
-		REFERENCES professor (prof_nusp),
-	CONSTRAINT fk_ministra2 FOREIGN KEY (ministra_disciplina_sigla)
 		REFERENCES disciplina (disciplina_sigla)
 );
 

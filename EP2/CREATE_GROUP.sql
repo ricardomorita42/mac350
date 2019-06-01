@@ -198,6 +198,45 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+/* Pode ser usado para adicionar uma ligação entre uma Disciplina e um
+modulo ja existente também. Caso modulo_nome seja NULL,
+então a disciplina não será atrelada a ninguém.
+   Pode-se chamar também para criar uma noval relação entre disciplina
+existente e outro módulo. */
+CREATE OR REPLACE FUNCTION insert_disciplina
+(disciplina_sigla text, disciplina_unidade text, disciplina_nome text,
+disciplina_cred_aula int, disciplina_cred_trabalho int, modulo_nome text)
+RETURNS INTEGER AS $$
+BEGIN
+	IF $6 IS NULL THEN
+		INSERT INTO disciplina VALUES ($1,$2,$3,$4,$5);
+	ELSE
+		INSERT INTO disciplina VALUES ($1,$2,$3,$4,$5) ON CONFLICT DO NOTHING;
+		INSERT INTO dis_mod VALUES ($1,$6);
+	END IF;
+
+	RETURN 1;
+END;
+$$ LANGUAGE plpgsql;
+
+/* Cria um oferecimento de uma disciplina por um professor. Caso uma data não seja
+ adicionada, usa-se a data atual como ministra_data. */
+CREATE OR REPLACE FUNCTION insert_oferecimento
+(ofer_prof_nusp int, ofer_disciplina_sigla text, ofer_ministra_data date default NULL)
+RETURNS INTEGER AS $$
+DECLARE
+	date_atm date := (SELECT TO_CHAR(NOW() :: DATE,'dd-mm-yyyy'));
+BEGIN
+	IF $3 IS NULL THEN
+		INSERT INTO oferecimento VALUES ($1,$2,date_atm);
+	ELSE
+		INSERT INTO oferecimento VALUES ($1,$2,$3);
+	END IF;
+
+	RETURN 1;
+END;
+$$ LANGUAGE plpgsql;
+
 -------------------------------------------------------------------
 \i EP2_DDL_CLEAN.sql
 \i EP2_DDL.sql
