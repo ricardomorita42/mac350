@@ -190,3 +190,93 @@ AS $$
 	RETURNING disciplina_sigla, disciplina_cred_trabalho
 $$ LANGUAGE sql;
 ------------------------------------------------------------
+
+/* deve-se inserir nova entrada em admnistra caso se queira
+mudar outros atributos da tabela. Se houvesse data de final
+esta função será mais útil com leve adaptação. */
+CREATE OR REPLACE FUNCTION update_admnistra_data_inicio
+(INOUT nusp int, INOUT curriculo_sigla text, INOUT new_data date)
+AS $$
+	UPDATE admnistra
+	SET admnistra_inicio = new_data
+	WHERE	admnistra_nusp = nusp AND
+		admnistra_curriculo_sigla = curriculo_sigla 
+	RETURNING admnistra_nusp, admnistra_curriculo_sigla, admnistra_inicio
+$$ LANGUAGE sql;
+
+------------------- Updates em Curriculo ------------------
+CREATE OR REPLACE FUNCTION update_curriculo_unidade
+(INOUT sigla text, INOUT new_unidade text)
+AS $$
+	UPDATE curriculo
+	SET curriculo_unidade = new_unidade
+	WHERE curriculo_sigla = sigla
+	RETURNING curriculo_sigla, curriculo_unidade
+$$ LANGUAGE sql;
+
+CREATE OR REPLACE FUNCTION update_curriculo_nome
+(INOUT sigla text, INOUT new_nome text)
+AS $$
+	UPDATE curriculo
+	SET curriculo_nome = new_nome
+	WHERE curriculo_sigla = sigla
+	RETURNING curriculo_sigla, curriculo_nome
+$$ LANGUAGE sql;
+
+CREATE OR REPLACE FUNCTION update_curriculo_cred_obrig
+(INOUT sigla text, INOUT new_cred_obrig int)
+AS $$
+	UPDATE curriculo
+	SET curriculo_cred_obrig = new_cred_obrig
+	WHERE curriculo_sigla = sigla
+	RETURNING curriculo_sigla, curriculo_cred_obrig
+$$ LANGUAGE sql;
+
+CREATE OR REPLACE FUNCTION update_curriculo_cred_opt_elet
+(INOUT sigla text, INOUT new_cred_opt_elet int)
+AS $$
+	UPDATE curriculo
+	SET curriculo_cred_opt_elet = new_cred_opt_elet
+	WHERE curriculo_sigla = sigla
+	RETURNING curriculo_sigla, curriculo_cred_opt_elet
+$$ LANGUAGE sql;
+
+CREATE OR REPLACE FUNCTION update_curriculo_cred_opt_liv
+(INOUT sigla text, INOUT new_cred_opt_liv int)
+AS $$
+	UPDATE curriculo
+	SET curriculo_cred_opt_liv = new_cred_opt_liv
+	WHERE curriculo_sigla = sigla
+	RETURNING curriculo_sigla, curriculo_cred_opt_liv
+$$ LANGUAGE sql;
+------------------------------------------------------------
+
+-- Muda descrição de uma trilha
+CREATE OR REPLACE FUNCTION update_trilha_descricao
+(INOUT nome text, INOUT new_descricao text)
+AS $$
+	UPDATE trilha
+	SET trilha_descricao = new_descricao
+	WHERE trilha_nome = nome 
+	RETURNING trilha_nome , trilha_descricao
+$$ LANGUAGE sql;
+
+-- Muda descrição de um modulo 
+CREATE OR REPLACE FUNCTION update_modulo_descricao
+(INOUT nome text, INOUT new_descricao text)
+AS $$
+	UPDATE modulo
+	SET modulo_descricao = new_descricao
+	WHERE modulo_nome = nome 
+	RETURNING modulo_nome , modulo_descricao
+$$ LANGUAGE sql;
+
+-- Muda bibliografia de uma disciplina
+CREATE OR REPLACE FUNCTION update_disc_biblio_descricao
+(INOUT disc_sigla text, INOUT new_descricao text)
+AS $$
+	UPDATE disciplina_biblio
+	SET disc_biblio_descricao = new_descricao
+	WHERE disc_biblio_disciplina_sigla = disc_sigla
+	RETURNING disc_biblio_disciplina_sigla, disc_biblio_descricao
+$$ LANGUAGE sql;

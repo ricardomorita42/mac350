@@ -326,12 +326,12 @@ $$
 LANGUAGE sql;
 
 CREATE OR REPLACE FUNCTION insert_disciplina_requisitos
-(INOUT disciplina_sigla text, INOUT requisito text)
+(INOUT disciplina_sigla text, INOUT disciplina_requisito text)
 AS
 $$
 	INSERT INTO disciplina_requisitos 
 	VALUES ($1,$2)
-	RETURNING disciplina_sigla, requisito 
+	RETURNING disciplina_sigla, disciplina_requisito 
 $$
 LANGUAGE sql;
 

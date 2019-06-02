@@ -258,22 +258,23 @@ CREATE TABLE trilha_extrareqs (
 --DROP TABLE IF EXISTS disciplina_requisitos  CASCADE;
 CREATE TABLE disciplina_requisitos (
 	disc_reqs_disciplina_sigla	TEXT NOT NULL,
-	disc_reqs_requisito		TEXT NOT NULL,
+	disc_reqs_disciplina_requisito	TEXT NOT NULL,
 
 	CONSTRAINT pk_disc_reqs 
-		PRIMARY KEY (disc_reqs_disciplina_sigla, disc_reqs_requisito),
-	CONSTRAINT fk_disc_reqs FOREIGN KEY (disc_reqs_disciplina_sigla)
+		PRIMARY KEY (disc_reqs_disciplina_sigla, disc_reqs_disciplina_requisito),
+	CONSTRAINT fk_disc_reqs1 FOREIGN KEY (disc_reqs_disciplina_sigla)
+		REFERENCES disciplina (disciplina_sigla),
+	CONSTRAINT fk_disc_reqs2 FOREIGN KEY (disc_reqs_disciplina_requisito)
 		REFERENCES disciplina (disciplina_sigla)
 );
 
 --DROP TABLE IF EXISTS disciplina_biblio CASCADE;
 CREATE TABLE disciplina_biblio (
 	disc_biblio_disciplina_sigla	TEXT NOT NULL,
-	disc_biblio_requisito		TEXT NOT NULL,
+	disc_biblio_descricao		TEXT NOT NULL,
 
 	CONSTRAINT pk_disc_biblio
-		PRIMARY KEY (disc_biblio_disciplina_sigla,disc_biblio_requisito),
+		PRIMARY KEY (disc_biblio_disciplina_sigla),
 	CONSTRAINT fk_disc_biblio FOREIGN KEY (disc_biblio_disciplina_sigla)
 		REFERENCES disciplina (disciplina_sigla)
 );
-

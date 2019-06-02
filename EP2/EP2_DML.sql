@@ -207,16 +207,16 @@ select * from insert_trilha_extrareqs('Metereologia'		,'definir um tutor'		);
 select * from insert_trilha_extrareqs('Astronomia'		,'Fazer tcc na area'		);
 select * from insert_trilha_extrareqs('Teoria dos Jogos'	,'definir um tutor'		);
 
-select * from insert_disciplina_requisitos('MAC0101','requisito a');
-select * from insert_disciplina_requisitos('MAC0102','requisito b');
-select * from insert_disciplina_requisitos('MAC0110','requisito c');
-select * from insert_disciplina_requisitos('MAC0350','requisito d');
-select * from insert_disciplina_requisitos('MAC0210','requisito e');
-select * from insert_disciplina_requisitos('MAC0420','requisito f');
-select * from insert_disciplina_requisitos('MAT0101','requisito g');
-select * from insert_disciplina_requisitos('MAT0102','requisito h');
-select * from insert_disciplina_requisitos('MAT0103','requisito i');
-select * from insert_disciplina_requisitos('7974123','requisito j');
+select * from insert_disciplina_requisitos('MAC0101','7974123');
+select * from insert_disciplina_requisitos('MAC0101','MAC0102');
+select * from insert_disciplina_requisitos('MAC0102','7974123');
+select * from insert_disciplina_requisitos('MAC0110','7974123');
+select * from insert_disciplina_requisitos('MAC0350','7974123');
+select * from insert_disciplina_requisitos('MAC0210','7974123');
+select * from insert_disciplina_requisitos('MAC0420','7974123');
+select * from insert_disciplina_requisitos('MAT0101','7974123');
+select * from insert_disciplina_requisitos('MAT0102','7974123');
+select * from insert_disciplina_requisitos('MAT0103','7974123');
 
 select * from insert_disciplina_biblio('MAC0101','BESTERMAN, Theodore. A world bibliography of bibliographies and of bibliographical catalogues, calendars, abstracts, digests, indexes, and the like. 4. ed. Rowan & Littlefield, Totwan, N.J. 1980 (5 vol.)');
 select * from insert_disciplina_biblio('MAC0102','IOS – International Organization for Standardization. Norma ISO 690');
