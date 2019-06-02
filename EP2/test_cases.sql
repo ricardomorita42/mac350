@@ -91,3 +91,4 @@ select * from insert_cursa(386930905,344149328,'MAC0102',0.0,100.0);
 
 --tentando inserir cursar matéria no planejamento mas que não está sendo oferecida
 select * from insert_cursa(386930905,123456,'MAC0101',0.0,100.0);
+

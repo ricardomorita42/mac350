@@ -212,19 +212,6 @@ CREATE TABLE dis_mod (
 		REFERENCES modulo (modulo_nome)
 );
 
---DROP TABLE IF EXISTS alu_cur CASCADE;
-CREATE TABLE alu_cur (
-	rel_alu_cur_aluno_nusp			INTEGER NOT NULL,
-	rel_alu_cur_curriculo_sigla		TEXT NOT NULL,
-
-	CONSTRAINT pk_rel_alucur 
-		PRIMARY KEY (rel_alu_cur_aluno_nusp,rel_alu_cur_curriculo_sigla),
-	CONSTRAINT fk_rel_alu_cur1 FOREIGN KEY (rel_alu_cur_aluno_nusp)
-		REFERENCES aluno(aluno_nusp),
-	CONSTRAINT fk_rel_alu_cur2 FOREIGN KEY (rel_alu_cur_curriculo_sigla)
-		REFERENCES curriculo (curriculo_sigla)
-);
-
 --DROP TABLE IF EXISTS planeja CASCADE;
 CREATE TABLE planeja (
 	planeja_aluno_nusp		INTEGER NOT NULL,
@@ -255,44 +242,6 @@ CREATE TABLE cursa (
 		REFERENCES disciplina (disciplina_sigla),
 	CHECK (cursa_nota >= 0 AND cursa_nota <= 10),
 	CHECK (cursa_presenca >= 0 AND cursa_presenca <= 100)
-);
-
---DROP TABLE IF EXISTS perfil_permissoes CASCADE;
-CREATE TABLE perfil_permissoes (
-	perf_perm_perfil_nome		TEXT NOT NULL,
-	perf_perm_permissao		TEXT NOT NULL,
-
-	CONSTRAINT pk_perf_perm 
-		PRIMARY KEY (perf_perm_perfil_nome,perf_perm_permissao),
-	CONSTRAINT fk_perf_perm FOREIGN KEY (perf_perm_perfil_nome)
-		REFERENCES perfil (perfil_nome)
-);
-
---DROP TABLE IF EXISTS linguas CASCADE;
-CREATE TABLE linguas (
-	linguas_nusp		INTEGER NOT NULL,
-	linguas_nome		TEXT NOT NULL,
-
-	CONSTRAINT pk_attr_linguas 
-		PRIMARY KEY (linguas_nusp,linguas_nome),
-	CONSTRAINT fk_attr_linguas FOREIGN KEY (linguas_nusp)
-		REFERENCES pessoa (nusp)
-);
-
---DROP TABLE IF EXISTS disc_cursadas CASCADE;
-CREATE TABLE disc_cursadas (
-	disc_cursadas_aluno_nusp		INTEGER NOT NULL,
-	disc_cursadas_curriculo_sigla		TEXT NOT NULL,
-	disc_cursadas_disciplina_sigla		TEXT NOT NULL,
-
-	CONSTRAINT pk_disc_cursadas
-		PRIMARY KEY(disc_cursadas_aluno_nusp,disc_cursadas_curriculo_sigla,disc_cursadas_disciplina_sigla),
-	CONSTRAINT fk_disc_cursadas1 FOREIGN KEY (disc_cursadas_aluno_nusp)
-		REFERENCES aluno(aluno_nusp),
-	CONSTRAINT fk_disc_cursadas2 FOREIGN KEY (disc_cursadas_curriculo_sigla)
-		REFERENCES curriculo (curriculo_sigla),
-	CONSTRAINT fk_disc_cursadas3 FOREIGN KEY (disc_cursadas_disciplina_sigla)
-		REFERENCES disciplina (disciplina_sigla)
 );
 
 --DROP TABLE IF EXISTS trilha_extrareqs CASCADE;
@@ -328,28 +277,3 @@ CREATE TABLE disciplina_biblio (
 		REFERENCES disciplina (disciplina_sigla)
 );
 
---DROP TABLE IF EXISTS cur_disc_opt_elet CASCADE;
-CREATE TABLE cur_disc_opt_elet(
-	cur_disc_opt_elet_curriculo_sigla	TEXT NOT NULL,
-	cur_disc_opt_elet_disciplina_sigla	TEXT NOT NULL,
-
-	CONSTRAINT pk_cur_disc_opt_elet 
-		PRIMARY KEY (cur_disc_opt_elet_curriculo_sigla, cur_disc_opt_elet_disciplina_sigla),
-	CONSTRAINT fk_cur_disc_opt_elet1 FOREIGN KEY (cur_disc_opt_elet_curriculo_sigla)
-		REFERENCES curriculo (curriculo_sigla),
-	CONSTRAINT fk_cur_disc_opt_elet2  FOREIGN KEY (cur_disc_opt_elet_disciplina_sigla)
-		REFERENCES disciplina (disciplina_sigla)
-);
-
---DROP TABLE IF EXISTS cur_disc_opt_liv CASCADE;
-CREATE TABLE cur_disc_opt_liv (
-	cur_disc_opt_livre_curriculo_sigla	TEXT NOT NULL,
-	cur_disc_opt_livre_disciplina_sigla	TEXT NOT NULL,
-
-	CONSTRAINT pk_cur_disc_opt_livre
-		PRIMARY KEY (cur_disc_opt_livre_curriculo_sigla, cur_disc_opt_livre_disciplina_sigla),
-	CONSTRAINT fk_cur_disc_opt_livre1 FOREIGN KEY (cur_disc_opt_livre_curriculo_sigla)
-		REFERENCES curriculo (curriculo_sigla),
-	CONSTRAINT fk_cur_disc_opt_livre2  FOREIGN KEY (cur_disc_opt_livre_disciplina_sigla)
-		REFERENCES disciplina (disciplina_sigla)
-);

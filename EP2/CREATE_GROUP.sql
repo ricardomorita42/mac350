@@ -277,7 +277,43 @@ BEGIN
 	END IF;
 END;
 $$ LANGUAGE plpgsql;
+
+/* As funções a seguir são usadas para adicionar atributos multi-valorados
+às entidades correspondentes. No momento não há intenção de usar estas
+para checagem mais complexas de pré-requisitos necessários por falta de tempo.
+ */
+
+CREATE OR REPLACE FUNCTION insert_trilha_extrareqs
+(INOUT trilha_nome text, INOUT requisito text)
+AS
+$$
+	INSERT INTO trilha_extrareqs 
+	VALUES ($1,$2)
+	RETURNING trilha_nome, requisito 
+$$
+LANGUAGE sql;
+
+CREATE OR REPLACE FUNCTION insert_disciplina_requisitos
+(INOUT disciplina_sigla text, INOUT requisito text)
+AS
+$$
+	INSERT INTO disciplina_requisitos 
+	VALUES ($1,$2)
+	RETURNING disciplina_sigla, requisito 
+$$
+LANGUAGE sql;
+
+CREATE OR REPLACE FUNCTION insert_disciplina_biblio
+(INOUT disciplina_sigla text, INOUT requisito text)
+AS
+$$
+	INSERT INTO disciplina_biblio
+	VALUES ($1,$2)
+	RETURNING disciplina_sigla, requisito 
+$$
+LANGUAGE sql;
+
 -------------------------------------------------------------------
 \i EP2_DDL_CLEAN.sql
 \i EP2_DDL.sql
-\i test_cases.sql
+\i DML.sql
