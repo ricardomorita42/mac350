@@ -153,6 +153,21 @@ CREATE TABLE oferecimento(
 		ON UPDATE CASCADE
 );
 
+CREATE TABLE ministra(
+	ministra_prof_nusp			INTEGER NOT NULL,
+	ministra_disciplina_sigla		TEXT NOT NULL,
+
+	CONSTRAINT pk_ministra PRIMARY KEY (ministra_prof_nusp, ministra_disciplina_sigla),
+	CONSTRAINT fk_ministra1 FOREIGN KEY (ministra_prof_nusp)
+		REFERENCES professor (prof_nusp)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE,
+	CONSTRAINT fk_ministra2 FOREIGN KEY (ministra_disciplina_sigla)
+		REFERENCES disciplina (disciplina_sigla)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE
+);
+
 --DROP TABLE IF EXISTS us_pf CASCADE;
 CREATE TABLE us_pf (
 	us_pf_user_login		TEXT NOT NULL,

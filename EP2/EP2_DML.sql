@@ -171,6 +171,18 @@ select * from insert_planeja(489997003,'MAT0102');
 select * from insert_planeja(365513041,'MAT0103');
 select * from insert_planeja(300606205,'7974123');
 
+----!! Inserting ministras !!----
+select * from insert_ministra(588508512,'MAC0101');
+select * from insert_ministra(217525199,'MAC0102');
+select * from insert_ministra(403856584,'MAC0110');
+select * from insert_ministra(629091676,'MAC0350');
+select * from insert_ministra(914806276,'MAC0210');
+select * from insert_ministra(442932985,'MAC0420');
+select * from insert_ministra(292003247,'MAT0101');
+select * from insert_ministra(388414429,'MAT0102');
+select * from insert_ministra(886902161,'MAT0103');
+select * from insert_ministra(344149328,'7974123');
+
 ----!! Inserting oferecimentos !!----
 select * from insert_oferecimento(588508512,'MAC0101',NULL);
 select * from insert_oferecimento(217525199,'MAC0102',NULL);

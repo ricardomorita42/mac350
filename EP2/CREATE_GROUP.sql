@@ -175,21 +175,39 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+/* Cria-se uma ligação entre disciplina e professor. Mostra quais disciplinas
+ cada professor dá.*/
+CREATE OR REPLACE FUNCTION insert_ministra
+(ofer_prof_nusp int, ofer_disciplina_sigla text)
+RETURNS INTEGER AS $$
+BEGIN
+	INSERT INTO ministra VALUES ($1,$2);
+
+	RETURN 1;
+END;
+$$ LANGUAGE plpgsql;
+
 /* Cria um oferecimento de uma disciplina por um professor. Caso uma data não seja
  adicionada, usa-se a data atual como ministra_data. */
 CREATE OR REPLACE FUNCTION insert_oferecimento
 (ofer_prof_nusp int, ofer_disciplina_sigla text, ofer_ministra_data date default NULL)
 RETURNS INTEGER AS $$
-DECLARE
-	date_atm date := (SELECT TO_CHAR(NOW() :: DATE,'dd-mm-yyyy'));
+DECLARE 
+	ministra_ok INTEGER := 	(SELECT count(*) FROM ministra
+				WHERE ministra_disciplina_sigla = ofer_disciplina_sigla);
 BEGIN
-	IF $3 IS NULL THEN
-		INSERT INTO oferecimento VALUES ($1,$2,date_atm);
-	ELSE
-		INSERT INTO oferecimento VALUES ($1,$2,$3);
-	END IF;
 
-	RETURN 1;
+	IF ministra_ok = 1 THEN
+		IF $3 IS NULL THEN
+			INSERT INTO oferecimento VALUES ($1,$2,current_date);
+		ELSE
+			INSERT INTO oferecimento VALUES ($1,$2,$3);
+		END IF;
+
+		RETURN 1;
+	ELSE
+		RETURN 0;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 
