@@ -15,6 +15,8 @@ CREATE DOMAIN email AS citext
   CHECK ( value ~ '^[a-zA-Z0-9.!#$%&''*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$' );
 */
 
+\i EP2_DDL_CLEAN.sql
+\i EP2_DDL.sql
 ---------------------------------------------------
 
 --adicionado por um superadmin ou alguém da graduacao
@@ -47,18 +49,18 @@ CREATE OR REPLACE FUNCTION insert_user_into_role
 AS
 $$
 	INSERT INTO us_pf
-	VALUES ($1,$2,current_date)
+	VALUES ($1,$2,current_date) ON CONFLICT DO NOTHING
 	RETURNING $1,$2 
 $$
 LANGUAGE sql;
 
-/* Insere um estudante como usuário que tenha um nusp válido (i.e. está em pessoa).
+/* Insere usuário que tenha um nusp válido (i.e. está em pessoa).
 também liga este usuário a pessoa e perfil, criando entradas em
 pe_us e us_pf.
-  Importante que haja um perfil com nome 'student' em perfil ou esta função falhará.
+  Importante que haja um perfil válido ou esta função falhará.
 (i.e. executar insert_role('student') primeiro  */
-CREATE OR REPLACE FUNCTION insert_student
-(nusp int, curso text, nickname text, email text, password text)
+CREATE OR REPLACE FUNCTION insert_user
+(nusp int, curso_ou_unidade text, nickname text, email text, password text, role text)
 RETURNS INTEGER AS $$
 BEGIN
 	INSERT INTO usuario (user_login,user_email,user_password)
@@ -69,93 +71,19 @@ BEGIN
 	VALUES(nusp,nickname)
        	ON CONFLICT DO NOTHING; --quando a pessoa já tem outro perfil
 	
-	INSERT INTO aluno VALUES(nusp, curso);
+	IF role = 'student' THEN
+		INSERT INTO aluno VALUES(nusp, curso_ou_unidade);
+		PERFORM insert_user_into_role(nickname,role);
+	ELSIF role = 'teacher' THEN
+		INSERT INTO professor VALUES(nusp, curso_ou_unidade);
+		PERFORM insert_user_into_role(nickname,role);
+	ELSIF role = 'admin' THEN
+		INSERT INTO admnistrador VALUES(nusp, curso_ou_unidade);
+		PERFORM insert_user_into_role(nickname,role);
+	ELSE
+		PERFORM insert_user_into_role(nickname,role);
+	END IF;
 
-	PERFORM insert_user_into_role(nickname,'student');
-
-	--Adicionando perfil guest ao usuario
-	PERFORM insert_user_into_role(nickname,'guest');
-
-	--raise notice 'Value %', idperf;
-	RETURN 1;
-END;
-$$ LANGUAGE plpgsql;
-
-/* Insere um professor como usuário que tenha um nusp válido (i.e. está em pessoa).
-também liga este usuário a pessoa e perfil, criando entradas em
-pe_us e us_pf.
-  Importante que haja um perfil com nome 'teacher' em perfil ou esta função falhará.
-(i.e. executar insert_role('teacher') primeiro */
-CREATE OR REPLACE FUNCTION insert_teacher
-(nusp int, unidade text, nickname text, email text, password text)
-RETURNS INTEGER AS $$
-BEGIN
-	INSERT INTO usuario (user_login,user_email,user_password)
-	VALUES (nickname,email,crypt(password,gen_salt('bf')))
-       	ON CONFLICT DO NOTHING; --quando a pessoa já tem outro perfil
-
-	INSERT INTO pe_us (pe_us_nusp,pe_us_user_login)
-	VALUES(nusp,nickname)
-       	ON CONFLICT DO NOTHING; --quando a pessoa já tem outro perfil
-	
-	INSERT INTO professor (prof_nusp,prof_unidade)
-	VALUES(nusp, unidade);
-
-	PERFORM insert_user_into_role(nickname,'teacher');
-
-	--Adicionando perfil guest ao usuario
-	PERFORM insert_user_into_role(nickname,'guest');
-
-	RETURN 1;
-END;
-$$ LANGUAGE plpgsql;
-
-/* Insere um admin como usuário que tenha um nusp válido (i.e. está em pessoa).
-também liga este usuário a pessoa e perfil, criando entradas em
-pe_us e us_pf.
-  Importante que haja um perfil com nome 'admin' em perfil ou esta função falhará.
-(i.e. executar insert_role('admin') primeiro */
-CREATE OR REPLACE FUNCTION insert_admin
-(nusp int, unidade text, nickname text, email text, password text)
-RETURNS INTEGER AS $$
-BEGIN
-	INSERT INTO usuario (user_login,user_email,user_password)
-	VALUES (nickname,email,crypt(password,gen_salt('bf')))
-       	ON CONFLICT DO NOTHING; --quando a pessoa já tem outro perfil
-
-	INSERT INTO pe_us (pe_us_nusp,pe_us_user_login)
-	VALUES(nusp,nickname)
-       	ON CONFLICT DO NOTHING; --quando a pessoa já tem outro perfil
-	
-	PERFORM insert_user_into_role(nickname,'admin');
-
-	INSERT INTO admnistrador 
-	VALUES(nusp, unidade);
-
-	--Adicionando perfil guest ao usuario
-	PERFORM insert_user_into_role(nickname,'guest');
-
-	RETURN 1;
-END;
-$$ LANGUAGE plpgsql;
-
-/* Insere um guest como usuário que tenha um nusp válido (i.e. está em pessoa).
-também liga este usuário a pessoa e perfil, criando entradas em
-pe_us e us_pf.
-  Importante que haja um perfil com nome 'guest' em perfil ou esta função falhará.
-(i.e. executar insert_role('student') primeiro  */
-CREATE OR REPLACE FUNCTION insert_guest
-(nusp int, curso text, nickname text, email text, password text)
-RETURNS INTEGER AS $$
-BEGIN
-	INSERT INTO usuario (user_login,user_email,user_password)
-	VALUES (nickname,email,crypt(password,gen_salt('bf')))
-       	ON CONFLICT DO NOTHING; --quando a pessoa já tem outro perfil
-
-	INSERT INTO pe_us (pe_us_nusp,pe_us_user_login)
-	VALUES(nusp,nickname)
-       	ON CONFLICT DO NOTHING; --quando a pessoa já tem outro perfil
-	
 	--Adicionando perfil guest ao usuario
 	PERFORM insert_user_into_role(nickname,'guest');
 
@@ -346,6 +274,6 @@ $$
 LANGUAGE sql;
 
 -------------------------------------------------------------------
-\i EP2_DDL_CLEAN.sql
-\i EP2_DDL.sql
 \i EP2_DML.sql
+\i UPDATE_GROUP.sql
+\i DELETE_GROUP.sql

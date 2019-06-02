@@ -44,26 +44,26 @@ select * from insert_person(365513041,'483.551.084-52','David','Rodgers','12-8-1
 select * from insert_person(300606205,'343.742.070-97','Chester','Madril','1-8-1991'	,'M');
 select * from insert_person(815705605,'375.709.244-84','David','Turner','2-9-1951'	,'M');
 
-select * from insert_student(227705861,'BCC' ,'tonya'	,'tonya@email.com'	,'aluno_secret');
-select * from insert_student(386930905,'BMAT','felipe'	,'felipe@email.com'	,'aluno2_secret');
-select * from insert_student(859852130,'BCC' ,'danny'	,'danny@email.com'	,'aluno3_secret');
-select * from insert_student(310554114,'BCC' ,'lauryn'	,'lauryn@email.com'	,'aluno4_secret');
-select * from insert_student(613923368,'BCC' ,'lillian'	,'lillian@email.com'	,'aluno5_secret');
-select * from insert_student(311285463,'BCC' ,'jessica'	,'jessica@email.com'	,'aluno6_secret');
-select * from insert_student(991002548,'BCC' ,'joann'	,'joann@email.com'	,'aluno7_secret');
-select * from insert_student(158298846,'BCC' ,'robert'	,'robert@email.com'	,'aluno8_secret');
-select * from insert_student(761213416,'BCC' ,'rodney'	,'rodney@email.com'	,'aluno9_secret');
-select * from insert_student(702391605,'BCC' ,'james'	,'james@email.com'	,'aluno10_secret');
-select * from insert_student(559853740,'BCC' ,'jeana'	,'jeana@email.com'	,'aluno11_secret');
-select * from insert_student(994567006,'BCC' ,'heather'	,'heather@email.com'	,'aluno12_secret');
-select * from insert_student(230057892,'BMAT','otis'	,'otis@email.com'	,'aluno13_secret');
-select * from insert_student(961065297,'BMAT','gregory'	,'gregory@email.com'	,'aluno14_secret');
-select * from insert_student(162109146,'BMAT','kelly'	,'kelly@email.com'	,'aluno15_secret');
-select * from insert_student(939847659,'BMAT','marie'	,'marie@email.com'	,'aluno16_secret');
-select * from insert_student(489997003,'BMAE','elliott'	,'elliott@email.com'	,'aluno17_secret');
-select * from insert_student(365513041,'BMAE','david'	,'david@email.com'	,'aluno18_secret');
-select * from insert_student(300606205,'BMAE','chester'	,'chester@email.com'	,'aluno19_secret');
-select * from insert_student(815705605,'BMAE','dave'	,'dave@email.com'	,'aluno20_secret');
+select * from insert_user(227705861,'BCC' ,'tonya'	,'tonya@email.com'	,'aluno_secret'  ,'student');
+select * from insert_user(386930905,'BMAT','felipe'	,'felipe@email.com'	,'aluno2_secret' ,'student');
+select * from insert_user(859852130,'BCC' ,'danny'	,'danny@email.com'	,'aluno3_secret' ,'student');
+select * from insert_user(310554114,'BCC' ,'lauryn'	,'lauryn@email.com'	,'aluno4_secret' ,'student');
+select * from insert_user(613923368,'BCC' ,'lillian'	,'lillian@email.com'	,'aluno5_secret' ,'student');
+select * from insert_user(311285463,'BCC' ,'jessica'	,'jessica@email.com'	,'aluno6_secret' ,'student');
+select * from insert_user(991002548,'BCC' ,'joann'	,'joann@email.com'	,'aluno7_secret' ,'student');
+select * from insert_user(158298846,'BCC' ,'robert'	,'robert@email.com'	,'aluno8_secret' ,'student');
+select * from insert_user(761213416,'BCC' ,'rodney'	,'rodney@email.com'	,'aluno9_secret' ,'student');
+select * from insert_user(702391605,'BCC' ,'james'	,'james@email.com'	,'aluno10_secret','student');
+select * from insert_user(559853740,'BCC' ,'jeana'	,'jeana@email.com'	,'aluno11_secret','student');
+select * from insert_user(994567006,'BCC' ,'heather'	,'heather@email.com'	,'aluno12_secret','student');
+select * from insert_user(230057892,'BMAT','otis'	,'otis@email.com'	,'aluno13_secret','student');
+select * from insert_user(961065297,'BMAT','gregory'	,'gregory@email.com'	,'aluno14_secret','student');
+select * from insert_user(162109146,'BMAT','kelly'	,'kelly@email.com'	,'aluno15_secret','student');
+select * from insert_user(939847659,'BMAT','marie'	,'marie@email.com'	,'aluno16_secret','student');
+select * from insert_user(489997003,'BMAE','elliott'	,'elliott@email.com'	,'aluno17_secret','student');
+select * from insert_user(365513041,'BMAE','david'	,'david@email.com'	,'aluno18_secret','student');
+select * from insert_user(300606205,'BMAE','chester'	,'chester@email.com'	,'aluno19_secret','student');
+select * from insert_user(815705605,'BMAE','dave'	,'dave@email.com'	,'aluno20_secret','student');
 
 ----!! Inserting person and then adding him as teacher !!----
 select * from insert_person(588508512,'610.661.507-97','Ismael'	,'Brown','7-10-1950','M');
@@ -77,16 +77,16 @@ select * from insert_person(388414429,'271.414.864-10','Ray','Cromer','16-8-1983
 select * from insert_person(886902161,'823.449.865-83','Shane','Atkins','25-3-1959','M');
 select * from insert_person(344149328,'774.313.118-03','Raymond','Ho','14-2-1992','M');
 
-select * from insert_teacher(588508512,'POLI','ismael'	 ,'p_ismael@email.com'	,'teacher_secret');
-select * from insert_teacher(217525199,'IME' ,'virginia' ,'p_virginia@email.com','teacher2_secret');
-select * from insert_teacher(403856584,'IME' ,'virginia2','p_virginia2@email.com','teacher3_secret');
-select * from insert_teacher(629091676,'IME' ,'roland'	 ,'p_roland@email.com'	,'teacher4_secret');
-select * from insert_teacher(914806276,'IME' ,'charles'	 ,'p_charles@email.com' ,'teacher5_secret');
-select * from insert_teacher(442932985,'EACH','michelle' ,'p_michelle@email.com','teacher6_secret');
-select * from insert_teacher(292003247,'POLI','laurence' ,'p_laurence@email.com','teacher7_secret');
-select * from insert_teacher(388414429,'IME' ,'ray'	 ,'p_ray@email.com'	,'teacher8_secret');
-select * from insert_teacher(886902161,'IME' ,'shane'	 ,'p_shane@email.com'	,'teacher9_secret');
-select * from insert_teacher(344149328,'IME' ,'raymond'	 ,'p_raymond@email.com'	,'teacher10_secret');
+select * from insert_user(588508512,'POLI','ismael'	,'p_ismael@email.com'	,'teacher_secret'  ,'teacher');
+select * from insert_user(217525199,'IME' ,'virginia'	,'p_virginia@email.com' ,'teacher2_secret' ,'teacher');
+select * from insert_user(403856584,'IME' ,'virginia2'	,'p_virginia2@email.com','teacher3_secret' ,'teacher');
+select * from insert_user(629091676,'IME' ,'roland'	,'p_roland@email.com'	,'teacher4_secret' ,'teacher');
+select * from insert_user(914806276,'IME' ,'charles'	,'p_charles@email.com'  ,'teacher5_secret' ,'teacher');
+select * from insert_user(442932985,'EACH','michelle'	,'p_michelle@email.com' ,'teacher6_secret' ,'teacher');
+select * from insert_user(292003247,'POLI','laurence'	,'p_laurence@email.com' ,'teacher7_secret' ,'teacher');
+select * from insert_user(388414429,'IME' ,'ray'	,'p_ray@email.com'	,'teacher8_secret' ,'teacher');
+select * from insert_user(886902161,'IME' ,'shane'	,'p_shane@email.com'	,'teacher9_secret' ,'teacher');
+select * from insert_user(344149328,'IME' ,'raymond'	,'p_raymond@email.com'	,'teacher10_secret','teacher');
 
 ----!! Inserting person and then adding her as admin !!----
 select * from insert_person(933545064,'157.039.387-49','Ellen','Denney','28-3-1956','F');
@@ -100,16 +100,16 @@ select * from insert_person(306625659,'444.190.340-59','Melanie','Parker','21-1-
 select * from insert_person(295230948,'237.426.428-81','Christy','Hinsley','13-8-1974','F');
 select * from insert_person(897719693,'862.691.319-32','Karen','Mcraney','28-9-1950','F');
 
-select * from insert_admin(933545064,'IME' ,'ellen'	,'a_ellen@email.com'	,'admin1_secret');
-select * from insert_admin(169779300,'IME' ,'ronald'	,'a_ronald@email.com'	,'admin2_secret');
-select * from insert_admin(180318059,'IME' ,'brenda'	,'a_brenda@email.com'	,'admin3_secret');
-select * from insert_admin(813824779,'IME' ,'jean'	,'a_jean@email.com'	,'admin4_secret');
-select * from insert_admin(704437879,'POLI','katherine'	,'a_katherine@email.com','admin5_secret');
-select * from insert_admin(773718543,'IME' ,'zachary'	,'a_zachary@email.com'	,'admin6_secret');
-select * from insert_admin(377913230,'IME' ,'elizabeth'	,'a_elizabeth@email.com','admin7_secret');
-select * from insert_admin(306625659,'IME' ,'melanie'	,'a_melanie@email.com'	,'admin8_secret');
-select * from insert_admin(295230948,'POLI','christy'	,'a_christy@email.com'	,'admin9_secret');
-select * from insert_admin(897719693,'IME' ,'karen'	,'a_karen@email.com'	,'admin10_secret');
+select * from insert_user(933545064,'IME' ,'ellen'	,'a_ellen@email.com'	,'admin1_secret' ,'admin');
+select * from insert_user(169779300,'IME' ,'ronald'	,'a_ronald@email.com'	,'admin2_secret' ,'admin');
+select * from insert_user(180318059,'IME' ,'brenda'	,'a_brenda@email.com'	,'admin3_secret' ,'admin');
+select * from insert_user(813824779,'IME' ,'jean'	,'a_jean@email.com'	,'admin4_secret' ,'admin');
+select * from insert_user(704437879,'POLI','katherine'	,'a_katherine@email.com','admin5_secret' ,'admin');
+select * from insert_user(773718543,'IME' ,'zachary'	,'a_zachary@email.com'	,'admin6_secret' ,'admin');
+select * from insert_user(377913230,'IME' ,'elizabeth'	,'a_elizabeth@email.com','admin7_secret' ,'admin');
+select * from insert_user(306625659,'IME' ,'melanie'	,'a_melanie@email.com'	,'admin8_secret' ,'admin');
+select * from insert_user(295230948,'POLI','christy'	,'a_christy@email.com'	,'admin9_secret' ,'admin');
+select * from insert_user(897719693,'IME' ,'karen'	,'a_karen@email.com'	,'admin10_secret','admin');
 
 ----!! Inserting curriculum !!----
 select * from insert_curriculum('BCC' ,'IME','Bacharelado em Ciencia da Computacao'		,111,52,24,933545064);

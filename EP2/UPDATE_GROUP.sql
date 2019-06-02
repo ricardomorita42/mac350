@@ -32,6 +32,15 @@ AS $$
 $$ LANGUAGE sql;
 
 ------------------------------------------------------------
+--dado um user_login, atualiza o email.
+CREATE OR REPLACE FUNCTION update_email
+(INOUT login TEXT, INOUT new_email text)
+AS $$
+	UPDATE usuario
+	SET user_email = new_email 
+	WHERE user_login = login 
+	RETURNING user_login,user_email
+$$ LANGUAGE sql;
 
 --dado um user_login, atualiza o password.
 CREATE OR REPLACE FUNCTION update_password
@@ -43,12 +52,20 @@ AS $$
 	RETURNING TRUE 
 $$ LANGUAGE sql;
 
-/* Atualiza a descrição de um perfil. 
-Da maneira como foi implementado, o nome da descrição é chave 1aria.
-Portanto, caso seja necessário renomear um perfil, deve-se criar outro perfil
-e apagar o perfil antigo. Esta função só renomeia a descrição
-de um perfil preexistente. */
-CREATE OR REPLACE FUNCTION update_perfil
+-- Atualiza um perfil de um usuario.
+/*CREATE OR REPLACE FUNCTION update_user_perfil
+(user_login text, old_perfil text, new_perfil text)
+RETURN INTEGER AS $$
+	UPDATE pf_se
+	SET us_pf_perfil_nome =  new_perfil
+	WHERE	us_pf_user_login = user_login AND
+		us_pf_perfil_nome = old_perfil;
+
+	RETURN 1;
+$$ LANGUAGE plpgsql;*/
+
+-- Atualiza a descrição de um perfil. 
+CREATE OR REPLACE FUNCTION update_perfil_descricao
 (INOUT nome text, INOUT new_descricao text)
 AS $$
 	UPDATE perfil 
@@ -57,11 +74,7 @@ AS $$
 	RETURNING nome, new_descricao
 $$ LANGUAGE sql;
 
-/* Atualiza a descrição de um serviço.
-Da maneira como foi implementado, o nome da descrição é chave 1aria.
-Portanto, caso seja necessário renomear um service, deve-se criar outro service
-e apagar o service antigo. Esta função só renomeia a descrição
-de um service preexistente. */
+-- Atualiza a descrição de um serviço.
 CREATE OR REPLACE FUNCTION update_service
 (INOUT nome text, INOUT new_descricao text)
 AS $$

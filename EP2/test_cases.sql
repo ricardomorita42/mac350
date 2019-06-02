@@ -12,21 +12,21 @@ select * from insert_service(NULL,'teste','testando');
 
 ----!! Inserting person and then adding her as student!!----
 select * from insert_person(227705861,'579.652.564-14','Tonya','Thibault','15-3-1974','F');
-select * from insert_student(227705861,'BCC','tonya','tonya@email.com','aluno_secret');
+select * from insert_user(227705861,'BCC','tonya','tonya@email.com','aluno_secret','student');
 select * from insert_person(386930905,'290.027.844-46','Felipe','Derby','27-8-1986','M');
-select * from insert_student(386930905,'BMAT','felipe','felipe@email.com','aluno2_secret');
+select * from insert_user(386930905,'BMAT','felipe','felipe@email.com','aluno2_secret','student');
 
 ----!! Inserting person and then adding him as teacher !!----
 select * from insert_person(344149328,'774.313.118-03','Raymond','Ho','14-2-1992','M');
-select * from insert_teacher(344149328,'IME','raymond','raymond@email.com','teacher_secret');
+select * from insert_user(344149328,'IME','raymond','raymond@email.com','teacher_secret','teacher');
 select * from insert_person(588508512,'610.661.507-97','Ismael'	,'Brown','7-10-1950','M');
-select * from insert_teacher(588508512,'POLI','ismael','ismael@email.com','teacher2_secret');
+select * from insert_user(588508512,'POLI','ismael','ismael@email.com','teacher2_secret','teacher');
 
 ----!! Inserting person and then adding her as admin !!----
 select * from insert_person(933545064,'157.039.387-49','Ellen','Denney','28-3-1956','F');
-select * from insert_admin(933545064,'IME','ellen','ellen@email.com','admin_secret');
+select * from insert_user(933545064,'IME','ellen','ellen@email.com','admin_secret','admin');
 select * from insert_person(169779300,'341.805.458-23','Ronald','Goyette','12-1-1996','M');
-select * from insert_admin(169779300,'IME','Ronald','ronald@email.com','admin2_secret');
+select * from insert_user(169779300,'IME','Ronald','ronald@email.com','admin2_secret','admin');
 
 /*Inserting person with role 'teacher' as 'admin' aka testing if a person can have multiple
 roles at the same time */
