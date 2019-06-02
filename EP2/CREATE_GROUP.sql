@@ -51,8 +51,46 @@ $$
 	INSERT INTO us_pf
 	VALUES ($1,$2,current_date) ON CONFLICT DO NOTHING
 	RETURNING $1,$2 
-$$
-LANGUAGE sql;
+$$ LANGUAGE sql;
+
+--Não deu tempo de testar, cuidado!
+CREATE OR REPLACE FUNCTION guest_insert_into_role_student
+(nusp int, user_login text, curso text)
+RETURNS INTEGER AS $$
+BEGIN
+	INSERT INTO us_pf
+	VALUES (user_login,'student',current_date) ON CONFLICT DO NOTHING;
+
+	INSERT INTO aluno
+	VALUES (nusp,curso);
+END;
+$$ LANGUAGE plpgsql;
+
+--Não deu tempo de testar, cuidado!
+CREATE OR REPLACE FUNCTION guest_insert_into_role_teacher
+(nusp int, user_login text, unidade text)
+RETURNS INTEGER AS $$
+BEGIN
+	INSERT INTO us_pf
+	VALUES (user_login,'teacher',current_date) ON CONFLICT DO NOTHING;
+
+	INSERT INTO professor
+	VALUES (nusp,unidade);
+END;
+$$ LANGUAGE plpgsql;
+
+--Não deu tempo de testar, cuidado!
+CREATE OR REPLACE FUNCTION guest_insert_into_role_admin
+(nusp int, user_login text, unidade text)
+RETURNS INTEGER AS $$
+BEGIN
+	INSERT INTO us_pf
+	VALUES (user_login,'admin',current_date) ON CONFLICT DO NOTHING;
+
+	INSERT INTO administrador 
+	VALUES (nusp,unidade);
+END;
+$$ LANGUAGE plpgsql;
 
 /* Insere usuário que tenha um nusp válido (i.e. está em pessoa).
 também liga este usuário a pessoa e perfil, criando uma entrada em
@@ -106,16 +144,15 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-/*
-CREATE OR REPLACE FUNCTION insert_administra
-(planeja_aluno_nusp int, planeja_disciplina_sigla text)
-RETURNS INTEGER AS $$
-BEGIN
-	INSERT INTO planeja VALUES ($1,$2);
+--Insere elo entre administrador e curriculo
+CREATE OR REPLACE FUNCTION insert_into_administra
+(INOUT admin_nusp int, INOUT administra_curriculo_sigla text,
+ INOUT adminstra_data_inicio date default null)
+AS $$
+	INSERT INTO administra VALUES ($1,$2,$3)
+	RETURNING $1,$2,$3
 
-	RETURN 1;
-END;
-$$ LANGUAGE plpgsql;*/
+$$ LANGUAGE sql;
 
 /* É adicinado por um admin então deve estar ligada com um administrador pelo menos.
 (i.e., não se deve criar um currículo sem admin). Também pode adicionar 

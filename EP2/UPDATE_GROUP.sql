@@ -52,18 +52,6 @@ AS $$
 	RETURNING TRUE 
 $$ LANGUAGE sql;
 
--- Atualiza um perfil de um usuario.
-/*CREATE OR REPLACE FUNCTION update_user_perfil
-(user_login text, old_perfil text, new_perfil text)
-RETURN INTEGER AS $$
-	UPDATE pf_se
-	SET us_pf_perfil_nome =  new_perfil
-	WHERE	us_pf_user_login = user_login AND
-		us_pf_perfil_nome = old_perfil;
-
-	RETURN 1;
-$$ LANGUAGE plpgsql;*/
-
 -- Atualiza a descrição de um perfil. 
 CREATE OR REPLACE FUNCTION update_perfil_descricao
 (INOUT nome text, INOUT new_descricao text)
