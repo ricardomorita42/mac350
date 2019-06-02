@@ -20,7 +20,10 @@ CREATE TABLE aluno (
 
 	CONSTRAINT pk_aluno PRIMARY KEY (aluno_nusp, aluno_curso),
 	CONSTRAINT sk_aluno UNIQUE (aluno_nusp),
-	CONSTRAINT pf_al FOREIGN KEY (aluno_nusp) REFERENCES pessoa (nusp)
+	CONSTRAINT pf_al FOREIGN KEY (aluno_nusp) 
+		REFERENCES pessoa (nusp)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE
 );
 
 --DROP TABLE IF EXISTS professor CASCADE;
@@ -30,7 +33,10 @@ CREATE TABLE professor (
 
 	CONSTRAINT pk_professor	PRIMARY KEY (prof_nusp,prof_unidade),
 	CONSTRAINT sk_professor UNIQUE (prof_nusp),
-	CONSTRAINT pf_professor FOREIGN KEY (prof_nusp) REFERENCES pessoa (nusp)
+	CONSTRAINT pf_professor FOREIGN KEY (prof_nusp)
+       		REFERENCES pessoa (nusp)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE
 );
 
 --DROP TABLE IF EXISTS admnistrador CASCADE;
@@ -40,7 +46,10 @@ CREATE TABLE admnistrador (
 
 	CONSTRAINT pk_admin PRIMARY KEY (admin_nusp, admin_unidade),
 	CONSTRAINT sk_admin UNIQUE (admin_nusp),
-	CONSTRAINT pf_admin FOREIGN KEY (admin_nusp) REFERENCES pessoa (nusp)
+	CONSTRAINT pf_admin FOREIGN KEY (admin_nusp)
+       		REFERENCES pessoa (nusp)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE
 );
 
 --DROP TABLE IF EXISTS curriculo CASCADE;
@@ -78,6 +87,8 @@ CREATE TABLE modulo (
 	CONSTRAINT sk_modulo UNIQUE (modulo_trilha_nome),
 	CONSTRAINT fk_modulo FOREIGN KEY (modulo_trilha_nome)
 		REFERENCES trilha (trilha_nome)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE
 );
 
 --DROP TABLE IF EXISTS disciplina CASCADE;
@@ -128,9 +139,13 @@ CREATE TABLE oferecimento(
 
 	CONSTRAINT pk_ofer PRIMARY KEY (ofer_prof_nusp, ofer_disciplina_sigla),
 	CONSTRAINT fk_ofer1 FOREIGN KEY (ofer_prof_nusp)
-		REFERENCES professor (prof_nusp),
+		REFERENCES professor (prof_nusp)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE,
 	CONSTRAINT fk_ofer2 FOREIGN KEY (ofer_disciplina_sigla)
 		REFERENCES disciplina (disciplina_sigla)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE
 );
 
 --DROP TABLE IF EXISTS pe_us CASCADE;
@@ -141,9 +156,13 @@ CREATE TABLE pe_us (
 
 	CONSTRAINT pk_pe_us PRIMARY KEY (pe_us_nusp),
 	CONSTRAINT fk_pe_us1 FOREIGN KEY (pe_us_nusp)
-		REFERENCES pessoa (nusp),
+		REFERENCES pessoa (nusp)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE,
 	CONSTRAINT fk_pe_us2 FOREIGN KEY (pe_us_user_login)
 		REFERENCES usuario (user_login)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE
 
 );
 
@@ -167,9 +186,13 @@ CREATE TABLE pf_se (
 
 	CONSTRAINT pk_pf_se PRIMARY KEY (pf_se_perfil_nome,pf_se_service_nome),
 	CONSTRAINT fk_pf_se1 FOREIGN KEY (pf_se_perfil_nome)
-		REFERENCES perfil (perfil_nome),
+		REFERENCES perfil (perfil_nome)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE,
 	CONSTRAINT fk_pf_se2 FOREIGN KEY (pf_se_service_nome)
 		REFERENCES service (service_nome)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE
 );
 
 --DROP TABLE IF EXISTS admnistra CASCADE;
@@ -181,9 +204,13 @@ CREATE TABLE admnistra (
 	CONSTRAINT pk_admnistra
 		PRIMARY KEY (admnistra_nusp, admnistra_curriculo_sigla),
 	CONSTRAINT fk_admnistra1 FOREIGN KEY (admnistra_nusp)
-		REFERENCES pessoa (nusp),
+		REFERENCES pessoa (nusp)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE,
 	CONSTRAINT fk_admnistra2 FOREIGN KEY (admnistra_curriculo_sigla)
 		REFERENCES curriculo (curriculo_sigla)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE
 );
 
 --DROP TABLE IF EXISTS cur_tril CASCADE;
@@ -194,9 +221,13 @@ CREATE TABLE cur_tril (
 	CONSTRAINT pk_cur_tril 
 		PRIMARY KEY (cur_tril_curriculo_sigla, cur_tril_trilha_nome),
 	CONSTRAINT fk_cur_tril1 FOREIGN KEY (cur_tril_curriculo_sigla)
-		REFERENCES curriculo (curriculo_sigla),
+		REFERENCES curriculo (curriculo_sigla)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE,
 	CONSTRAINT fk_cur_tril2 FOREIGN KEY (cur_tril_trilha_nome)
 		REFERENCES trilha (trilha_nome)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE
 );
 
 --DROP TABLE IF EXISTS dis_mod CASCADE;
@@ -207,9 +238,13 @@ CREATE TABLE dis_mod (
 	CONSTRAINT pk_disc_mod 
 		PRIMARY KEY (disc_mod_disciplina_sigla, disc_mod_modulo_nome),
 	CONSTRAINT fk_disc_mod1 FOREIGN KEY (disc_mod_disciplina_sigla)
-		REFERENCES disciplina (disciplina_sigla),
+		REFERENCES disciplina (disciplina_sigla)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE,
 	CONSTRAINT fk_disc_mod2 FOREIGN KEY (disc_mod_modulo_nome)
 		REFERENCES modulo (modulo_nome)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE
 );
 
 --DROP TABLE IF EXISTS planeja CASCADE;
@@ -219,9 +254,13 @@ CREATE TABLE planeja (
 
 	CONSTRAINT pk_planeja PRIMARY KEY (planeja_aluno_nusp, planeja_disciplina_sigla),
 	CONSTRAINT fk_planeja1 FOREIGN KEY (planeja_aluno_nusp)
-		REFERENCES aluno (aluno_nusp),
+		REFERENCES aluno (aluno_nusp)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE,
 	CONSTRAINT fk_planeja2 FOREIGN KEY (planeja_disciplina_sigla)
 		REFERENCES disciplina (disciplina_sigla)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE
 );
 
 --DROP TABLE IF EXISTS cursa CASCADE;
@@ -235,11 +274,17 @@ CREATE TABLE cursa (
 	CONSTRAINT pk_cursa 
 		PRIMARY KEY (cursa_aluno_nusp,cursa_prof_nusp,cursa_disciplina_sigla),
 	CONSTRAINT fk_cursa1 FOREIGN KEY (cursa_aluno_nusp)
-		REFERENCES aluno (aluno_nusp),
+		REFERENCES aluno (aluno_nusp)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE,
 	CONSTRAINT fk_cursa2 FOREIGN KEY (cursa_prof_nusp)
-		REFERENCES professor (prof_nusp),
+		REFERENCES professor (prof_nusp)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE,
 	CONSTRAINT fk_cursa3 FOREIGN KEY (cursa_disciplina_sigla)
-		REFERENCES disciplina (disciplina_sigla),
+		REFERENCES disciplina (disciplina_sigla)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE,
 	CHECK (cursa_nota >= 0 AND cursa_nota <= 10),
 	CHECK (cursa_presenca >= 0 AND cursa_presenca <= 100)
 );
@@ -253,6 +298,8 @@ CREATE TABLE trilha_extrareqs (
 		PRIMARY KEY (tril_extrareqs_trilha_nome,tril_extrareqs_requisito),
 	CONSTRAINT fk_tril_extra FOREIGN KEY (tril_extrareqs_trilha_nome)
 		REFERENCES trilha (trilha_nome)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE
 );
 
 --DROP TABLE IF EXISTS disciplina_requisitos  CASCADE;
@@ -263,9 +310,13 @@ CREATE TABLE disciplina_requisitos (
 	CONSTRAINT pk_disc_reqs 
 		PRIMARY KEY (disc_reqs_disciplina_sigla, disc_reqs_disciplina_requisito),
 	CONSTRAINT fk_disc_reqs1 FOREIGN KEY (disc_reqs_disciplina_sigla)
-		REFERENCES disciplina (disciplina_sigla),
+		REFERENCES disciplina (disciplina_sigla)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE,
 	CONSTRAINT fk_disc_reqs2 FOREIGN KEY (disc_reqs_disciplina_requisito)
 		REFERENCES disciplina (disciplina_sigla)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE
 );
 
 --DROP TABLE IF EXISTS disciplina_biblio CASCADE;
@@ -277,4 +328,6 @@ CREATE TABLE disciplina_biblio (
 		PRIMARY KEY (disc_biblio_disciplina_sigla),
 	CONSTRAINT fk_disc_biblio FOREIGN KEY (disc_biblio_disciplina_sigla)
 		REFERENCES disciplina (disciplina_sigla)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE
 );
