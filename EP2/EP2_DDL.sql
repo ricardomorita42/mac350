@@ -109,8 +109,13 @@ CREATE TABLE usuario(
 	user_login			TEXT NOT NULL,
 	user_email			TEXT NOT NULL,
 	user_password			TEXT NOT NULL,	
+	user_nusp			INT NOT NULL,
 
 	CONSTRAINT pk_user PRIMARY KEY (user_login),
+	CONSTRAINT fk_user FOREIGN KEY (user_nusp)
+		REFERENCES pessoa (nusp)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE,
 	CONSTRAINT sk1_user UNIQUE (user_login),
 	CONSTRAINT sk2_user UNIQUE (user_email)
 );
@@ -146,24 +151,6 @@ CREATE TABLE oferecimento(
 		REFERENCES disciplina (disciplina_sigla)
 		ON DELETE CASCADE
 		ON UPDATE CASCADE
-);
-
---DROP TABLE IF EXISTS pe_us CASCADE;
---cada pessoa tem um só login, o qual depende do nusp
-CREATE TABLE pe_us (
-	pe_us_nusp		INTEGER NOT NULL,
-	pe_us_user_login	TEXT NOT NULL,
-
-	CONSTRAINT pk_pe_us PRIMARY KEY (pe_us_nusp),
-	CONSTRAINT fk_pe_us1 FOREIGN KEY (pe_us_nusp)
-		REFERENCES pessoa (nusp)
-		ON DELETE CASCADE
-		ON UPDATE CASCADE,
-	CONSTRAINT fk_pe_us2 FOREIGN KEY (pe_us_user_login)
-		REFERENCES usuario (user_login)
-		ON DELETE CASCADE
-		ON UPDATE CASCADE
-
 );
 
 --DROP TABLE IF EXISTS us_pf CASCADE;

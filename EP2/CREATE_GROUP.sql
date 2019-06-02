@@ -55,20 +55,16 @@ $$
 LANGUAGE sql;
 
 /* Insere usuário que tenha um nusp válido (i.e. está em pessoa).
-também liga este usuário a pessoa e perfil, criando entradas em
-pe_us e us_pf.
+também liga este usuário a pessoa e perfil, criando uma entrada em
+us_pf.
   Importante que haja um perfil válido ou esta função falhará.
 (i.e. executar insert_role('student') primeiro  */
 CREATE OR REPLACE FUNCTION insert_user
 (nusp int, curso_ou_unidade text, nickname text, email text, password text, role text)
 RETURNS INTEGER AS $$
 BEGIN
-	INSERT INTO usuario (user_login,user_email,user_password)
-	VALUES (nickname,email,crypt(password,gen_salt('bf')))
-       	ON CONFLICT DO NOTHING; --quando a pessoa já tem outro perfil
-
-	INSERT INTO pe_us (pe_us_nusp,pe_us_user_login)
-	VALUES(nusp,nickname)
+	INSERT INTO usuario (user_login,user_email,user_password, user_nusp)
+	VALUES (nickname,email,crypt(password,gen_salt('bf')), nusp)
        	ON CONFLICT DO NOTHING; --quando a pessoa já tem outro perfil
 	
 	IF role = 'student' THEN
