@@ -126,7 +126,7 @@ CREATE OR REPLACE FUNCTION delete_admin
 (num_usp int, unidade text)
 RETURNS INTEGER AS $$
 BEGIN
-	DELETE 	FROM admnistrador
+	DELETE 	FROM administrador
 		WHERE 	admin_nusp = num_usp AND
 			admin_unidade = unidade;
 
@@ -134,14 +134,14 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- exclui um curriculo da relação admnistra
-CREATE OR REPLACE FUNCTION delete_from_admnistra
+-- exclui um curriculo da relação administra
+CREATE OR REPLACE FUNCTION delete_from_administra
 (nusp int, sigla text) 
 RETURNS INTEGER AS $$
 BEGIN
-	DELETE 	FROM admnistra
-		WHERE 	admnistra_curriculo_sigla = sigla AND
-			admnistra_nusp = nusp;
+	DELETE 	FROM administra
+		WHERE 	administra_curriculo_sigla = sigla AND
+			administra_nusp = nusp;
 
 	RETURN 1;
 END;
@@ -153,9 +153,9 @@ CREATE OR REPLACE FUNCTION delete_curriculo
 (sigla text)
 RETURNS INTEGER AS $$
 BEGIN
-	DELETE 	FROM admnistra
-		WHERE 	admnistra_curriculo_sigla = sigla AND
-			admnistra_nusp = nusp;
+	DELETE 	FROM administra
+		WHERE 	administra_curriculo_sigla = sigla AND
+			administra_nusp = nusp;
 
 	DELETE 	FROM curriculo 
 		WHERE curriculo_sigla = sigla;

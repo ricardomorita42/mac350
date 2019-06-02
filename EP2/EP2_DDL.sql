@@ -39,8 +39,8 @@ CREATE TABLE professor (
 		ON UPDATE CASCADE
 );
 
---DROP TABLE IF EXISTS admnistrador CASCADE;
-CREATE TABLE admnistrador (
+--DROP TABLE IF EXISTS administrador CASCADE;
+CREATE TABLE administrador (
 	admin_nusp		INTEGER,
 	admin_unidade		TEXT NOT NULL,
 
@@ -197,19 +197,19 @@ CREATE TABLE pf_se (
 		ON UPDATE CASCADE
 );
 
---DROP TABLE IF EXISTS admnistra CASCADE;
-CREATE TABLE admnistra (
-	admnistra_nusp			INTEGER NOT NULL,
-	admnistra_curriculo_sigla	TEXT NOT NULL,
-	admnistra_inicio		date,
+--DROP TABLE IF EXISTS administra CASCADE;
+CREATE TABLE administra (
+	administra_nusp			INTEGER NOT NULL,
+	administra_curriculo_sigla	TEXT NOT NULL,
+	administra_inicio		date,
 
-	CONSTRAINT pk_admnistra
-		PRIMARY KEY (admnistra_nusp, admnistra_curriculo_sigla),
-	CONSTRAINT fk_admnistra1 FOREIGN KEY (admnistra_nusp)
+	CONSTRAINT pk_administra
+		PRIMARY KEY (administra_nusp, administra_curriculo_sigla),
+	CONSTRAINT fk_administra1 FOREIGN KEY (administra_nusp)
 		REFERENCES pessoa (nusp)
 		ON DELETE CASCADE
 		ON UPDATE CASCADE,
-	CONSTRAINT fk_admnistra2 FOREIGN KEY (admnistra_curriculo_sigla)
+	CONSTRAINT fk_administra2 FOREIGN KEY (administra_curriculo_sigla)
 		REFERENCES curriculo (curriculo_sigla)
 		ON DELETE CASCADE
 		ON UPDATE CASCADE

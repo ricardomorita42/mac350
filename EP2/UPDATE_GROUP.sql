@@ -98,7 +98,7 @@ $$ LANGUAGE sql;
 CREATE OR REPLACE FUNCTION update_admin_unidade
 (INOUT nusp int, INOUT new_unidade text)
 AS $$
-	UPDATE admnistrador
+	UPDATE administrador
 	SET admin_unidade = new_unidade
 	WHERE admin_nusp = nusp
 	RETURNING admin_nusp, admin_unidade 
@@ -204,17 +204,17 @@ AS $$
 $$ LANGUAGE sql;
 ------------------------------------------------------------
 
-/* deve-se inserir nova entrada em admnistra caso se queira
+/* deve-se inserir nova entrada em administra caso se queira
 mudar outros atributos da tabela. Se houvesse data de final
 esta função será mais útil com leve adaptação. */
-CREATE OR REPLACE FUNCTION update_admnistra_data_inicio
+CREATE OR REPLACE FUNCTION update_administra_data_inicio
 (INOUT nusp int, INOUT curriculo_sigla text, INOUT new_data date)
 AS $$
-	UPDATE admnistra
-	SET admnistra_inicio = new_data
-	WHERE	admnistra_nusp = nusp AND
-		admnistra_curriculo_sigla = curriculo_sigla 
-	RETURNING admnistra_nusp, admnistra_curriculo_sigla, admnistra_inicio
+	UPDATE administra
+	SET administra_inicio = new_data
+	WHERE	administra_nusp = nusp AND
+		administra_curriculo_sigla = curriculo_sigla 
+	RETURNING administra_nusp, administra_curriculo_sigla, administra_inicio
 $$ LANGUAGE sql;
 
 ------------------- Updates em Curriculo ------------------

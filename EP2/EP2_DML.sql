@@ -17,7 +17,7 @@ select * from insert_service('student'	,'retrieve_user_email','recupera o e-mail
 select * from insert_service('teacher'	,'teacher_retrieve_nota','acessa as notas das disciplinas em que ele dá aula');
 select * from insert_service('teacher'	,'teacher_update_nota','professor atualiza a nota de um aluno');
 select * from insert_service('teacher'	,'teacher_update_presenca','professor atualiza a presença de um aluno');
-select * from insert_service('admin'	,'admin_retrieve_nota','acessa as notas das disciplinas do currículo que ele admnistra');
+select * from insert_service('admin'	,'admin_retrieve_nota','acessa as notas das disciplinas do currículo que ele administra');
 select * from insert_service('admin'	,'admin_insert_cursa','admin inscreve aluno numa matéria');
 select * from insert_service('admin'	,'admin_update_curriculo','admin atualiza um currículo');
 select * from insert_service('admin'	,'admin_update_trilha','admin atualiza uma trilha');

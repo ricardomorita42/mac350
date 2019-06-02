@@ -74,7 +74,7 @@ BEGIN
 		INSERT INTO professor VALUES(nusp, curso_ou_unidade);
 		PERFORM insert_user_into_role(nickname,role);
 	ELSIF role = 'admin' THEN
-		INSERT INTO admnistrador VALUES(nusp, curso_ou_unidade);
+		INSERT INTO administrador VALUES(nusp, curso_ou_unidade);
 		PERFORM insert_user_into_role(nickname,role);
 	ELSE
 		PERFORM insert_user_into_role(nickname,role);
@@ -106,7 +106,18 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-/* É adicinado por um admin então deve estar ligada com um admnistrador pelo menos.
+/*
+CREATE OR REPLACE FUNCTION insert_administra
+(planeja_aluno_nusp int, planeja_disciplina_sigla text)
+RETURNS INTEGER AS $$
+BEGIN
+	INSERT INTO planeja VALUES ($1,$2);
+
+	RETURN 1;
+END;
+$$ LANGUAGE plpgsql;*/
+
+/* É adicinado por um admin então deve estar ligada com um administrador pelo menos.
 (i.e., não se deve criar um currículo sem admin). Também pode adicionar 
 mais um admin para um currículo.  */
 CREATE OR REPLACE FUNCTION insert_curriculum
@@ -117,7 +128,7 @@ DECLARE
 	date_atm date := (SELECT TO_CHAR(NOW() :: DATE,'dd-mm-yyyy'));
 BEGIN
 	INSERT into curriculo VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT DO NOTHING;
-	INSERT into admnistra VALUES ($7,$1,date_atm);
+	INSERT into administra VALUES ($7,$1,date_atm);
 
 	RETURN 1;
 END;
