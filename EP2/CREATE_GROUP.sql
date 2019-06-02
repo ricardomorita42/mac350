@@ -30,6 +30,7 @@ $$
 $$
 LANGUAGE sql;
 
+--Cria um perfil
 CREATE OR REPLACE FUNCTION insert_role 
 (INOUT perfil_nome text, INOUT perfil_descricao text DEFAULT NULL)
 AS
@@ -37,6 +38,17 @@ $$
 	INSERT INTO perfil
 	VALUES ($1,$2)
 	RETURNING perfil_nome, perfil_descricao
+$$
+LANGUAGE sql;
+
+--Insere um usuario existente em um perfil existente
+CREATE OR REPLACE FUNCTION insert_user_into_role 
+(INOUT user_login text, INOUT perfil_nome text)
+AS
+$$
+	INSERT INTO us_pf
+	VALUES ($1,$2,current_date)
+	RETURNING $1,$2 
 $$
 LANGUAGE sql;
 
@@ -48,9 +60,6 @@ pe_us e us_pf.
 CREATE OR REPLACE FUNCTION insert_student
 (nusp int, curso text, nickname text, email text, password text)
 RETURNS INTEGER AS $$
-DECLARE
-	date_atm date := (SELECT TO_CHAR(NOW() :: DATE,'dd-mm-yyyy'));
-	--gerando com numeros aleatorios para auxiliar ao testar, evitando colisao de logins
 BEGIN
 	INSERT INTO usuario (user_login,user_email,user_password)
 	VALUES (nickname,email,crypt(password,gen_salt('bf')))
@@ -60,11 +69,12 @@ BEGIN
 	VALUES(nusp,nickname)
        	ON CONFLICT DO NOTHING; --quando a pessoa já tem outro perfil
 	
-	INSERT INTO us_pf
-	VALUES(nickname, 'student', date_atm);
+	INSERT INTO aluno VALUES(nusp, curso);
 
-	INSERT INTO aluno
-	VALUES(nusp, curso);
+	PERFORM insert_user_into_role(nickname,'student');
+
+	--Adicionando perfil guest ao usuario
+	PERFORM insert_user_into_role(nickname,'guest');
 
 	--raise notice 'Value %', idperf;
 	RETURN 1;
@@ -79,10 +89,6 @@ pe_us e us_pf.
 CREATE OR REPLACE FUNCTION insert_teacher
 (nusp int, unidade text, nickname text, email text, password text)
 RETURNS INTEGER AS $$
-DECLARE
-	date_atm date := (SELECT TO_CHAR(NOW() :: DATE,'dd-mm-yyyy'));
-	--gerando com numeros aleatorios para auxiliar ao testar, evitando colisao de logins
-	--login_nick text := TRIM(BOTH FROM nickname) || TRIM(BOTH FROM to_char(floor(random() * 100 + 1),'99'));
 BEGIN
 	INSERT INTO usuario (user_login,user_email,user_password)
 	VALUES (nickname,email,crypt(password,gen_salt('bf')))
@@ -92,17 +98,19 @@ BEGIN
 	VALUES(nusp,nickname)
        	ON CONFLICT DO NOTHING; --quando a pessoa já tem outro perfil
 	
-	INSERT INTO us_pf(us_pf_user_login,us_pf_perfil_nome,us_pf_perfil_inicio)
-	VALUES(nickname, 'teacher', date_atm);
-
 	INSERT INTO professor (prof_nusp,prof_unidade)
 	VALUES(nusp, unidade);
+
+	PERFORM insert_user_into_role(nickname,'teacher');
+
+	--Adicionando perfil guest ao usuario
+	PERFORM insert_user_into_role(nickname,'guest');
 
 	RETURN 1;
 END;
 $$ LANGUAGE plpgsql;
 
-/* Insere um professor como usuário que tenha um nusp válido (i.e. está em pessoa).
+/* Insere um admin como usuário que tenha um nusp válido (i.e. está em pessoa).
 também liga este usuário a pessoa e perfil, criando entradas em
 pe_us e us_pf.
   Importante que haja um perfil com nome 'admin' em perfil ou esta função falhará.
@@ -110,9 +118,6 @@ pe_us e us_pf.
 CREATE OR REPLACE FUNCTION insert_admin
 (nusp int, unidade text, nickname text, email text, password text)
 RETURNS INTEGER AS $$
-DECLARE
-	date_atm date := (SELECT TO_CHAR(NOW() :: DATE,'dd-mm-yyyy'));
-	--gerando com numeros aleatorios para auxiliar ao testar, evitando colisao de logins
 BEGIN
 	INSERT INTO usuario (user_login,user_email,user_password)
 	VALUES (nickname,email,crypt(password,gen_salt('bf')))
@@ -122,12 +127,39 @@ BEGIN
 	VALUES(nusp,nickname)
        	ON CONFLICT DO NOTHING; --quando a pessoa já tem outro perfil
 	
-	INSERT INTO us_pf
-	VALUES(nickname, 'admin', date_atm);
+	PERFORM insert_user_into_role(nickname,'admin');
 
 	INSERT INTO admnistrador 
 	VALUES(nusp, unidade);
 
+	--Adicionando perfil guest ao usuario
+	PERFORM insert_user_into_role(nickname,'guest');
+
+	RETURN 1;
+END;
+$$ LANGUAGE plpgsql;
+
+/* Insere um guest como usuário que tenha um nusp válido (i.e. está em pessoa).
+também liga este usuário a pessoa e perfil, criando entradas em
+pe_us e us_pf.
+  Importante que haja um perfil com nome 'guest' em perfil ou esta função falhará.
+(i.e. executar insert_role('student') primeiro  */
+CREATE OR REPLACE FUNCTION insert_guest
+(nusp int, curso text, nickname text, email text, password text)
+RETURNS INTEGER AS $$
+BEGIN
+	INSERT INTO usuario (user_login,user_email,user_password)
+	VALUES (nickname,email,crypt(password,gen_salt('bf')))
+       	ON CONFLICT DO NOTHING; --quando a pessoa já tem outro perfil
+
+	INSERT INTO pe_us (pe_us_nusp,pe_us_user_login)
+	VALUES(nusp,nickname)
+       	ON CONFLICT DO NOTHING; --quando a pessoa já tem outro perfil
+	
+	--Adicionando perfil guest ao usuario
+	PERFORM insert_user_into_role(nickname,'guest');
+
+	--raise notice 'Value %', idperf;
 	RETURN 1;
 END;
 $$ LANGUAGE plpgsql;
@@ -316,4 +348,4 @@ LANGUAGE sql;
 -------------------------------------------------------------------
 \i EP2_DDL_CLEAN.sql
 \i EP2_DDL.sql
-\i DML.sql
+\i EP2_DML.sql
