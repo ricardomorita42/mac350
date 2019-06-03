@@ -13,7 +13,7 @@ $$ LANGUAGE sql;
 REVOKE ALL ON FUNCTION update_nome(int,text,text)
 	FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION update_nome(int,text,text)
-	TO dba;
+	TO dba,guest;
 COMMIT;
 
 BEGIN;
@@ -30,7 +30,7 @@ $$ LANGUAGE sql;
 REVOKE ALL ON FUNCTION update_datanasc(int,date)
 	FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION update_datanasc(int,date)
-	TO dba;
+	TO dba,guest;
 COMMIT;
 
 BEGIN;
@@ -46,7 +46,7 @@ $$ LANGUAGE sql;
 REVOKE ALL ON FUNCTION update_sexo(int,varchar(1))
 	FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION update_sexo(int,varchar(1))
-	TO dba;
+	TO dba,guest;
 COMMIT;
 
 BEGIN;
@@ -79,7 +79,7 @@ $$ LANGUAGE sql;
 REVOKE ALL ON FUNCTION update_password(text,text)
 	FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION update_password(text,text)
-	TO dba;
+	TO dba,guest;
 COMMIT;
 
 BEGIN;
@@ -127,7 +127,7 @@ $$ LANGUAGE sql;
 REVOKE ALL ON FUNCTION update_prof_unidade(int,text)
 	FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION update_prof_unidade(int,text)
-	TO dba;
+	TO dba,teacher;
 COMMIT;
 
 BEGIN;
@@ -143,7 +143,7 @@ $$ LANGUAGE sql;
 REVOKE ALL ON FUNCTION update_admin_unidade(int,text)
 	FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION update_admin_unidade(int,text)
-	TO dba;
+	TO dba,admin;
 COMMIT;
 
 BEGIN;
@@ -159,7 +159,7 @@ $$ LANGUAGE sql;
 REVOKE ALL ON FUNCTION update_aluno_curso(int,text)
 	FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION update_aluno_curso(int,text)
-	TO dba;
+	TO dba,student;
 COMMIT;
 
 BEGIN;
@@ -178,7 +178,7 @@ $$ LANGUAGE sql;
 REVOKE ALL ON FUNCTION update_ofer_data(int,text,date)
 	FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION update_ofer_data(int,text,date)
-	TO dba;
+	TO dba,teacher;
 COMMIT;
 
 BEGIN;
@@ -198,7 +198,7 @@ $$ LANGUAGE sql;
 REVOKE ALL ON FUNCTION update_cursa_nota(int,int,text,numeric)
 	FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION update_cursa_nota(int,int,text,numeric)
-	TO dba;
+	TO dba,teacher;
 COMMIT;
 
 BEGIN;
@@ -218,7 +218,7 @@ $$ LANGUAGE sql;
 REVOKE ALL ON FUNCTION update_cursa_presenca(int,int,text,numeric)
 	FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION update_cursa_presenca(int,int,text,numeric)
-	TO dba;
+	TO dba,teacher;
 COMMIT;
 
 BEGIN;
@@ -235,7 +235,7 @@ $$ LANGUAGE sql;
 REVOKE ALL ON FUNCTION update_planeja_disciplina(int,text)
 	FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION update_planeja_disciplina(int,text)
-	TO dba;
+	TO dba,student;
 COMMIT;
 
 BEGIN;
@@ -251,7 +251,7 @@ $$ LANGUAGE sql;
 REVOKE ALL ON FUNCTION update_disciplina_unidade(text,text)
 	FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION update_disciplina_unidade(text,text)
-	TO dba;
+	TO dba,admin;
 COMMIT;
 
 BEGIN;
@@ -266,7 +266,7 @@ $$ LANGUAGE sql;
 REVOKE ALL ON FUNCTION update_disciplina_nome(text,text)
 	FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION update_disciplina_nome(text,text)
-	TO dba;
+	TO dba,admin;
 COMMIT;
 
 BEGIN;
@@ -281,7 +281,7 @@ $$ LANGUAGE sql;
 REVOKE ALL ON FUNCTION update_disciplina_cred_aula(text,int)
 	FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION update_disciplina_cred_aula(text,int)
-	TO dba;
+	TO dba,admin;
 COMMIT;
 
 BEGIN;
@@ -296,7 +296,7 @@ $$ LANGUAGE sql;
 REVOKE ALL ON FUNCTION update_disciplina_cred_trabalho(text,int)
 	FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION update_disciplina_cred_trabalho(text,int)
-	TO dba;
+	TO dba,admin;
 COMMIT;
 
 BEGIN;
@@ -315,7 +315,7 @@ $$ LANGUAGE sql;
 REVOKE ALL ON FUNCTION update_administra_data_inicio(int,text,date)
 	FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION update_administra_data_inicio(int,text,date)
-	TO dba;
+	TO dba,admin;
 COMMIT;
 
 BEGIN;
@@ -331,7 +331,7 @@ $$ LANGUAGE sql;
 REVOKE ALL ON FUNCTION update_curriculo_unidade(text,text)
 	FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION update_curriculo_unidade(text,text)
-	TO dba;
+	TO dba,admin;
 COMMIT;
 
 BEGIN;
@@ -346,7 +346,7 @@ $$ LANGUAGE sql;
 REVOKE ALL ON FUNCTION update_curriculo_nome(text,text)
 	FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION update_curriculo_nome(text,text)
-	TO dba;
+	TO dba,admin;
 COMMIT;
 
 BEGIN;
@@ -361,7 +361,7 @@ $$ LANGUAGE sql;
 REVOKE ALL ON FUNCTION update_curriculo_cred_obrig(text,int)
 	FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION update_curriculo_cred_obrig(text,int)
-	TO dba;
+	TO dba,admin;
 COMMIT;
 
 BEGIN;
@@ -376,7 +376,7 @@ $$ LANGUAGE sql;
 REVOKE ALL ON FUNCTION update_curriculo_cred_opt_elet(text,int)
 	FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION update_curriculo_cred_opt_elet(text,int)
-	TO dba;
+	TO dba,admin;
 COMMIT;
 
 BEGIN;
@@ -391,7 +391,7 @@ $$ LANGUAGE sql;
 REVOKE ALL ON FUNCTION update_curriculo_cred_opt_liv(text,int)
 	FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION update_curriculo_cred_opt_liv(text,int)
-	TO dba;
+	TO dba,admin;
 COMMIT;
 
 BEGIN;
@@ -407,7 +407,7 @@ $$ LANGUAGE sql;
 REVOKE ALL ON FUNCTION update_trilha_descricao(text,text)
 	FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION update_trilha_descricao(text,text)
-	TO dba;
+	TO dba,admin;
 COMMIT;
 
 BEGIN;
@@ -423,7 +423,7 @@ $$ LANGUAGE sql;
 REVOKE ALL ON FUNCTION update_modulo_descricao(text,text)
 	FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION update_modulo_descricao(text,text)
-	TO dba;
+	TO dba,admin;
 COMMIT;
 
 BEGIN;
@@ -439,5 +439,5 @@ $$ LANGUAGE sql;
 REVOKE ALL ON FUNCTION update_disc_biblio_descricao(text,text)
 	FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION update_disc_biblio_descricao(text,text)
-	TO dba;
+	TO dba,admin;
 COMMIT;

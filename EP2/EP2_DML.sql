@@ -248,6 +248,7 @@ select * from insert_service('dba','insert_cursa',NULL);
 select * from insert_service('dba','insert_trilha_extrareqs',NULL);
 select * from insert_service('dba','insert_disciplina_requisitos',NULL);
 select * from insert_service('dba','insert_disciplina_biblio',NULL);
+
 select * from insert_service('dba','delete_perfil',NULL);
 select * from insert_service('dba','delete_service',NULL);
 select * from insert_service('dba','delete_perfil_from_user',NULL);
@@ -297,6 +298,7 @@ select * from insert_service('dba','update_disc_biblio_descricao',NULL);
 select * from insert_service('guest','update_nome',NULL);
 select * from insert_service('guest','update_sexo',NULL);
 select * from insert_service('guest','update_password',NULL);
+select * from insert_service('guest','update_datanasc',NULL);
 
 select * from insert_service('student','update_aluno_curso',NULL);
 select * from insert_service('student','update_planeja_disciplina',NULL);
