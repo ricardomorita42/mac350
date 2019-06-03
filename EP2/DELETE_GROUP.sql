@@ -1,3 +1,4 @@
+BEGIN;
 -- apaga perfil e sua ligação com us_pf
 -- ligação com pf_se também cai por cascade
 CREATE OR REPLACE FUNCTION delete_perfil 
@@ -13,7 +14,13 @@ BEGIN
 	RETURN 1;
 END;
 $$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION delete_perfil(text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION delete_perfil(text)
+	TO dba;
+COMMIT;
 
+BEGIN;
 -- apaga serviço e sua ligação em pf_se
 CREATE OR REPLACE FUNCTION delete_service
 (nome text)
@@ -28,7 +35,13 @@ BEGIN
 	RETURN 1;
 END;
 $$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION delete_service(text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION delete_service(text)
+	TO dba;
+COMMIT;
 
+BEGIN;
 --apaga ligação entre usuario e perfil em us_pf
 CREATE OR REPLACE FUNCTION delete_perfil_from_user
 (login text, perfil text)
@@ -41,7 +54,13 @@ BEGIN
 	RETURN 1;
 END;
 $$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION delete_perfil_from_user(text,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION delete_perfil_from_user(text,text)
+	TO dba;
+COMMIT;
 
+BEGIN;
 --apaga ligação entre perfil e serviço em pf_se 
 CREATE OR REPLACE FUNCTION delete_service_from_perfil
 (perfil text, service text)
@@ -54,7 +73,13 @@ BEGIN
 	RETURN 1;
 END;
 $$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION delete_service_from_perfil(text,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION delete_service_from_perfil(text,text)
+	TO dba;
+COMMIT;
 
+BEGIN;
 -- apaga usuario e as ligacoes em pe_us e us_pf
 -- nusp em pessoa nao é alterado
 CREATE OR REPLACE FUNCTION delete_user
@@ -70,7 +95,13 @@ BEGIN
 	RETURN 1;
 END;
 $$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION delete_user(text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION delete_user(text)
+	TO dba;
+COMMIT;
 
+BEGIN;
 /*Apaga uma pessoa. O usuário ligado a este código NUSP 
 também vai para o vazio, com as conexões deste usuário
  a perfis. Suas ligações com aluno,professor e admin também
@@ -90,8 +121,14 @@ BEGIN
 	RETURN 1;
 END;
 $$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION delete_pessoa(int)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION delete_pessoa(int)
+	TO dba;
+COMMIT;
 
 
+BEGIN;
 /* Apaga a entrada em aluno ligado à uma pessoa. As relações em
 cursa e planeja também se vão.*/
 CREATE OR REPLACE FUNCTION delete_aluno
@@ -105,7 +142,13 @@ BEGIN
 	RETURN 1;
 END;
 $$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION delete_aluno(int,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION delete_aluno(int,text)
+	TO dba;
+COMMIT;
 
+BEGIN;
 /* Apaga a entrada em professor ligado à uma pessoa. As relações
 em ministra e oferecimento também se vão. */
 CREATE OR REPLACE FUNCTION delete_professor
@@ -119,7 +162,13 @@ BEGIN
 	RETURN 1;
 END;
 $$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION delete_professor(int,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION delete_professor(int,text)
+	TO dba;
+COMMIT;
 
+BEGIN;
 /* Apaga a entrada em adminstrador ligado à uma pessoa. As relações
 em ministra e oferecimento também se vão. */
 CREATE OR REPLACE FUNCTION delete_admin
@@ -133,7 +182,13 @@ BEGIN
 	RETURN 1;
 END;
 $$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION delete_admin(int,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION delete_admin(int,text)
+	TO dba;
+COMMIT;
 
+BEGIN;
 -- exclui um curriculo da relação administra
 CREATE OR REPLACE FUNCTION delete_from_administra
 (nusp int, sigla text) 
@@ -146,7 +201,13 @@ BEGIN
 	RETURN 1;
 END;
 $$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION delete_from_administra(int,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION delete_from_administra(int,text)
+	TO dba;
+COMMIT;
 
+BEGIN;
 /* Não apaga os alunos que estão neste currículo. É importante
 tomar uma providência caso um currículo seja apagado! */
 CREATE OR REPLACE FUNCTION delete_curriculo
@@ -163,7 +224,13 @@ BEGIN
 	RETURN 1;
 END;
 $$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION delete_curriculo(text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION delete_curriculo(text)
+	TO dba;
+COMMIT;
 
+BEGIN;
 --Apaga uma relação entre trilha e currículo.
 CREATE OR REPLACE FUNCTION delete_from_cur_tril
 (sigla text, nome text) 
@@ -176,7 +243,13 @@ BEGIN
 	RETURN 1;
 END;
 $$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION delete_from_cur_tril(text,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION delete_from_cur_tril(text,text)
+	TO dba;
+COMMIT;
 
+BEGIN;
 /* Apagar a trilha deixa as disciplinas que estão relacionadas
 ao módulo atrelada à trilha solta. Se estas disciplinas não
 estiverem num outro módulo, elas podem ficar soltas! */
@@ -193,7 +266,13 @@ BEGIN
 	RETURN 1;
 END;
 $$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION delete_trilha(text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION delete_trilha(text)
+	TO dba;
+COMMIT;
 
+BEGIN;
 /* Apagar o modulo deixa as disciplinas que estão relacionadas
 ao módulo soltas. Se estas disciplinas não estiverem num outro
 módulo, elas podem ficar soltas! */
@@ -207,7 +286,13 @@ BEGIN
 	RETURN 1;
 END;
 $$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION delete_modulo(text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION delete_modulo(text)
+	TO dba;
+COMMIT;
 
+BEGIN;
 /* Apaga uma disciplina que um  professor se oferece para dar. */
 CREATE OR REPLACE FUNCTION delete_from_ministra
 (num_usp int, sigla text) 
@@ -220,7 +305,13 @@ BEGIN
 	RETURN 1;
 END;
 $$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION delete_from_ministra(int,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION delete_from_ministra(int,text)
+	TO dba;
+COMMIT;
 
+BEGIN;
 -- Apaga um oferecimento de uma disciplina por um professor numa certa data
 CREATE OR REPLACE FUNCTION delete_from_oferecimento
 (num_usp int, sigla text, data date) 
@@ -234,7 +325,13 @@ BEGIN
 	RETURN 1;
 END;
 $$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION delete_from_oferecimento(int,text,date)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION delete_from_oferecimento(int,text,date)
+	TO dba;
+COMMIT;
 
+BEGIN;
 --Apaga uma relação entre disciplina e módulo.
 CREATE OR REPLACE FUNCTION delete_from_dis_mod
 (sigla text, modulo text) 
@@ -247,7 +344,13 @@ BEGIN
 	RETURN 1;
 END;
 $$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION delete_from_dis_mod(text,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION delete_from_dis_mod(text,text)
+	TO dba;
+COMMIT;
 
+BEGIN;
 /* Apaga uma disciplina. Apaga túplas e planeja, cursa e oferecimento!
 Você tem certeza que quer fazer isso? considere apagar de ministra ou de
 oferecimento e manter a disciplina antiga. */
@@ -264,3 +367,8 @@ BEGIN
 	RETURN 1;
 END;
 $$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION delete_disciplina(text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION delete_disciplina(text)
+	TO dba;
+COMMIT;

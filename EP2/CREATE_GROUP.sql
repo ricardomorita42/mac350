@@ -15,10 +15,9 @@ CREATE DOMAIN email AS citext
   CHECK ( value ~ '^[a-zA-Z0-9.!#$%&''*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$' );
 */
 
-\i EP2_DDL_CLEAN.sql
-\i EP2_DDL.sql
 ---------------------------------------------------
 
+BEGIN;
 --adicionado por um superadmin ou alguém da graduacao
 --pessoa = t(NUSP,CPF,PNome,SNome,DataNasc,Sexo)
 CREATE OR REPLACE FUNCTION insert_person 
@@ -31,7 +30,13 @@ $$
 	RETURNING nusp, cpf, pnome, snome, datanasc, sexo
 $$
 LANGUAGE sql;
+REVOKE ALL ON FUNCTION insert_person(int,text,text,text,date,varchar(1))
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION insert_person(int,text,text,text,date,varchar(1))
+	TO dba;
+COMMIT;
 
+BEGIN;
 --Cria um perfil
 CREATE OR REPLACE FUNCTION insert_role 
 (INOUT perfil_nome text, INOUT perfil_descricao text DEFAULT NULL)
@@ -42,7 +47,13 @@ $$
 	RETURNING perfil_nome, perfil_descricao
 $$
 LANGUAGE sql;
+REVOKE ALL ON FUNCTION insert_role(text,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION insert_role(text,text)
+	TO dba;
+COMMIT;
 
+BEGIN;
 --Insere um usuario existente em um perfil existente
 CREATE OR REPLACE FUNCTION insert_user_into_role 
 (INOUT user_login text, INOUT perfil_nome text)
@@ -52,7 +63,13 @@ $$
 	VALUES ($1,$2,current_date) ON CONFLICT DO NOTHING
 	RETURNING $1,$2 
 $$ LANGUAGE sql;
+REVOKE ALL ON FUNCTION insert_user_into_role(text,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION insert_user_into_role(text,text)
+	TO dba;
+COMMIT;
 
+BEGIN;
 --Não deu tempo de testar, cuidado!
 CREATE OR REPLACE FUNCTION guest_insert_into_role_student
 (nusp int, user_login text, curso text)
@@ -65,7 +82,13 @@ BEGIN
 	VALUES (nusp,curso);
 END;
 $$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION guest_insert_into_role_student(int,text,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION guest_insert_into_role_student(int,text,text)
+	TO dba,student;
+COMMIT;
 
+BEGIN;
 --Não deu tempo de testar, cuidado!
 CREATE OR REPLACE FUNCTION guest_insert_into_role_teacher
 (nusp int, user_login text, unidade text)
@@ -78,7 +101,13 @@ BEGIN
 	VALUES (nusp,unidade);
 END;
 $$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION guest_insert_into_role_teacher(int,text,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION guest_insert_into_role_student(int,text,text)
+	TO dba,teacher;
+COMMIT;
 
+BEGIN;
 --Não deu tempo de testar, cuidado!
 CREATE OR REPLACE FUNCTION guest_insert_into_role_admin
 (nusp int, user_login text, unidade text)
@@ -91,7 +120,13 @@ BEGIN
 	VALUES (nusp,unidade);
 END;
 $$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION guest_insert_into_role_admin(int,text,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION guest_insert_into_role_admin(int,text,text)
+	TO dba,admin;
+COMMIT;
 
+BEGIN;
 /* Insere usuário que tenha um nusp válido (i.e. está em pessoa).
 também liga este usuário a pessoa e perfil, criando uma entrada em
 us_pf.
@@ -125,7 +160,13 @@ BEGIN
 	RETURN 1;
 END;
 $$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION insert_user(int,text,text,text,text,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION insert_user(int,text,text,text,text,text)
+	TO dba;
+COMMIT;
 
+BEGIN;
 /* Caso se queira ligar um servico existente a outro perfil pode-se usar
 esta funcao tambem pois basta add outra entrada em pf_se.
 Caso $1 seja nulo, um serviço será criado sem ser relacionado a um perfil.  */
@@ -143,7 +184,13 @@ BEGIN
 	RETURN 1;
 END;
 $$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION insert_service(text,text,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION insert_service(text,text,text)
+	TO dba;
+COMMIT;
 
+BEGIN;
 --Insere elo entre administrador e curriculo
 CREATE OR REPLACE FUNCTION insert_into_administra
 (INOUT admin_nusp int, INOUT administra_curriculo_sigla text,
@@ -153,13 +200,19 @@ AS $$
 	RETURNING $1,$2,$3
 
 $$ LANGUAGE sql;
+REVOKE ALL ON FUNCTION insert_into_administra(int,text,date)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION insert_into_administra(int,text,date)
+	TO dba;
+COMMIT;
 
+BEGIN;
 /* É adicinado por um admin então deve estar ligada com um administrador pelo menos.
 (i.e., não se deve criar um currículo sem admin). Também pode adicionar 
 mais um admin para um currículo.  */
 CREATE OR REPLACE FUNCTION insert_curriculum
 (curriculo_sigla text, curriculo_unidade text, curriculo_nome text, curriculo_cred_obrig int,
- curriculo_cred_opt_elet int, curriculo_opt_liv int, admnin_nusp int)
+ curriculo_cred_opt_elet int, curriculo_opt_liv int, admin_nusp int)
 RETURNS INTEGER AS $$
 DECLARE
 	date_atm date := (SELECT TO_CHAR(NOW() :: DATE,'dd-mm-yyyy'));
@@ -170,7 +223,13 @@ BEGIN
 	RETURN 1;
 END;
 $$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION insert_curriculum(text,text,text,int,int,int,int)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION insert_curriculum(text,text,text,int,int,int,int)
+	TO dba;
+COMMIT;
 
+BEGIN;
 /* Pode ser usado para adicionar uma ligação entre uma trilha e um
 curriculo ja existente também. Caso curriculo_sigla seja NULL,
 então a trilha não será atrelada a ninguém. */
@@ -188,7 +247,13 @@ BEGIN
 	RETURN 1;
 END;
 $$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION insert_trilha(text,text,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION insert_trilha(text,text,text)
+	TO dba;
+COMMIT;
 
+BEGIN;
 /* Pode ser usado para adicionar uma ligação entre uma trilha e um
 curriculo ja existente também. Caso curriculo_sigla seja NULL,
 então a trilha não será atrelada a ninguém. */
@@ -201,7 +266,13 @@ BEGIN
 	RETURN 1;
 END;
 $$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION insert_modulo(text,text,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION insert_modulo(text,text,text)
+	TO dba;
+COMMIT;
 
+BEGIN;
 /* Pode ser usado para adicionar uma ligação entre uma Disciplina e um
 modulo ja existente também. Caso modulo_nome seja NULL,
 então a disciplina não será atrelada a ninguém.
@@ -222,7 +293,13 @@ BEGIN
 	RETURN 1;
 END;
 $$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION insert_disciplina(text,text,text,int,int,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION insert_disciplina(text,text,text,int,int,text)
+	TO dba;
+COMMIT;
 
+BEGIN;
 /* Cria-se uma ligação entre disciplina e professor. Mostra quais disciplinas
  cada professor dá.*/
 CREATE OR REPLACE FUNCTION insert_ministra
@@ -234,7 +311,13 @@ BEGIN
 	RETURN 1;
 END;
 $$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION insert_ministra(int,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION insert_ministra(int,text)
+	TO dba;
+COMMIT;
 
+BEGIN;
 /* Cria um oferecimento de uma disciplina por um professor. Caso uma data não seja
  adicionada, usa-se a data atual como ministra_data. */
 CREATE OR REPLACE FUNCTION insert_oferecimento
@@ -258,7 +341,13 @@ BEGIN
 	END IF;
 END;
 $$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION insert_oferecimento(int,text,date)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION insert_oferecimento(int,text,date)
+	TO dba;
+COMMIT;
 
+BEGIN;
 /* Cria um oferecimento de uma disciplina por um professor. Caso uma data não seja
  adicionada, usa-se a data atual como ministra_data. */
 CREATE OR REPLACE FUNCTION insert_planeja
@@ -270,7 +359,13 @@ BEGIN
 	RETURN 1;
 END;
 $$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION insert_planeja(int,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION insert_planeja(int,text)
+	TO dba;
+COMMIT;
 
+BEGIN;
 /* Insere uma entrada para um aluno que vai cursar uma disciplina oferecida.
 Primeiro verifica-se se o aluno tem esta matéria no planejamento. Depois
 é necessária uma checagem para ver se a disciplina está sendo oferecida 
@@ -299,12 +394,16 @@ BEGIN
 	END IF;
 END;
 $$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION insert_cursa(int,int,text,numeric,numeric)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION insert_cursa(int,int,text,numeric,numeric)
+	TO dba;
+COMMIT;
 
+BEGIN;
 /* As funções a seguir são usadas para adicionar atributos multi-valorados
 às entidades correspondentes. No momento não há intenção de usar estas
-para checagem mais complexas de pré-requisitos necessários por falta de tempo.
- */
-
+para checagem mais complexas de pré-requisitos necessários por falta de tempo.*/
 CREATE OR REPLACE FUNCTION insert_trilha_extrareqs
 (INOUT trilha_nome text, INOUT requisito text)
 AS
@@ -314,7 +413,13 @@ $$
 	RETURNING trilha_nome, requisito 
 $$
 LANGUAGE sql;
+REVOKE ALL ON FUNCTION insert_trilha_extrareqs(text,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION insert_trilha_extrareqs(text,text)
+	TO dba;
+COMMIT;
 
+BEGIN;
 CREATE OR REPLACE FUNCTION insert_disciplina_requisitos
 (INOUT disciplina_sigla text, INOUT disciplina_requisito text)
 AS
@@ -324,7 +429,13 @@ $$
 	RETURNING disciplina_sigla, disciplina_requisito 
 $$
 LANGUAGE sql;
+REVOKE ALL ON FUNCTION insert_disciplina_requisitos(text,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION insert_disciplina_requisitos(text,text)
+	TO dba;
+COMMIT;
 
+BEGIN;
 CREATE OR REPLACE FUNCTION insert_disciplina_biblio
 (INOUT disciplina_sigla text, INOUT requisito text)
 AS
@@ -334,8 +445,9 @@ $$
 	RETURNING disciplina_sigla, requisito 
 $$
 LANGUAGE sql;
+REVOKE ALL ON FUNCTION insert_disciplina_biblio(text,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION insert_disciplina_biblio(text,text)
+	TO dba;
+COMMIT;
 
--------------------------------------------------------------------
-\i EP2_DML.sql
-\i UPDATE_GROUP.sql
-\i DELETE_GROUP.sql

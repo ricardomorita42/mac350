@@ -1,3 +1,4 @@
+BEGIN;
 ------------------- Updates em Pessoa ------------------
 --Dado um numero usp, atualiza pnome e snome.
 CREATE OR REPLACE FUNCTION update_nome
@@ -9,7 +10,13 @@ $$
 	WHERE nusp = num_usp
 	RETURNING pnome,snome
 $$ LANGUAGE sql;
+REVOKE ALL ON FUNCTION update_nome(int,text,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION update_nome(int,text,text)
+	TO dba;
+COMMIT;
 
+BEGIN;
 --Dado um numero usp, atualiza a data de nascimento.
 CREATE OR REPLACE FUNCTION update_datanasc
 (IN num_usp int, INOUT new_datanasc date)
@@ -20,7 +27,13 @@ $$
 	WHERE nusp = num_usp
 	RETURNING new_datanasc
 $$ LANGUAGE sql;
+REVOKE ALL ON FUNCTION update_datanasc(int,date)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION update_datanasc(int,date)
+	TO dba;
+COMMIT;
 
+BEGIN;
 --Dado um numero usp, atualiza o sexo de uma pessoa.
 CREATE OR REPLACE FUNCTION update_sexo
 (IN num_usp int, INOUT new_sexo varchar(1))
@@ -30,7 +43,13 @@ AS $$
 	WHERE nusp = num_usp
 	RETURNING new_sexo
 $$ LANGUAGE sql;
+REVOKE ALL ON FUNCTION update_sexo(int,varchar(1))
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION update_sexo(int,varchar(1))
+	TO dba;
+COMMIT;
 
+BEGIN;
 ------------------------------------------------------------
 --dado um user_login, atualiza o email.
 CREATE OR REPLACE FUNCTION update_email
@@ -41,7 +60,13 @@ AS $$
 	WHERE user_login = login 
 	RETURNING user_login,user_email
 $$ LANGUAGE sql;
+REVOKE ALL ON FUNCTION update_email(text,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION update_email(text,text)
+	TO dba;
+COMMIT;
 
+BEGIN;
 --dado um user_login, atualiza o password.
 CREATE OR REPLACE FUNCTION update_password
 (IN login TEXT, IN new_password text, OUT success boolean)
@@ -51,7 +76,13 @@ AS $$
 	WHERE user_login = login 
 	RETURNING TRUE 
 $$ LANGUAGE sql;
+REVOKE ALL ON FUNCTION update_password(text,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION update_password(text,text)
+	TO dba;
+COMMIT;
 
+BEGIN;
 -- Atualiza a descrição de um perfil. 
 CREATE OR REPLACE FUNCTION update_perfil_descricao
 (INOUT nome text, INOUT new_descricao text)
@@ -61,7 +92,13 @@ AS $$
 	WHERE perfil_nome = nome 
 	RETURNING nome, new_descricao
 $$ LANGUAGE sql;
+REVOKE ALL ON FUNCTION update_perfil_descricao(text,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION update_perfil_descricao(text,text)
+	TO dba;
+COMMIT;
 
+BEGIN;
 -- Atualiza a descrição de um serviço.
 CREATE OR REPLACE FUNCTION update_service
 (INOUT nome text, INOUT new_descricao text)
@@ -71,7 +108,13 @@ AS $$
 	WHERE service_nome = nome 
 	RETURNING nome, new_descricao
 $$ LANGUAGE sql;
+REVOKE ALL ON FUNCTION update_service(text,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION update_service(text,text)
+	TO dba;
+COMMIT;
 
+BEGIN;
 --Atualiza a unidade ligada à um professor
 CREATE OR REPLACE FUNCTION update_prof_unidade
 (INOUT nusp int, INOUT new_unidade text)
@@ -81,7 +124,13 @@ AS $$
 	WHERE prof_nusp = nusp
 	RETURNING prof_nusp, prof_unidade 
 $$ LANGUAGE sql;
+REVOKE ALL ON FUNCTION update_prof_unidade(int,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION update_prof_unidade(int,text)
+	TO dba;
+COMMIT;
 
+BEGIN;
 --Atualiza a unidade ligada à um admin 
 CREATE OR REPLACE FUNCTION update_admin_unidade
 (INOUT nusp int, INOUT new_unidade text)
@@ -91,7 +140,13 @@ AS $$
 	WHERE admin_nusp = nusp
 	RETURNING admin_nusp, admin_unidade 
 $$ LANGUAGE sql;
+REVOKE ALL ON FUNCTION update_admin_unidade(int,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION update_admin_unidade(int,text)
+	TO dba;
+COMMIT;
 
+BEGIN;
 --Atualiza o curso ligado a um aluno
 CREATE OR REPLACE FUNCTION update_aluno_curso
 (INOUT nusp int, INOUT new_curso text)
@@ -101,7 +156,13 @@ AS $$
 	WHERE aluno_nusp = nusp
 	RETURNING aluno_nusp, aluno_curso
 $$ LANGUAGE sql;
+REVOKE ALL ON FUNCTION update_aluno_curso(int,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION update_aluno_curso(int,text)
+	TO dba;
+COMMIT;
 
+BEGIN;
 /* Atualiza data do oferecimento de uma disciplina.
 Caso se deseje atualizar nusp do professor ou codigo da
 disciplina, deve-se inserir uma nova disciplina. */
@@ -114,7 +175,13 @@ AS $$
 		ofer_disciplina_sigla = disc_sigla
 	RETURNING ofer_prof_nusp,ofer_disciplina_sigla,new_data
 $$ LANGUAGE sql;
+REVOKE ALL ON FUNCTION update_ofer_data(int,text,date)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION update_ofer_data(int,text,date)
+	TO dba;
+COMMIT;
 
+BEGIN;
 -- Atualiza uma nota em cursa. 
 CREATE OR REPLACE FUNCTION update_cursa_nota
 (INOUT al_nusp int, INOUT prof_nusp int, INOUT disc_sigla text,
@@ -128,7 +195,13 @@ AS $$
 	RETURNING cursa_aluno_nusp,cursa_prof_nusp,
 		cursa_disciplina_sigla, new_nota
 $$ LANGUAGE sql;
+REVOKE ALL ON FUNCTION update_cursa_nota(int,int,text,numeric)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION update_cursa_nota(int,int,text,numeric)
+	TO dba;
+COMMIT;
 
+BEGIN;
 -- Atualiza uma presença em cursa. 
 CREATE OR REPLACE FUNCTION update_cursa_presenca
 (INOUT al_nusp int, INOUT prof_nusp int, INOUT disc_sigla text,
@@ -142,7 +215,13 @@ AS $$
 	RETURNING cursa_aluno_nusp,cursa_prof_nusp,
 		cursa_disciplina_sigla, new_presenca
 $$ LANGUAGE sql;
+REVOKE ALL ON FUNCTION update_cursa_presenca(int,int,text,numeric)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION update_cursa_presenca(int,int,text,numeric)
+	TO dba;
+COMMIT;
 
+BEGIN;
 --Mudar uma sigla de disciplina para outra sigla
 --Obs: Como insert_cursa depende de planeja, não é bom usar esta função.
 CREATE OR REPLACE FUNCTION update_planeja_disciplina
@@ -153,7 +232,13 @@ AS $$
 	WHERE planeja_aluno_nusp = nusp
 	RETURNING planeja_aluno_nusp,planeja_disciplina_sigla
 $$ LANGUAGE sql;
+REVOKE ALL ON FUNCTION update_planeja_disciplina(int,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION update_planeja_disciplina(int,text)
+	TO dba;
+COMMIT;
 
+BEGIN;
 ------------------- Updates em Disciplina ------------------
 CREATE OR REPLACE FUNCTION update_disciplina_unidade
 (INOUT sigla text, INOUT new_unidade text)
@@ -163,7 +248,13 @@ AS $$
 	WHERE disciplina_sigla = sigla
 	RETURNING disciplina_sigla, disciplina_unidade
 $$ LANGUAGE sql;
+REVOKE ALL ON FUNCTION update_disciplina_unidade(text,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION update_disciplina_unidade(text,text)
+	TO dba;
+COMMIT;
 
+BEGIN;
 CREATE OR REPLACE FUNCTION update_disciplina_nome
 (INOUT sigla text, INOUT new_nome text)
 AS $$
@@ -172,7 +263,13 @@ AS $$
 	WHERE disciplina_sigla = sigla
 	RETURNING disciplina_sigla, disciplina_nome
 $$ LANGUAGE sql;
+REVOKE ALL ON FUNCTION update_disciplina_nome(text,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION update_disciplina_nome(text,text)
+	TO dba;
+COMMIT;
 
+BEGIN;
 CREATE OR REPLACE FUNCTION update_disciplina_cred_aula
 (INOUT sigla text, INOUT new_cred_aula int)
 AS $$
@@ -181,7 +278,13 @@ AS $$
 	WHERE disciplina_sigla = sigla
 	RETURNING disciplina_sigla, disciplina_cred_aula
 $$ LANGUAGE sql;
+REVOKE ALL ON FUNCTION update_disciplina_cred_aula(text,int)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION update_disciplina_cred_aula(text,int)
+	TO dba;
+COMMIT;
 
+BEGIN;
 CREATE OR REPLACE FUNCTION update_disciplina_cred_trabalho
 (INOUT sigla text, INOUT new_cred_trabalho int)
 AS $$
@@ -190,8 +293,13 @@ AS $$
 	WHERE disciplina_sigla = sigla
 	RETURNING disciplina_sigla, disciplina_cred_trabalho
 $$ LANGUAGE sql;
-------------------------------------------------------------
+REVOKE ALL ON FUNCTION update_disciplina_cred_trabalho(text,int)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION update_disciplina_cred_trabalho(text,int)
+	TO dba;
+COMMIT;
 
+BEGIN;
 /* deve-se inserir nova entrada em administra caso se queira
 mudar outros atributos da tabela. Se houvesse data de final
 esta função será mais útil com leve adaptação. */
@@ -204,7 +312,13 @@ AS $$
 		administra_curriculo_sigla = curriculo_sigla 
 	RETURNING administra_nusp, administra_curriculo_sigla, administra_inicio
 $$ LANGUAGE sql;
+REVOKE ALL ON FUNCTION update_administra_data_inicio(int,text,date)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION update_administra_data_inicio(int,text,date)
+	TO dba;
+COMMIT;
 
+BEGIN;
 ------------------- Updates em Curriculo ------------------
 CREATE OR REPLACE FUNCTION update_curriculo_unidade
 (INOUT sigla text, INOUT new_unidade text)
@@ -214,7 +328,13 @@ AS $$
 	WHERE curriculo_sigla = sigla
 	RETURNING curriculo_sigla, curriculo_unidade
 $$ LANGUAGE sql;
+REVOKE ALL ON FUNCTION update_curriculo_unidade(text,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION update_curriculo_unidade(text,text)
+	TO dba;
+COMMIT;
 
+BEGIN;
 CREATE OR REPLACE FUNCTION update_curriculo_nome
 (INOUT sigla text, INOUT new_nome text)
 AS $$
@@ -223,7 +343,13 @@ AS $$
 	WHERE curriculo_sigla = sigla
 	RETURNING curriculo_sigla, curriculo_nome
 $$ LANGUAGE sql;
+REVOKE ALL ON FUNCTION update_curriculo_nome(text,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION update_curriculo_nome(text,text)
+	TO dba;
+COMMIT;
 
+BEGIN;
 CREATE OR REPLACE FUNCTION update_curriculo_cred_obrig
 (INOUT sigla text, INOUT new_cred_obrig int)
 AS $$
@@ -232,7 +358,13 @@ AS $$
 	WHERE curriculo_sigla = sigla
 	RETURNING curriculo_sigla, curriculo_cred_obrig
 $$ LANGUAGE sql;
+REVOKE ALL ON FUNCTION update_curriculo_cred_obrig(text,int)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION update_curriculo_cred_obrig(text,int)
+	TO dba;
+COMMIT;
 
+BEGIN;
 CREATE OR REPLACE FUNCTION update_curriculo_cred_opt_elet
 (INOUT sigla text, INOUT new_cred_opt_elet int)
 AS $$
@@ -241,7 +373,13 @@ AS $$
 	WHERE curriculo_sigla = sigla
 	RETURNING curriculo_sigla, curriculo_cred_opt_elet
 $$ LANGUAGE sql;
+REVOKE ALL ON FUNCTION update_curriculo_cred_opt_elet(text,int)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION update_curriculo_cred_opt_elet(text,int)
+	TO dba;
+COMMIT;
 
+BEGIN;
 CREATE OR REPLACE FUNCTION update_curriculo_cred_opt_liv
 (INOUT sigla text, INOUT new_cred_opt_liv int)
 AS $$
@@ -250,8 +388,13 @@ AS $$
 	WHERE curriculo_sigla = sigla
 	RETURNING curriculo_sigla, curriculo_cred_opt_liv
 $$ LANGUAGE sql;
-------------------------------------------------------------
+REVOKE ALL ON FUNCTION update_curriculo_cred_opt_liv(text,int)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION update_curriculo_cred_opt_liv(text,int)
+	TO dba;
+COMMIT;
 
+BEGIN;
 -- Muda descrição de uma trilha
 CREATE OR REPLACE FUNCTION update_trilha_descricao
 (INOUT nome text, INOUT new_descricao text)
@@ -261,7 +404,13 @@ AS $$
 	WHERE trilha_nome = nome 
 	RETURNING trilha_nome , trilha_descricao
 $$ LANGUAGE sql;
+REVOKE ALL ON FUNCTION update_trilha_descricao(text,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION update_trilha_descricao(text,text)
+	TO dba;
+COMMIT;
 
+BEGIN;
 -- Muda descrição de um modulo 
 CREATE OR REPLACE FUNCTION update_modulo_descricao
 (INOUT nome text, INOUT new_descricao text)
@@ -271,7 +420,13 @@ AS $$
 	WHERE modulo_nome = nome 
 	RETURNING modulo_nome , modulo_descricao
 $$ LANGUAGE sql;
+REVOKE ALL ON FUNCTION update_modulo_descricao(text,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION update_modulo_descricao(text,text)
+	TO dba;
+COMMIT;
 
+BEGIN;
 -- Muda bibliografia de uma disciplina
 CREATE OR REPLACE FUNCTION update_disc_biblio_descricao
 (INOUT disc_sigla text, INOUT new_descricao text)
@@ -281,3 +436,8 @@ AS $$
 	WHERE disc_biblio_disciplina_sigla = disc_sigla
 	RETURNING disc_biblio_disciplina_sigla, disc_biblio_descricao
 $$ LANGUAGE sql;
+REVOKE ALL ON FUNCTION update_disc_biblio_descricao(text,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION update_disc_biblio_descricao(text,text)
+	TO dba;
+COMMIT;

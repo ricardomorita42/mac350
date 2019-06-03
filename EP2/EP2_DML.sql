@@ -248,61 +248,6 @@ select * from insert_service('dba','insert_cursa',NULL);
 select * from insert_service('dba','insert_trilha_extrareqs',NULL);
 select * from insert_service('dba','insert_disciplina_requisitos',NULL);
 select * from insert_service('dba','insert_disciplina_biblio',NULL);
-
-select * from insert_service('dba','update_nome',NULL);
-select * from insert_service('guest','update_nome',NULL);
-select * from insert_service('dba','update_datanasc',NULL);
-select * from insert_service('guest','update_nome',NULL);
-select * from insert_service('dba','update_sexo',NULL);
-select * from insert_service('guest','update_sexo',NULL);
-select * from insert_service('dba','update_email',NULL);
-select * from insert_service('dba','update_password',NULL);
-select * from insert_service('guest','update_password',NULL);
-select * from insert_service('dba','update_perfil_descricao',NULL);
-select * from insert_service('dba','update_service',NULL);
-select * from insert_service('dba','update_prof_unidade',NULL);
-select * from insert_service('teacher','update_prof_unidade',NULL);
-select * from insert_service('dba','update_admin_unidade',NULL);
-select * from insert_service('admin','update_admin_unidade',NULL);
-select * from insert_service('dba','update_aluno_curso',NULL);
-select * from insert_service('student','update_aluno_curso',NULL);
-select * from insert_service('dba','update_ofer_data',NULL);
-select * from insert_service('teacher','update_ofer_data',NULL);
-select * from insert_service('dba','update_cursa_nota',NULL);
-select * from insert_service('teacher','update_cursa_nota',NULL);
-select * from insert_service('dba','update_cursa_presenca',NULL);
-select * from insert_service('teacher','update_cursa_presenca',NULL);
-select * from insert_service('dba','update_planeja_disciplina',NULL);
-select * from insert_service('aluno','update_planeja_disciplina',NULL);
-select * from insert_service('dba','update_disciplina_unidade',NULL);
-select * from insert_service('admin','update_disciplina_unidade',NULL);
-select * from insert_service('dba','update_disciplina_nome',NULL);
-select * from insert_service('admin','update_disciplina_nome',NULL);
-select * from insert_service('dba','update_disciplina_cred_aula',NULL);
-select * from insert_service('admin','update_disciplina_cred_aula',NULL);
-select * from insert_service('dba','update_disciplina_cred_trabalho',NULL);
-select * from insert_service('admin','update_disciplina_cred_trabalho',NULL);
-select * from insert_service('dba','update_administra_data_inicio',NULL);
-select * from insert_service('admin','update_administra_data_inicio',NULL);
-
-select * from insert_service('dba','update_curriculo_unidade',NULL);
-select * from insert_service('dba','update_curriculo_nome',NULL);
-select * from insert_service('dba','update_curriculo_cred_obrig',NULL);
-select * from insert_service('dba','update_curriculo_cred_opt_elet',NULL);
-select * from insert_service('dba','update_curriculo_cred_opt_liv',NULL);
-select * from insert_service('dba','update_trilha_descricao',NULL);
-select * from insert_service('dba','update_modulo_descricao',NULL);
-select * from insert_service('dba','update_disc_biblio_descricao',NULL);
-
-select * from insert_service('admin','update_curriculo_unidade',NULL);
-select * from insert_service('admin','update_curriculo_nome',NULL);
-select * from insert_service('admin','update_curriculo_cred_obrig',NULL);
-select * from insert_service('admin','update_curriculo_cred_opt_elet',NULL);
-select * from insert_service('admin','update_curriculo_cred_opt_liv',NULL);
-select * from insert_service('admin','update_trilha_descricao',NULL);
-select * from insert_service('admin','update_modulo_descricao',NULL);
-select * from insert_service('admin','update_disc_biblio_descricao',NULL);
-
 select * from insert_service('dba','delete_perfil',NULL);
 select * from insert_service('dba','delete_service',NULL);
 select * from insert_service('dba','delete_perfil_from_user',NULL);
@@ -321,6 +266,62 @@ select * from insert_service('dba','delete_from_oferecimento',NULL);
 select * from insert_service('dba','delete_from_dis_mod',NULL);
 select * from insert_service('dba','delete_disciplina',NULL);
 
+select * from insert_service('dba','update_nome',NULL);
+select * from insert_service('dba','update_datanasc',NULL);
+select * from insert_service('dba','update_sexo',NULL);
+select * from insert_service('dba','update_email',NULL);
+select * from insert_service('dba','update_password',NULL);
+select * from insert_service('dba','update_perfil_descricao',NULL);
+select * from insert_service('dba','update_service',NULL);
+select * from insert_service('dba','update_prof_unidade',NULL);
+select * from insert_service('dba','update_admin_unidade',NULL);
+select * from insert_service('dba','update_aluno_curso',NULL);
+select * from insert_service('dba','update_ofer_data',NULL);
+select * from insert_service('dba','update_cursa_nota',NULL);
+select * from insert_service('dba','update_cursa_presenca',NULL);
+select * from insert_service('dba','update_planeja_disciplina',NULL);
+select * from insert_service('dba','update_disciplina_unidade',NULL);
+select * from insert_service('dba','update_disciplina_nome',NULL);
+select * from insert_service('dba','update_disciplina_cred_aula',NULL);
+select * from insert_service('dba','update_disciplina_cred_trabalho',NULL);
+select * from insert_service('dba','update_administra_data_inicio',NULL);
+select * from insert_service('dba','update_curriculo_unidade',NULL);
+select * from insert_service('dba','update_curriculo_nome',NULL);
+select * from insert_service('dba','update_curriculo_cred_obrig',NULL);
+select * from insert_service('dba','update_curriculo_cred_opt_elet',NULL);
+select * from insert_service('dba','update_curriculo_cred_opt_liv',NULL);
+select * from insert_service('dba','update_trilha_descricao',NULL);
+select * from insert_service('dba','update_modulo_descricao',NULL);
+select * from insert_service('dba','update_disc_biblio_descricao',NULL);
+
+select * from insert_service('guest','update_nome',NULL);
+select * from insert_service('guest','update_sexo',NULL);
+select * from insert_service('guest','update_password',NULL);
+
+select * from insert_service('student','update_aluno_curso',NULL);
+select * from insert_service('student','update_planeja_disciplina',NULL);
+
+select * from insert_service('teacher','update_prof_unidade',NULL);
+select * from insert_service('teacher','update_ofer_data',NULL);
+select * from insert_service('teacher','update_cursa_nota',NULL);
+select * from insert_service('teacher','update_cursa_presenca',NULL);
+
+select * from insert_service('admin','update_admin_unidade',NULL);
+select * from insert_service('admin','update_disciplina_unidade',NULL);
+select * from insert_service('admin','update_disciplina_nome',NULL);
+select * from insert_service('admin','update_disciplina_cred_aula',NULL);
+select * from insert_service('admin','update_disciplina_cred_trabalho',NULL);
+select * from insert_service('admin','update_administra_data_inicio',NULL);
+select * from insert_service('admin','update_curriculo_unidade',NULL);
+select * from insert_service('admin','update_curriculo_nome',NULL);
+select * from insert_service('admin','update_curriculo_cred_obrig',NULL);
+select * from insert_service('admin','update_curriculo_cred_opt_elet',NULL);
+select * from insert_service('admin','update_curriculo_cred_opt_liv',NULL);
+select * from insert_service('admin','update_trilha_descricao',NULL);
+select * from insert_service('admin','update_modulo_descricao',NULL);
+select * from insert_service('admin','update_disc_biblio_descricao',NULL);
+
+/*
 select * from insert_service('guest','guest_insert_into_role_student','guest add para si o perfil aluno');
 select * from insert_service('guest','guest_insert_into_role_teacher','guest add para si o perfil professor');
-select * from insert_service('guest','guest_insert_into_role_admin','guest add para si o perfil admin');
+select * from insert_service('guest','guest_insert_into_role_admin','guest add para si o perfil admin');*/
