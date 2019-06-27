@@ -18,8 +18,8 @@ DECLARE
 	role_ok INTEGER := (SELECT count(*) FROM perfil
 			    WHERE perfil_nome = role);
 BEGIN
-	INSERT INTO usuario (user_login,user_email,user_password, user_nusp)
-	VALUES (nickname,email,crypt(password,gen_salt('bf')), nusp)
+	INSERT INTO usuario (user_login,user_email,user_password)
+	VALUES (nickname,email,crypt(password,gen_salt('bf')))
        	ON CONFLICT DO NOTHING; --quando a pessoa já tem outro perfil
 	
 	--Adicionando perfil guest ao usuario
@@ -225,3 +225,203 @@ COMMIT;
 
 
 -------- DELETE TYPE FUNCTIONS ------------
+BEGIN;
+-- apaga usuario, a ligacao em us_pf
+-- precisa solicitar ao db inter_ace_pes que apague 
+-- relacoes pe_us com o login fornecido
+CREATE OR REPLACE FUNCTION delete_user
+(login text)
+RETURNS INTEGER AS $$
+BEGIN
+	DELETE FROM us_pf 
+	WHERE us_pf_user_login = login;
+
+	DELETE FROM usuario
+	WHERE user_login = login;
+
+	-- COLOCAR AQUI A DELECAO EM INTER_ACE_PES
+	-- DOS PE_US RELEVANTES
+
+	RETURN 1;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION delete_user(text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION delete_user(text)
+	TO dba;
+COMMIT;
+
+BEGIN;
+-- apaga perfil e sua ligação com us_pf
+CREATE OR REPLACE FUNCTION delete_role 
+(nome text)
+RETURNS INTEGER AS $$
+BEGIN
+	DELETE FROM us_pf
+	WHERE us_pf_perfil_nome = nome;	
+
+	DELETE FROM perfil
+	WHERE perfil_nome = nome;
+
+	DELETE FROM pf_se
+	WHERE pf_se_perfil_nome = nome;	
+
+	RETURN 1;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION delete_role(text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION delete_role(text)
+	TO dba;
+COMMIT;
+
+BEGIN;
+-- apaga serviço e sua ligação em pf_se
+CREATE OR REPLACE FUNCTION delete_service
+(nome text)
+RETURNS INTEGER AS $$
+BEGIN
+	DELETE FROM pf_se
+	WHERE pf_se_service_nome = nome;	
+
+	DELETE FROM service 
+	WHERE service_nome = nome;
+
+	RETURN 1;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION delete_service(text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION delete_service(text)
+	TO dba;
+COMMIT;
+
+BEGIN;
+--apaga ligação entre usuario e perfil em us_pf
+CREATE OR REPLACE FUNCTION delete_rel_us_pf
+(login text, perfil text)
+RETURNS INTEGER AS $$
+BEGIN
+	DELETE FROM us_pf 
+	WHERE	us_pf_user_login = login AND
+		us_pf_perfil_nome = perfil;
+
+	RETURN 1;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION delete_rel_us_pf(text,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION delete_rel_us_pf(text,text)
+	TO dba;
+COMMIT;
+
+BEGIN;
+--apaga ligação entre perfil e serviço em pf_se 
+CREATE OR REPLACE FUNCTION delete_rel_pf_se
+(perfil text, service text)
+RETURNS INTEGER AS $$
+BEGIN
+	DELETE FROM pf_se
+	WHERE	pf_se_perfil_nome  = perfil AND
+		pf_se_service_nome = service;
+
+	RETURN 1;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION delete_rel_pf_se(text,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION delete_rel_pf_se(text,text)
+	TO dba;
+COMMIT;
+
+-------- RETRIEVAL TYPE FUNCTIONS ------------
+BEGIN;
+-- retorna todos os usuarios do db 
+CREATE OR REPLACE FUNCTION return_all_users()
+RETURNS TABLE(logins text, emails email) AS $$
+BEGIN
+	RETURN QUERY
+	SELECT user_login, user_email FROM usuario;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION return_all_users()
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION return_all_users()
+	TO dba;
+COMMIT;
+
+BEGIN;
+-- retorna todos os perfis do db 
+CREATE OR REPLACE FUNCTION return_all_roles()
+RETURNS TABLE(perfis text, descricoes text) AS $$
+BEGIN
+	RETURN QUERY
+	SELECT perfil_nome, perfil_descricao FROM perfil;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION return_all_roles()
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION return_all_roles()
+	TO dba;
+COMMIT;
+
+BEGIN;
+-- retorna todos os servicos do db 
+CREATE OR REPLACE FUNCTION return_all_services()
+RETURNS TABLE(servicos text, descricoes text) AS $$
+BEGIN
+	RETURN QUERY
+	SELECT service_nome, service_descricao FROM service;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION return_all_services()
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION return_all_services()
+	TO dba;
+COMMIT;
+
+BEGIN;
+-- retorna todos os servicos do db 
+CREATE OR REPLACE FUNCTION return_all_us_pf()
+RETURNS TABLE(usuarios text, perfis text) AS $$
+BEGIN
+	RETURN QUERY
+	SELECT us_pf_user_login, us_pf_perfil_nome FROM us_pf;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION return_all_us_pf()
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION return_all_us_pf()
+	TO dba;
+COMMIT;
+
+BEGIN;
+-- retorna todos os servicos do db 
+CREATE OR REPLACE FUNCTION return_all_pf_se()
+RETURNS TABLE(perfis text, servicos text) AS $$
+BEGIN
+	RETURN QUERY
+	SELECT pf_se_service_nome, pf_se_service_nome FROM pf_se;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION return_all_pf_se()
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION return_all_pf_se()
+	TO dba;
+COMMIT;
+
+BEGIN;
+-- dado um login, retorna um usuario 
+-- nao inclui password por seguranca
+CREATE OR REPLACE FUNCTION return_user
+(INOUT login text, OUT email text)
+AS $$
+	SELECT user_login,user_email FROM usuario
+	WHERE user_login = login
+$$
+LANGUAGE sql;
+REVOKE ALL ON FUNCTION return_user(text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION return_user(text)
+	TO guest;
+COMMIT;
