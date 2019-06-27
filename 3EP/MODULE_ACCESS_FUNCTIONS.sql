@@ -4,6 +4,13 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto;
 CREATE EXTENSION IF NOT EXISTS citext;
 SET ROLE dba;
 
+-------- VIEWS  ------------
+CREATE OR REPLACE VIEW remote_ace_pes AS
+ 	SELECT * FROM dblink
+		('dbname = inter_ace_pes options =-csearch_path=',
+		'select pe_us_nusp, pe_us_user_login from public.pe_us')
+       	as t1(inter_pe_us_nusp int, inter_pe_us_login text);
+
 -------- CREATE TYPE FUNCTIONS ------------
 BEGIN;
 /* 
@@ -232,15 +239,20 @@ BEGIN;
 CREATE OR REPLACE FUNCTION delete_user
 (login text)
 RETURNS INTEGER AS $$
+DECLARE
+	ace_pes_ok INTEGER := (	SELECT count(*) FROM remote_ace_pes
+				WHERE login = inter_pe_us_login);
 BEGIN
+	IF ace_pes_ok = 1 THEN
+		PERFORM dblink_connect('connect1','dbname=inter_ace_pes');
+		PERFORM dblink('connect1',format('PERFORM delete_pe_us_with_login(%L)',$1));
+	END IF;
+
 	DELETE FROM us_pf 
 	WHERE us_pf_user_login = login;
 
 	DELETE FROM usuario
 	WHERE user_login = login;
-
-	-- COLOCAR AQUI A DELECAO EM INTER_ACE_PES
-	-- DOS PE_US RELEVANTES
 
 	RETURN 1;
 END;
