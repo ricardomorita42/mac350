@@ -1,0 +1,21 @@
+-- DML
+SELECT * FROM insert_pe_us(227705861,'tonya'	);
+SELECT * FROM insert_pe_us(386930905,'felipe'	);
+SELECT * FROM insert_pe_us(859852130,'danny'	);
+SELECT * FROM insert_pe_us(310554114,'lauryn'	);
+SELECT * FROM insert_pe_us(613923368,'lillian'	);
+SELECT * FROM insert_pe_us(311285463,'jessica'	);
+SELECT * FROM insert_pe_us(991002548,'joann'	);
+SELECT * FROM insert_pe_us(158298846,'robert'	);
+SELECT * FROM insert_pe_us(761213416,'rodney'	);
+SELECT * FROM insert_pe_us(702391605,'james'	);
+SELECT * FROM insert_pe_us(559853740,'jeana'	);
+SELECT * FROM insert_pe_us(994567006,'heather'	);
+SELECT * FROM insert_pe_us(230057892,'otis'	);
+SELECT * FROM insert_pe_us(961065297,'gregory'	);
+SELECT * FROM insert_pe_us(162109146,'kelly'	);
+SELECT * FROM insert_pe_us(939847659,'marie'	);
+SELECT * FROM insert_pe_us(489997003,'elliott'	);
+SELECT * FROM insert_pe_us(365513041,'david'	);
+SELECT * FROM insert_pe_us(300606205,'chester'	);
+SELECT * FROM insert_pe_us(815705605,'dave'	);
