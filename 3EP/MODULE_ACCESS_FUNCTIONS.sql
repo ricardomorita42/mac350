@@ -91,13 +91,14 @@ COMMIT;
 BEGIN;
 --Insere um usuario existente em um perfil existente
 CREATE OR REPLACE FUNCTION insert_user_into_role 
-(INOUT user_login text, INOUT perfil_nome text)
-AS
-$$
+(user_login text, perfil_nome text)
+RETURNS INTEGER AS $$
+BEGIN
 	INSERT INTO us_pf
-	VALUES ($1,$2,current_date) ON CONFLICT DO NOTHING
-	RETURNING $1,$2 
-$$ LANGUAGE sql;
+	VALUES ($1,$2,current_date) ON CONFLICT DO NOTHING;
+	RETURN 1;
+END;
+$$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION insert_user_into_role(text,text)
 	FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION insert_user_into_role(text,text)

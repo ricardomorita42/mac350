@@ -1,3 +1,6 @@
+\c acesso
+SET ROLE dba;
+
 ----Inserting roles----
 select * from insert_role('guest');
 select * from insert_role('student');
@@ -51,3 +54,24 @@ select * from insert_user(365513041,'BMAE','david'	,'david@email.com'	,'aluno18_
 select * from insert_user(300606205,'BMAE','chester'	,'chester@email.com'	,'aluno19_secret','student');
 select * from insert_user(815705605,'BMAE','dave'	,'dave@email.com'	,'aluno20_secret','student');
 
+select * from insert_user(588508512,'POLI','ismael'	,'p_ismael@email.com'	,'teacher_secret'  ,'teacher');
+select * from insert_user(217525199,'IME' ,'virginia'	,'p_virginia@email.com' ,'teacher2_secret' ,'teacher');
+select * from insert_user(403856584,'IME' ,'virginia2'	,'p_virginia2@email.com','teacher3_secret' ,'teacher');
+select * from insert_user(629091676,'IME' ,'roland'	,'p_roland@email.com'	,'teacher4_secret' ,'teacher');
+select * from insert_user(914806276,'IME' ,'charles'	,'p_charles@email.com'  ,'teacher5_secret' ,'teacher');
+select * from insert_user(442932985,'EACH','michelle'	,'p_michelle@email.com' ,'teacher6_secret' ,'teacher');
+select * from insert_user(292003247,'POLI','laurence'	,'p_laurence@email.com' ,'teacher7_secret' ,'teacher');
+select * from insert_user(388414429,'IME' ,'ray'	,'p_ray@email.com'	,'teacher8_secret' ,'teacher');
+select * from insert_user(886902161,'IME' ,'shane'	,'p_shane@email.com'	,'teacher9_secret' ,'teacher');
+select * from insert_user(344149328,'IME' ,'raymond'	,'p_raymond@email.com'	,'teacher10_secret','teacher');
+
+select * from insert_user(933545064,'IME' ,'ellen'	,'a_ellen@email.com'	,'admin1_secret' ,'admin');
+select * from insert_user(169779300,'IME' ,'ronald'	,'a_ronald@email.com'	,'admin2_secret' ,'admin');
+select * from insert_user(180318059,'IME' ,'brenda'	,'a_brenda@email.com'	,'admin3_secret' ,'admin');
+select * from insert_user(813824779,'IME' ,'jean'	,'a_jean@email.com'	,'admin4_secret' ,'admin');
+select * from insert_user(704437879,'POLI','katherine'	,'a_katherine@email.com','admin5_secret' ,'admin');
+select * from insert_user(773718543,'IME' ,'zachary'	,'a_zachary@email.com'	,'admin6_secret' ,'admin');
+select * from insert_user(377913230,'IME' ,'elizabeth'	,'a_elizabeth@email.com','admin7_secret' ,'admin');
+select * from insert_user(306625659,'IME' ,'melanie'	,'a_melanie@email.com'	,'admin8_secret' ,'admin');
+select * from insert_user(295230948,'POLI','christy'	,'a_christy@email.com'	,'admin9_secret' ,'admin');
+select * from insert_user(897719693,'IME' ,'karen'	,'a_karen@email.com'	,'admin10_secret','admin');

@@ -55,17 +55,6 @@ CREATE TABLE administrador (
 		ON UPDATE CASCADE
 );
 
---DROP TABLE IF EXISTS ministra CASCADE;
-CREATE TABLE ministra(
-	ministra_prof_nusp			INTEGER NOT NULL,
-	ministra_disciplina_sigla		TEXT NOT NULL,
-
-	CONSTRAINT pk_ministra PRIMARY KEY (ministra_prof_nusp, ministra_disciplina_sigla),
-	CONSTRAINT fk_ministra1 FOREIGN KEY (ministra_prof_nusp)
-		REFERENCES professor (prof_nusp)
-		ON DELETE CASCADE
-		ON UPDATE CASCADE
-);
 
 --DROP TABLE IF EXISTS cursa CASCADE;
 CREATE TABLE cursa (
@@ -87,4 +76,13 @@ CREATE TABLE cursa (
 		ON UPDATE CASCADE,
 	CHECK (cursa_nota >= 0 AND cursa_nota <= 10),
 	CHECK (cursa_presenca >= 0 AND cursa_presenca <= 100)
+);
+
+--DROP TABLE IF EXISTS oferecimento CASCADE;
+CREATE TABLE oferecimento(
+	ofer_prof_nusp			INTEGER NOT NULL,
+	ofer_disciplina_sigla		TEXT NOT NULL,
+	ofer_ministra_data		date NOT NULL,
+
+	CONSTRAINT pk_ofer PRIMARY KEY (ofer_prof_nusp, ofer_disciplina_sigla)
 );

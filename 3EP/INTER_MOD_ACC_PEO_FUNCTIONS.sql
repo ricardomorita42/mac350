@@ -3,6 +3,10 @@ CREATE EXTENSION IF NOT EXISTS dblink;
 SET ROLE dba;
 
 -------- VIEWS  ------------
+/* Teoricamente estou dando um select em fez de envelopar numa 
+funcao quando uso esta view. Entretanto, não tenho a intenção
+de permitir que o usuário use esta view livremente portanto
+esta não estaria exposta para todos. */
 CREATE OR REPLACE VIEW remote_acesso AS
  	SELECT * FROM dblink
 		('dbname = acesso options =-csearch_path=',
