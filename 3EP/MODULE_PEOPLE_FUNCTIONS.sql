@@ -46,6 +46,23 @@ CREATE FOREIGN TABLE pe_us (
 	SERVER ace_pes_server
 	OPTIONS (schema_name 'public',table_name 'pe_us');
 
+-- Config para modulo_curriculo
+CREATE SERVER curriculo_server
+	FOREIGN DATA WRAPPER postgres_fdw
+	OPTIONS (host 'localhost', port '5432', dbname 'modulo_curriculo');
+
+CREATE USER MAPPING FOR dba
+	SERVER curriculo_server
+	OPTIONS (user 'dba', password 'dba1234');
+
+CREATE FOREIGN TABLE disciplina(
+	disciplina_sigla		TEXT,
+	disciplina_unidade		TEXT,
+	disciplina_nome			TEXT
+)
+	SERVER curriculo_server
+	OPTIONS (schema_name 'public',table_name 'disciplina');
+
 -------- CREATE TYPE FUNCTIONS ------------
 BEGIN;
 --adicionado por um superadmin ou alguém da graduacao
@@ -125,7 +142,6 @@ DECLARE
 	pe_us_ok INTEGER := (	SELECT count(*) FROM pe_us 
 				WHERE nusp = pe_us_nusp);
 	var_login text;
-	result INTEGER;
 BEGIN
 	--Existe um pe_us deste nusp?
 	IF (pe_us_ok = 1) THEN
@@ -171,7 +187,6 @@ DECLARE
 	pe_us_ok INTEGER := (	SELECT count(*) FROM pe_us 
 				WHERE nusp = pe_us_nusp);
 	var_login text;
-	result INTEGER;
 BEGIN
 	--Existe um pe_us deste nusp?
 	IF (pe_us_ok = 1) THEN
@@ -209,12 +224,20 @@ BEGIN;
 CREATE OR REPLACE FUNCTION insert_oferecimento
 (ofer_prof_nusp int, ofer_disciplina_sigla text, ofer_ministra_data date default NULL)
 RETURNS INTEGER AS $$
+--APAGAR CODIGO COMENTADO SO QUANDO CURRICULO_DML FOR IMPLEMENTADO
+/*
+DECLARE
+	disciplina_ok INTEGER := (SELECT count(*) FROM disciplina 
+				         WHERE ofer_disciplina_sigla = disciplina_sigla);*/
 BEGIN
-	IF $3 IS NULL THEN
-		INSERT INTO oferecimento VALUES ($1,$2,current_date);
-	ELSE
-		INSERT INTO oferecimento VALUES ($1,$2,$3);
-	END IF;
+	--IF (disciplina_ok = 1) THEN
+		IF $3 IS NULL THEN
+			INSERT INTO oferecimento VALUES ($1,$2,current_date);
+		ELSE
+			INSERT INTO oferecimento VALUES ($1,$2,$3);
+		END IF;
+	--ELSE RETURN -1;
+	--END IF;
 
 	RETURN 1;
 END;
@@ -423,7 +446,6 @@ DECLARE
 				WHERE num_usp = ace_pes_nusp);
 	var_login text;
 	request text;
-	result INTEGER;
 BEGIN
 	--Checa se pessoa tem conta de usuario
 	IF (pe_us_ok = 1) THEN
