@@ -10,7 +10,6 @@ DROP TABLE IF EXISTS oferecimento CASCADE;
 
 DROP FUNCTION insert_person;
 DROP FUNCTION insert_into_role_student;
-DROP FUNCTION insert_into_role_student_fdw;
 DROP FUNCTION insert_into_role_teacher;
 DROP FUNCTION insert_into_role_admin;
 DROP FUNCTION insert_cursa;

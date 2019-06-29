@@ -1,5 +1,4 @@
 \c modulo_pessoa
-CREATE EXTENSION IF NOT EXISTS dblink;
 CREATE EXTENSION IF NOT EXISTS postgres_fdw;
 SET ROLE dba;
 
@@ -25,7 +24,8 @@ CREATE FOREIGN TABLE usuario (
 
 CREATE FOREIGN TABLE us_pf (
 	us_pf_user_login	TEXT,
-	us_pf_perfil_nome	TEXT
+	us_pf_perfil_nome	TEXT,
+	us_pf_perfil_inicio	date
 )
 	SERVER acesso_server
 	OPTIONS (schema_name 'public',table_name 'us_pf');
@@ -45,17 +45,6 @@ CREATE FOREIGN TABLE pe_us (
 )
 	SERVER ace_pes_server
 	OPTIONS (schema_name 'public',table_name 'pe_us');
-
--------- VIEWS  ------------
-/* Teoricamente estou dando um select em fez de envelopar numa 
-funcao quando uso esta view. Entretanto, não tenho a intenção
-de permitir que o usuário use esta view livremente portanto
-esta não estaria exposta para todos. */
-CREATE OR REPLACE VIEW remote_ace_pes AS
- 	SELECT * FROM dblink
-		('dbname = inter_mod_ace_pes options =-csearch_path=',
-		'select pe_us_nusp, pe_us_user_login from public.pe_us')
-       	as t1(ace_pes_nusp int, ace_pes_login text);
 
 -------- CREATE TYPE FUNCTIONS ------------
 BEGIN;
@@ -81,59 +70,10 @@ BEGIN;
 /*Insere uma pessoa na entidade aluno. Para que isto ocorra, ela deve
 ter uma conta de usuário já criada. Ou seja, deve haver um elo entre
 usuário e pessoa em pe_us. Depois add o usuario desta pessoa na tabela
-perfil como estudante.
+perfil como 'student'.
  O único requisito para esta função é que haja uma conta de usuário, 
 portanto. Tendo uma conta de usuário, esta ganha perfil de estudante.*/
 CREATE OR REPLACE FUNCTION insert_into_role_student
-(nusp int, curso text)
-RETURNS INTEGER AS $$
-DECLARE
-	pe_us_ok INTEGER := (	SELECT count(*) FROM remote_ace_pes
-				WHERE nusp = ace_pes_nusp);
-	var_login text;
-	request text;
-	result INTEGER;
-BEGIN
-	--Existe um pe_us deste nusp?
-	IF (pe_us_ok = 1) THEN
-		--insere em aluno 
-		INSERT INTO aluno
-		VALUES (nusp,curso);
-
-		--descobre o login deste usuário
-		SELECT  ace_pes_login 
-			FROM remote_ace_pes
-			WHERE ace_pes_nusp = nusp
-			INTO var_login;
-
-		-- insere na tabela us_pf o perfil student para o usuário deste nusp
-		SELECT FORMAT(E'SELECT * from insert_user_into_role(%L,''student'')',var_login) INTO request;
-
-		--raise notice 'var_login: %',var_login;
-		--raise notice 'request: %', request;
-
-		--guardando em result caso seja necessário debugar
-		SELECT * from dblink('dbname=modulo_acesso',request) AS t(x int) into result;
-
-	ELSE RETURN -1;
-	END IF;
-	RETURN 1;
-END;
-$$ LANGUAGE plpgsql;
-REVOKE ALL ON FUNCTION insert_into_role_student(int,text)
-	FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION insert_into_role_student(int,text)
-	TO dba,aluno;
-COMMIT;
-
-BEGIN;
-/*Insere uma pessoa na entidade aluno. Para que isto ocorra, ela deve
-ter uma conta de usuário já criada. Ou seja, deve haver um elo entre
-usuário e pessoa em pe_us. Depois add o usuario desta pessoa na tabela
-perfil como estudante.
- O único requisito para esta função é que haja uma conta de usuário, 
-portanto. Tendo uma conta de usuário, esta ganha perfil de estudante.*/
-CREATE OR REPLACE FUNCTION insert_into_role_student_fdw
 (nusp int, curso text)
 RETURNS INTEGER AS $$
 DECLARE
@@ -155,7 +95,10 @@ BEGIN
 			INTO var_login;
 
 		-- insere na tabela us_pf o perfil student para o usuário deste nusp
-		INSERT INTO us_pf VALUES (var_login,'student');
+		-- caso este nao seja um.
+		INSERT INTO us_pf 
+			VALUES (var_login,'student',current_date)
+			ON CONFLICT DO NOTHING;
 
 	ELSE RETURN -1;
 	END IF;
@@ -172,37 +115,36 @@ BEGIN;
 /*Insere uma pessoa na entidade professor. Para que isto ocorra, ela deve
 ter uma conta de usuário já criada. Ou seja, deve haver um elo entre
 usuário e pessoa em pe_us. Depois add o usuario desta pessoa na tabela
-perfil como professor. */
+perfil como 'teacher'.
+ O único requisito para esta função é que haja uma conta de usuário, 
+portanto. Tendo uma conta de usuário, esta ganha perfil de professor também.*/
 CREATE OR REPLACE FUNCTION insert_into_role_teacher
 (nusp int, unidade text)
 RETURNS INTEGER AS $$
 DECLARE
-	pe_us_ok INTEGER := (	SELECT count(*) FROM remote_ace_pes
-				WHERE nusp = ace_pes_nusp);
+	pe_us_ok INTEGER := (	SELECT count(*) FROM pe_us 
+				WHERE nusp = pe_us_nusp);
 	var_login text;
-	request text;
 	result INTEGER;
 BEGIN
 	--Existe um pe_us deste nusp?
 	IF (pe_us_ok = 1) THEN
 		--insere em professor
 		INSERT INTO professor 
-		VALUES (nusp, unidade);
+		VALUES (nusp,unidade);
 
 		--descobre o login deste usuário
-		SELECT  ace_pes_login 
-			FROM remote_ace_pes
-			WHERE ace_pes_nusp = nusp
+		SELECT  pe_us_user_login 
+			FROM pe_us
+			WHERE pe_us_nusp = nusp
 			INTO var_login;
 
 		-- insere na tabela us_pf o perfil teacher para o usuário deste nusp
-		select FORMAT(E'SELECT * from insert_user_into_role(%L,''teacher'')',var_login) INTO request;
+		-- caso este nao seja um. 
 
-		--raise notice 'var_login: %',var_login;
-		--raise notice 'request: %', request;
-
-		--guardando em result caso seja necessário debugar
-		SELECT * from dblink('dbname=modulo_acesso',request) AS t(x int) into result;
+		INSERT INTO us_pf 
+			VALUES (var_login,'teacher',current_date)
+			ON CONFLICT DO NOTHING;
 
 	ELSE RETURN -1;
 	END IF;
@@ -219,46 +161,45 @@ BEGIN;
 /*Insere uma pessoa na entidade admin. Para que isto ocorra, ela deve
 ter uma conta de usuário já criada. Ou seja, deve haver um elo entre
 usuário e pessoa em pe_us. Depois add o usuario desta pessoa na tabela
-perfil como admin. */
+perfil como 'admin'.
+ O único requisito para esta função é que haja uma conta de usuário, 
+portanto. Tendo uma conta de usuário, esta ganha perfil de admin também.*/
 CREATE OR REPLACE FUNCTION insert_into_role_admin
 (nusp int, unidade text)
 RETURNS INTEGER AS $$
 DECLARE
-	pe_us_ok INTEGER := (	SELECT count(*) FROM remote_ace_pes
-				WHERE nusp = ace_pes_nusp);
+	pe_us_ok INTEGER := (	SELECT count(*) FROM pe_us 
+				WHERE nusp = pe_us_nusp);
 	var_login text;
-	request text;
 	result INTEGER;
 BEGIN
 	--Existe um pe_us deste nusp?
 	IF (pe_us_ok = 1) THEN
 		--insere em administrador
 		INSERT INTO administrador
-		VALUES (nusp, unidade);
+		VALUES (nusp,unidade);
 
 		--descobre o login deste usuário
-		SELECT  ace_pes_login 
-			FROM remote_ace_pes
-			WHERE ace_pes_nusp = nusp
+		SELECT  pe_us_user_login 
+			FROM pe_us
+			WHERE pe_us_nusp = nusp
 			INTO var_login;
 
 		-- insere na tabela us_pf o perfil admin para o usuário deste nusp
-		select FORMAT(E'SELECT * from insert_user_into_role(%L,''admin'')',var_login) INTO request;
+		-- caso este nao seja um. 
 
-		--raise notice 'var_login: %',var_login;
-		--raise notice 'request: %', request;
-
-		--guardando em result caso seja necessário debugar
-		SELECT * from dblink('dbname=modulo_acesso',request) AS t(x int) into result;
+		INSERT INTO us_pf 
+			VALUES (var_login,'admin',current_date)
+			ON CONFLICT DO NOTHING;
 
 	ELSE RETURN -1;
 	END IF;
 	RETURN 1;
 END;
 $$ LANGUAGE plpgsql;
-REVOKE ALL ON FUNCTION insert_into_role_teacher(int,text)
+REVOKE ALL ON FUNCTION insert_into_role_admin(int,text)
 	FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION insert_into_role_teacher(int,text)
+GRANT EXECUTE ON FUNCTION insert_into_role_admin(int,text)
 	TO dba,admin;
 COMMIT;
 
@@ -492,25 +433,6 @@ BEGIN
 			WHERE ace_pes_nusp = num_usp
 			INTO var_login;
 
-		-- apaga na tabela pe_us a entrada com o login do usuário deste nusp
-		--SELECT FORMAT(E'SELECT * from delete_pe_us_with_login(%L)',var_login) INTO request;
-		--SELECT * from dblink('dbname=acesso',request) AS t(x int) into result;
-
-		-- apaga na tabela us_pf todas as entradas deste usuario que pertencam a (aluno,prof,admin) 
-		SELECT FORMAT(E'SELECT * from delete_rel_pe_us(%L,''student'')',var_login) INTO request;
-		SELECT * from dblink(   'dbname=modulo_acesso',
-					FORMAT(E'SELECT * from delete_rel_pe_us_with_login(%L,''student'')',var_login))
-			       		AS t(x int) into result;
-
-		SELECT FORMAT(E'SELECT * from delete_rel_pe_us(%L,''teacher'')',var_login) INTO request;
-		SELECT * from dblink(   'dbname=modulo_acesso',
-					FORMAT(E'SELECT * from delete_rel_pe_us_with_login(%L,''teacher'')',var_login))
-			       		AS t(x int) into result;
-
-		SELECT FORMAT(E'SELECT * from delete_rel_pe_us(%L,''admin'')',var_login) INTO request;
-		SELECT * from dblink(   'dbname=modulo_acesso',
-					FORMAT(E'SELECT * from delete_rel_pe_us_with_login(%L,''admin'')',var_login))
-			       		AS t(x int) into result;
 	END IF;
 	-- cascade nas outras tabelas de pessoa
 	DELETE FROM pessoa WHERE nusp = num_usp;
