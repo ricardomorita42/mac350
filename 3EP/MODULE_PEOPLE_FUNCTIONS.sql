@@ -1,6 +1,39 @@
 \c modulo_pessoa
 CREATE EXTENSION IF NOT EXISTS dblink;
+CREATE EXTENSION IF NOT EXISTS postgres_fdw;
 SET ROLE dba;
+-------- fdw config ------------
+-- Config para modulo_acesso
+CREATE SERVER acesso_server
+	FOREIGN DATA WRAPPER postgres_fdw
+	OPTIONS (host 'localhost', port '5432', dbname 'modulo_acesso');
+
+CREATE USER MAPPING FOR dba
+	SERVER acesso_server
+	OPTIONS (user 'dba', password 'dba1234');
+
+CREATE FOREIGN TABLE usuario (
+	user_login	TEXT,
+	user_email	email
+)
+	SERVER acesso_server
+	OPTIONS (schema_name 'public',table_name 'usuario');
+
+-- Config para intermod_ace_pes
+CREATE SERVER ace_pes_server
+	FOREIGN DATA WRAPPER postgres_fdw
+	OPTIONS (host 'localhost', port '5432', dbname 'inter_mod_ace_pes');
+
+CREATE USER MAPPING FOR dba
+	SERVER ace_pes_server
+	OPTIONS (user 'dba', password 'dba1234');
+
+CREATE FOREIGN TABLE pe_us (
+	pe_us_nusp		SERIAL,
+	pe_us_user_login 	TEXT
+)
+	SERVER ace_pes_server
+	OPTIONS (schema_name 'public',table_name 'pe_us');
 
 -------- VIEWS  ------------
 /* Teoricamente estou dando um select em fez de envelopar numa 

@@ -5,6 +5,7 @@ CREATE EXTENSION IF NOT EXISTS citext;
 SET ROLE dba;
 
 -------- fdw config ------------
+-- Config para intermod_ace_pes
 CREATE SERVER ace_pes_server
 	FOREIGN DATA WRAPPER postgres_fdw
 	OPTIONS (host 'localhost', port '5432', dbname 'inter_mod_ace_pes');

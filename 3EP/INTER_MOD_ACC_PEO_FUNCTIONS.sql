@@ -19,8 +19,7 @@ CREATE USER MAPPING FOR dba
 
 CREATE FOREIGN TABLE usuario (
 	user_login	TEXT,
-	user_email	email,
-	user_password	TEXT
+	user_email	email
 )
 	SERVER acesso_server
 	OPTIONS (schema_name 'public',table_name 'usuario');
@@ -35,12 +34,7 @@ CREATE USER MAPPING FOR dba
 	OPTIONS (user 'dba', password 'dba1234');
 
 CREATE FOREIGN TABLE pessoa (
-	nusp				SERIAL,
-	cpf				VARCHAR(14),
-	pnome				TEXT,
-	snome				TEXT,
-	datanasc			date,
-	sexo				VARCHAR(1)
+	nusp		SERIAL
 )
 	SERVER pessoa_server
 	OPTIONS (schema_name 'public',table_name 'pessoa');
