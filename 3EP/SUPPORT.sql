@@ -16,11 +16,11 @@ CREATE ROLE guest
 	LOGIN ENCRYPTED PASSWORD 'guest'
 	VALID UNTIL '2019-08-01';
 
-CREATE DATABASE acesso OWNER dba;
-CREATE DATABASE curriculo OWNER dba;
-CREATE DATABASE pessoa OWNER dba;
-CREATE DATABASE inter_pes_cur OWNER dba;
-CREATE DATABASE inter_ace_pes OWNER dba;
+CREATE DATABASE modulo_acesso OWNER dba;
+CREATE DATABASE modulo_curriculo OWNER dba;
+CREATE DATABASE modulo_pessoa OWNER dba;
+CREATE DATABASE inter_mod_pes_cur OWNER dba;
+CREATE DATABASE inter_mod_ace_pes OWNER dba;
 
 GRANT guest to dba,aluno,professor,admin;
 

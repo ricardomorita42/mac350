@@ -1,4 +1,4 @@
-\c pessoa
+\c modulo_pessoa
 SET ROLE dba;
 
 DROP TABLE IF EXISTS pessoa CASCADE;

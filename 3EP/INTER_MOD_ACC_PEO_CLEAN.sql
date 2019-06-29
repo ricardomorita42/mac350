@@ -1,4 +1,4 @@
-\c inter_ace_pes
+\c inter_mod_ace_pes
 SET ROLE dba;
 
 DROP TABLE pe_us;

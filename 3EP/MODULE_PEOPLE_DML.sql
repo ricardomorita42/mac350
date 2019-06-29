@@ -1,4 +1,4 @@
-\c pessoa
+\c modulo_pessoa
 SET ROLE DBA;
 
 --Students
@@ -51,7 +51,7 @@ select * from insert_person(897719693,'862.691.319-32','Karen','Mcraney','28-9-1
 -- This also means that DDL and Functions must've been executed already.
 \i INTER_MOD_ACC_PEO_DML.sql
 
-\c pessoa
+\c modulo_pessoa
 SET ROLE DBA;
 select * from insert_into_role_student(227705861,'BCC');
 select * from insert_into_role_student(386930905,'BMAT');

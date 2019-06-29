@@ -1,4 +1,4 @@
-\c pessoa
+\c modulo_pessoa
 SET ROLE dba;
 
 --DROP TABLE IF EXISTS pessoa CASCADE;
@@ -84,5 +84,9 @@ CREATE TABLE oferecimento(
 	ofer_disciplina_sigla		TEXT NOT NULL,
 	ofer_ministra_data		date NOT NULL,
 
-	CONSTRAINT pk_ofer PRIMARY KEY (ofer_prof_nusp, ofer_disciplina_sigla)
+	CONSTRAINT pk_ofer PRIMARY KEY (ofer_prof_nusp, ofer_disciplina_sigla),
+	CONSTRAINT fk_ofer FOREIGN KEY (ofer_prof_nusp)
+		REFERENCES professor (prof_nusp)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE
 );

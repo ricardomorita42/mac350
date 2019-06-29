@@ -1,4 +1,4 @@
-\c acesso
+\c modulo_acesso
 SET ROLE dba;
 
 ----Inserting roles----

@@ -1,4 +1,4 @@
-\c inter_ace_pes
+\c inter_mod_ace_pes
 CREATE EXTENSION IF NOT EXISTS dblink;
 SET ROLE dba;
 
@@ -9,13 +9,13 @@ de permitir que o usuário use esta view livremente portanto
 esta não estaria exposta para todos. */
 CREATE OR REPLACE VIEW remote_acesso AS
  	SELECT * FROM dblink
-		('dbname = acesso options =-csearch_path=',
+		('dbname = modulo_acesso options =-csearch_path=',
 		'select user_login, user_email from public.usuario')
        	as t1(user_login text, user_email text);
 
 CREATE OR REPLACE VIEW remote_pessoa AS
  	SELECT * FROM dblink
-		('dbname = pessoa options =-csearch_path=',
+		('dbname = modulo_pessoa options =-csearch_path=',
 		'select nusp, cpf, pnome from public.pessoa')
        	as t1(pes_nusp int, pes_cpf text, pes_pnome text);
 

@@ -1,4 +1,4 @@
-\c pessoa
+\c modulo_pessoa
 CREATE EXTENSION IF NOT EXISTS dblink;
 SET ROLE dba;
 
@@ -9,7 +9,7 @@ de permitir que o usuário use esta view livremente portanto
 esta não estaria exposta para todos. */
 CREATE OR REPLACE VIEW remote_ace_pes AS
  	SELECT * FROM dblink
-		('dbname = inter_ace_pes options =-csearch_path=',
+		('dbname = inter_mod_ace_pes options =-csearch_path=',
 		'select pe_us_nusp, pe_us_user_login from public.pe_us')
        	as t1(ace_pes_nusp int, ace_pes_login text);
 
@@ -63,13 +63,13 @@ BEGIN
 			INTO var_login;
 
 		-- insere na tabela us_pf o perfil student para o usuário deste nusp
-		select FORMAT(E'SELECT * from insert_user_into_role(%L,''student'')',var_login) INTO request;
+		SELECT FORMAT(E'SELECT * from insert_user_into_role(%L,''student'')',var_login) INTO request;
 
 		--raise notice 'var_login: %',var_login;
 		--raise notice 'request: %', request;
 
 		--guardando em result caso seja necessário debugar
-		SELECT * from dblink('dbname=acesso',request) AS t(x int) into result;
+		SELECT * from dblink('dbname=modulo_acesso',request) AS t(x int) into result;
 
 	ELSE RETURN -1;
 	END IF;
@@ -116,7 +116,7 @@ BEGIN
 		--raise notice 'request: %', request;
 
 		--guardando em result caso seja necessário debugar
-		SELECT * from dblink('dbname=acesso',request) AS t(x int) into result;
+		SELECT * from dblink('dbname=modulo_acesso',request) AS t(x int) into result;
 
 	ELSE RETURN -1;
 	END IF;
@@ -163,7 +163,7 @@ BEGIN
 		--raise notice 'request: %', request;
 
 		--guardando em result caso seja necessário debugar
-		SELECT * from dblink('dbname=acesso',request) AS t(x int) into result;
+		SELECT * from dblink('dbname=modulo_acesso',request) AS t(x int) into result;
 
 	ELSE RETURN -1;
 	END IF;
@@ -381,4 +381,119 @@ REVOKE ALL ON FUNCTION update_cursa_presenca(int,int,text,numeric)
 	FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION update_cursa_presenca(int,int,text,numeric)
 	TO dba,professor;
+COMMIT;
+
+-------- DELETE TYPE FUNCTIONS ------------
+BEGIN;
+/*Apaga uma pessoa. A ligação entre pessoa e usuário 
+também vai para o vazio, além de reverter o usuário
+para que ela tenha só o perfil de guest.*/
+CREATE OR REPLACE FUNCTION delete_from_pessoa
+(num_usp int)
+RETURNS INTEGER AS $$
+DECLARE
+	pe_us_ok INTEGER := (	SELECT count(*) FROM remote_ace_pes
+				WHERE num_usp = ace_pes_nusp);
+	var_login text;
+	request text;
+	result INTEGER;
+BEGIN
+	--Checa se pessoa tem conta de usuario
+	IF (pe_us_ok = 1) THEN
+		--descobre o login deste usuário
+		SELECT  ace_pes_login 
+			FROM remote_ace_pes
+			WHERE ace_pes_nusp = num_usp
+			INTO var_login;
+
+		-- apaga na tabela pe_us a entrada com o login do usuário deste nusp
+		--SELECT FORMAT(E'SELECT * from delete_pe_us_with_login(%L)',var_login) INTO request;
+		--SELECT * from dblink('dbname=acesso',request) AS t(x int) into result;
+
+		-- apaga na tabela us_pf todas as entradas deste usuario que pertencam a (aluno,prof,admin) 
+		SELECT FORMAT(E'SELECT * from delete_rel_pe_us(%L,''student'')',var_login) INTO request;
+		SELECT * from dblink(   'dbname=modulo_acesso',
+					FORMAT(E'SELECT * from delete_rel_pe_us_with_login(%L,''student'')',var_login))
+			       		AS t(x int) into result;
+
+		SELECT FORMAT(E'SELECT * from delete_rel_pe_us(%L,''teacher'')',var_login) INTO request;
+		SELECT * from dblink(   'dbname=modulo_acesso',
+					FORMAT(E'SELECT * from delete_rel_pe_us_with_login(%L,''teacher'')',var_login))
+			       		AS t(x int) into result;
+
+		SELECT FORMAT(E'SELECT * from delete_rel_pe_us(%L,''admin'')',var_login) INTO request;
+		SELECT * from dblink(   'dbname=modulo_acesso',
+					FORMAT(E'SELECT * from delete_rel_pe_us_with_login(%L,''admin'')',var_login))
+			       		AS t(x int) into result;
+	END IF;
+	-- cascade nas outras tabelas de pessoa
+	DELETE FROM pessoa WHERE nusp = num_usp;
+
+	RETURN 1;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION delete_from_pessoa(int)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION delete_from_pessoa(int)
+	TO dba;
+COMMIT;
+
+BEGIN;
+/* Apaga a entrada em aluno ligado à uma pessoa. As relações em
+cursa e planeja também se vão.*/
+CREATE OR REPLACE FUNCTION delete_from_aluno
+(num_usp int, curso text)
+RETURNS INTEGER AS $$
+BEGIN
+	DELETE 	FROM aluno
+		WHERE 	aluno_nusp = num_usp AND
+			aluno_curso = curso;
+
+	RETURN 1;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION delete_from_aluno(int,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION delete_from_aluno(int,text)
+	TO dba;
+COMMIT;
+
+BEGIN;
+/* Apaga a entrada em professor ligado à uma pessoa. As relações
+em ministra e oferecimento também se vão. */
+CREATE OR REPLACE FUNCTION delete_from_professor
+(num_usp int, unidade text)
+RETURNS INTEGER AS $$
+BEGIN
+	DELETE 	FROM professor
+		WHERE 	prof_nusp = num_usp AND
+			prof_unidade = unidade;
+
+	RETURN 1;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION delete_from_professor(int,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION delete_from_professor(int,text)
+	TO dba;
+COMMIT;
+
+BEGIN;
+/* Apaga a entrada em adminstrador ligado à uma pessoa. As relações
+em ministra e oferecimento também se vão. */
+CREATE OR REPLACE FUNCTION delete_from_administrador
+(num_usp int, unidade text)
+RETURNS INTEGER AS $$
+BEGIN
+	DELETE 	FROM administrador
+		WHERE 	admin_nusp = num_usp AND
+			admin_unidade = unidade;
+
+	RETURN 1;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION delete_from_administrador(int,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION delete_from_administrador(int,text)
+	TO dba;
 COMMIT;

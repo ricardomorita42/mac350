@@ -4,11 +4,11 @@ DROP OWNED BY professor;
 DROP OWNED BY admin;
 DROP OWNED BY guest;
 
-DROP DATABASE acesso;
-DROP DATABASE curriculo;
-DROP DATABASE pessoa;
-DROP DATABASE inter_pes_cur;
-DROP DATABASE inter_ace_pes;
+DROP DATABASE modulo_acesso;
+DROP DATABASE modulo_curriculo;
+DROP DATABASE modulo_pessoa;
+DROP DATABASE inter_mod_pes_cur;
+DROP DATABASE inter_mod_ace_pes;
 
 DROP ROLE dba;
 DROP ROLE aluno;

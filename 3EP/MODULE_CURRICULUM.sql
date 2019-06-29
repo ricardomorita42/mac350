@@ -1,4 +1,4 @@
-\c curriculo
+\c modulo_curriculo
 SET ROLE dba;
 
 --DROP TABLE IF EXISTS curriculo CASCADE;
