@@ -1,6 +1,7 @@
 \c inter_mod_ace_pes
 SET ROLE dba;
 
+CREATE EXTENSION IF NOT EXISTS citext;
 
 -------- DDL  ------------
 CREATE TABLE pe_us (

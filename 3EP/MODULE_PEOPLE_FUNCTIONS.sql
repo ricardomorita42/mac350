@@ -2,6 +2,10 @@
 CREATE EXTENSION IF NOT EXISTS dblink;
 CREATE EXTENSION IF NOT EXISTS postgres_fdw;
 SET ROLE dba;
+
+DROP DOMAIN IF EXISTS email;
+CREATE DOMAIN email AS citext
+  CHECK ( value ~ '^[a-zA-Z0-9.!#$%&''*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$' );
 -------- fdw config ------------
 -- Config para modulo_acesso
 CREATE SERVER acesso_server
@@ -18,6 +22,13 @@ CREATE FOREIGN TABLE usuario (
 )
 	SERVER acesso_server
 	OPTIONS (schema_name 'public',table_name 'usuario');
+
+CREATE FOREIGN TABLE us_pf (
+	us_pf_user_login	TEXT,
+	us_pf_perfil_nome	TEXT
+)
+	SERVER acesso_server
+	OPTIONS (schema_name 'public',table_name 'us_pf');
 
 -- Config para intermod_ace_pes
 CREATE SERVER ace_pes_server
@@ -103,6 +114,48 @@ BEGIN
 
 		--guardando em result caso seja necessário debugar
 		SELECT * from dblink('dbname=modulo_acesso',request) AS t(x int) into result;
+
+	ELSE RETURN -1;
+	END IF;
+	RETURN 1;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION insert_into_role_student(int,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION insert_into_role_student(int,text)
+	TO dba,aluno;
+COMMIT;
+
+BEGIN;
+/*Insere uma pessoa na entidade aluno. Para que isto ocorra, ela deve
+ter uma conta de usuário já criada. Ou seja, deve haver um elo entre
+usuário e pessoa em pe_us. Depois add o usuario desta pessoa na tabela
+perfil como estudante.
+ O único requisito para esta função é que haja uma conta de usuário, 
+portanto. Tendo uma conta de usuário, esta ganha perfil de estudante.*/
+CREATE OR REPLACE FUNCTION insert_into_role_student_fdw
+(nusp int, curso text)
+RETURNS INTEGER AS $$
+DECLARE
+	pe_us_ok INTEGER := (	SELECT count(*) FROM pe_us 
+				WHERE nusp = pe_us_nusp);
+	var_login text;
+	result INTEGER;
+BEGIN
+	--Existe um pe_us deste nusp?
+	IF (pe_us_ok = 1) THEN
+		--insere em aluno 
+		INSERT INTO aluno
+		VALUES (nusp,curso);
+
+		--descobre o login deste usuário
+		SELECT  pe_us_user_login 
+			FROM pe_us
+			WHERE pe_us_nusp = nusp
+			INTO var_login;
+
+		-- insere na tabela us_pf o perfil student para o usuário deste nusp
+		INSERT INTO us_pf VALUES (var_login,'student');
 
 	ELSE RETURN -1;
 	END IF;

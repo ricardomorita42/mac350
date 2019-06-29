@@ -19,6 +19,11 @@ CREATE DATABASE inter_mod_ace_pes OWNER dba;
 
 GRANT guest to dba,aluno,professor,admin;
 
+CREATE EXTENSION IF NOT EXISTS citext;
+DROP DOMAIN IF EXISTS email CASCADE;
+CREATE DOMAIN email AS citext
+  CHECK ( value ~ '^[a-zA-Z0-9.!#$%&''*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$' );
+
 \i MODULE_ACCESS_DDL.sql
 \i INTER_MOD_ACC_PEO_DDL.sql
 \i MODULE_PEOPLE_DDL.sql

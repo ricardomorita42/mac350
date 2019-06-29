@@ -1,6 +1,8 @@
 \c modulo_pessoa
 SET ROLE dba;
 
+CREATE EXTENSION IF NOT EXISTS citext;
+
 --DROP TABLE IF EXISTS pessoa CASCADE;
 CREATE TABLE pessoa (
 	nusp				SERIAL NOT NULL,

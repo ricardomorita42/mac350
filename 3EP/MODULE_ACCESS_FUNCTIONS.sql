@@ -1,7 +1,6 @@
 \c modulo_acesso
 CREATE EXTENSION IF NOT EXISTS postgres_fdw;
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
-CREATE EXTENSION IF NOT EXISTS citext;
 SET ROLE dba;
 
 -------- fdw config ------------
