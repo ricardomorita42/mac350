@@ -1,6 +1,6 @@
 \c modulo_pessoa
-CREATE EXTENSION IF NOT EXISTS postgres_fdw;
 SET ROLE dba;
+CREATE EXTENSION IF NOT EXISTS postgres_fdw;
 
 DROP DOMAIN IF EXISTS email;
 CREATE DOMAIN email AS citext

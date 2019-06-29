@@ -1,3 +1,5 @@
+\c modulo_curriculo
+SET ROLE dba;
 
 ----!! Inserting curriculum !!----
 select * from insert_curriculum('BCC' ,'IME','Bacharelado em Ciencia da Computacao'		,111,52,24);

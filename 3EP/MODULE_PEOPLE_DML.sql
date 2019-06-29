@@ -47,8 +47,9 @@ select * from insert_person(306625659,'444.190.340-59','Melanie','Parker','21-1-
 select * from insert_person(295230948,'237.426.428-81','Christy','Hinsley','13-8-1974','F');
 select * from insert_person(897719693,'862.691.319-32','Karen','Mcraney','28-9-1950','F');
 
--- Adding inter_ace_pes DML because to insert a person into a role it requires an account
--- This also means that DDL and Functions must've been executed already.
+/* Adding inter_ace_pes DML because to insert a person into a role
+it requires an account. This also means that DDL and Functions
+for access and the inter module must've been executed already.*/
 \i INTER_MOD_ACC_PEO_DML.sql
 
 \c modulo_pessoa
