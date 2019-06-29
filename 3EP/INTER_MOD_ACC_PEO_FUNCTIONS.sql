@@ -1,37 +1,63 @@
 \c inter_mod_ace_pes
-CREATE EXTENSION IF NOT EXISTS dblink;
+CREATE EXTENSION IF NOT EXISTS postgres_fdw;
+CREATE EXTENSION IF NOT EXISTS citext;
 SET ROLE dba;
 
--------- VIEWS  ------------
-/* Teoricamente estou dando um select em fez de envelopar numa 
-funcao quando uso esta view. Entretanto, não tenho a intenção
-de permitir que o usuário use esta view livremente portanto
-esta não estaria exposta para todos. */
-CREATE OR REPLACE VIEW remote_acesso AS
- 	SELECT * FROM dblink
-		('dbname = modulo_acesso options =-csearch_path=',
-		'select user_login, user_email from public.usuario')
-       	as t1(user_login text, user_email text);
+DROP DOMAIN IF EXISTS email CASCADE;
+CREATE DOMAIN email AS citext
+  CHECK ( value ~ '^[a-zA-Z0-9.!#$%&''*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$' );
 
-CREATE OR REPLACE VIEW remote_pessoa AS
- 	SELECT * FROM dblink
-		('dbname = modulo_pessoa options =-csearch_path=',
-		'select nusp, cpf, pnome from public.pessoa')
-       	as t1(pes_nusp int, pes_cpf text, pes_pnome text);
+-------- fdw config ------------
+-- Config para modulo_acesso
+CREATE SERVER acesso_server
+	FOREIGN DATA WRAPPER postgres_fdw
+	OPTIONS (host 'localhost', port '5432', dbname 'modulo_acesso');
+
+CREATE USER MAPPING FOR dba
+	SERVER acesso_server
+	OPTIONS (user 'dba', password 'dba1234');
+
+CREATE FOREIGN TABLE usuario (
+	user_login	TEXT,
+	user_email	email,
+	user_password	TEXT
+)
+	SERVER acesso_server
+	OPTIONS (schema_name 'public',table_name 'usuario');
+
+-- Config para modulo_pessoa
+CREATE SERVER pessoa_server
+	FOREIGN DATA WRAPPER postgres_fdw
+	OPTIONS (host 'localhost', port '5432', dbname 'modulo_pessoa');
+
+CREATE USER MAPPING FOR dba
+	SERVER pessoa_server 
+	OPTIONS (user 'dba', password 'dba1234');
+
+CREATE FOREIGN TABLE pessoa (
+	nusp				SERIAL,
+	cpf				VARCHAR(14),
+	pnome				TEXT,
+	snome				TEXT,
+	datanasc			date,
+	sexo				VARCHAR(1)
+)
+	SERVER pessoa_server
+	OPTIONS (schema_name 'public',table_name 'pessoa');
 
 -------- CREATE TYPE FUNCTIONS ------------
 BEGIN;
 --Cria um pe_us. Checa se existem entradas em pessoa.pessoa e acesso.usuario antes de criar.
 CREATE OR REPLACE FUNCTION insert_pe_us
-(nusp INTEGER, login text)
+(num_usp INTEGER, login text)
 RETURNS INTEGER AS $$
 DECLARE
-	acesso_ok INTEGER := (	SELECT count(*) FROM remote_acesso
+	usuario_ok INTEGER := (	SELECT count(*) FROM usuario 
 				WHERE login = user_login);
-	pessoa_ok INTEGER := (	SELECT count(*) FROM remote_pessoa
-				WHERE nusp = pes_nusp);
+	pessoa_ok INTEGER := (	SELECT count(*) FROM pessoa
+				WHERE num_usp = nusp);
 BEGIN
-	IF (acesso_ok =1 AND pessoa_ok = 1) THEN
+	IF (usuario_ok =1 AND pessoa_ok = 1) THEN
 		INSERT INTO pe_us
 		VALUES ($1,$2);
 	ELSE RETURN -1;
@@ -45,7 +71,6 @@ REVOKE ALL ON FUNCTION insert_pe_us(int,text)
 GRANT EXECUTE ON FUNCTION insert_pe_us(int,text)
 	TO dba;
 COMMIT;
-
 -------- UPDATE TYPE FUNCTIONS ------------
 BEGIN;
 --Atualiza uma determinada relação pe_us.
@@ -55,12 +80,14 @@ CREATE OR REPLACE FUNCTION update_pe_us
  new_nusp int, new_login text)
 RETURNS INTEGER AS $$
 DECLARE
-	acesso_ok INTEGER := (	SELECT count(*) FROM remote_acesso
+	-- Checa se os novos dados estao certos
+	-- antigos dados ja foram checados quando colocados na tabela 
+	usuario_ok INTEGER := (	SELECT count(*) FROM usuario 
 				WHERE new_login = user_login);
-	pessoa_ok INTEGER := (	SELECT count(*) FROM remote_pessoa
-				WHERE new_nusp = pes_nusp);
+	pessoa_ok INTEGER := (	SELECT count(*) FROM pessoa
+				WHERE new_nusp = nusp);
 BEGIN
-	IF (acesso_ok =1 AND pessoa_ok = 1) THEN
+	IF (usuario_ok =1 AND pessoa_ok = 1) THEN
 		UPDATE  pe_us 
 		SET	pe_us_nusp = new_nusp,
 			pe_us_user_login = new_login
@@ -78,7 +105,6 @@ REVOKE ALL ON FUNCTION update_pe_us(int,text,int,text)
 GRANT EXECUTE ON FUNCTION update_pe_us(int,text,int,text)
 	TO dba;
 COMMIT;
-
 -------- DELETE TYPE FUNCTIONS ------------
 BEGIN;
 -- apaga pe_us, isto nao tem efeitos colaterais
