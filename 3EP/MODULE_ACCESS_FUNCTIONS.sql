@@ -1,15 +1,24 @@
 \c modulo_acesso
-CREATE EXTENSION IF NOT EXISTS dblink;
+CREATE EXTENSION IF NOT EXISTS postgres_fdw;
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 CREATE EXTENSION IF NOT EXISTS citext;
 SET ROLE dba;
 
--------- VIEWS  ------------
-CREATE OR REPLACE VIEW remote_ace_pes AS
- 	SELECT * FROM dblink
-		('dbname = inter_mod_ace_pes options =-csearch_path=',
-		'select pe_us_nusp, pe_us_user_login from public.pe_us')
-       	as t1(inter_pe_us_nusp int, inter_pe_us_login text);
+-------- fdw config ------------
+CREATE SERVER ace_pes_server
+	FOREIGN DATA WRAPPER postgres_fdw
+	OPTIONS (host 'localhost', port '5432', dbname 'inter_mod_ace_pes');
+
+CREATE USER MAPPING FOR dba
+	SERVER ace_pes_server
+	OPTIONS (user 'dba', password 'dba1234');
+
+CREATE FOREIGN TABLE pe_us (
+	pe_us_nusp		SERIAL,
+	pe_us_user_login 	TEXT
+)
+	SERVER ace_pes_server
+	OPTIONS (schema_name 'public',table_name 'pe_us');
 
 -------- CREATE TYPE FUNCTIONS ------------
 BEGIN;
@@ -241,12 +250,12 @@ CREATE OR REPLACE FUNCTION delete_user
 (login text)
 RETURNS INTEGER AS $$
 DECLARE
-	ace_pes_ok INTEGER := (	SELECT count(*) FROM remote_ace_pes
-				WHERE login = inter_pe_us_login);
+	ace_pes_ok INTEGER := (	SELECT count(*) FROM pe_us 
+				WHERE login = pe_us_user_login);
 BEGIN
 	IF ace_pes_ok = 1 THEN
-		PERFORM dblink_connect('connect1','dbname=inter_mod_ace_pes');
-		PERFORM dblink('connect1',format('PERFORM delete_pe_us_with_login(%L)',$1));
+		DELETE 	FROM pe_us
+			WHERE login = pe_us_user_login;
 	END IF;
 
 	DELETE FROM us_pf 
