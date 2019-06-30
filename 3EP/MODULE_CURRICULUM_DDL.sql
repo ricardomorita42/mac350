@@ -33,7 +33,6 @@ CREATE TABLE modulo (
 	modulo_trilha_nome		TEXT,
 
 	CONSTRAINT pk_modulo PRIMARY KEY (modulo_nome),
-	CONSTRAINT sk_modulo UNIQUE (modulo_trilha_nome),
 	CONSTRAINT fk_modulo FOREIGN KEY (modulo_trilha_nome)
 		REFERENCES trilha (trilha_nome)
 		ON DELETE CASCADE
