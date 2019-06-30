@@ -63,6 +63,21 @@ CREATE FOREIGN TABLE disciplina(
 	SERVER curriculo_server
 	OPTIONS (schema_name 'public',table_name 'disciplina');
 
+CREATE SERVER pes_cur_server
+	FOREIGN DATA WRAPPER postgres_fdw
+	OPTIONS (host 'localhost', port '5432', dbname 'inter_mod_pes_cur');
+
+CREATE USER MAPPING FOR dba
+	SERVER pes_cur_server
+	OPTIONS (user 'dba', password 'dba1234');
+
+CREATE FOREIGN TABLE planeja (
+	planeja_aluno_nusp		INTEGER,
+	planeja_disciplina_sigla	TEXT
+)
+	SERVER pes_cur_server
+	OPTIONS (schema_name 'public',table_name 'planeja');
+
 -------- CREATE TYPE FUNCTIONS ------------
 BEGIN;
 --adicionado por um superadmin ou alguém da graduacao
@@ -224,20 +239,18 @@ BEGIN;
 CREATE OR REPLACE FUNCTION insert_oferecimento
 (ofer_prof_nusp int, ofer_disciplina_sigla text, ofer_ministra_data date default NULL)
 RETURNS INTEGER AS $$
---APAGAR CODIGO COMENTADO SO QUANDO CURRICULO_DML FOR IMPLEMENTADO
-/*
 DECLARE
 	disciplina_ok INTEGER := (SELECT count(*) FROM disciplina 
-				         WHERE ofer_disciplina_sigla = disciplina_sigla);*/
+				         WHERE ofer_disciplina_sigla = disciplina_sigla);
 BEGIN
-	--IF (disciplina_ok = 1) THEN
+	IF (disciplina_ok = 1) THEN
 		IF $3 IS NULL THEN
 			INSERT INTO oferecimento VALUES ($1,$2,current_date);
 		ELSE
 			INSERT INTO oferecimento VALUES ($1,$2,$3);
 		END IF;
-	--ELSE RETURN -1;
-	--END IF;
+	ELSE RETURN -1;
+	END IF;
 
 	RETURN 1;
 END;
@@ -250,22 +263,31 @@ COMMIT;
 
 BEGIN;
 /* Insere uma entrada para um aluno que vai cursar uma disciplina oferecida.
-Primeiro verifica-se se o aluno tem esta matéria no planejamento. Depois
-é necessária uma checagem para ver se a disciplina está sendo oferecida 
-(i.e. o curso está em oferecimento). */
+Primeiro verifica-se se a disciplina existe. Depois, se o aluno tem esta materia
+no planejamento. Depois é necessária uma checagem em oferecimento se 
+o professor e a disciplina estao sendo oferecidos. */
 CREATE OR REPLACE FUNCTION insert_cursa
 (cursa_aluno_nusp int, cursa_prof_nusp int, cursa_disciplina_sigla text,
 cursa_nota numeric, cursa_presenca numeric)
 RETURNS INTEGER AS $$
+DECLARE
+	disciplina_ok INTEGER := (
+		SELECT count(*) FROM disciplina 
+		WHERE cursa_disciplina_sigla = disciplina_sigla);
+
+	planeja_ok INTEGER := (
+		SELECT count(*) FROM planeja 
+		WHERE cursa_disciplina_sigla = planeja_disciplina_sigla);
+
+	oferecimento_ok INTEGER := (
+		SELECT count(*) FROM oferecimento
+		WHERE 	cursa_disciplina_sigla = ofer_disciplina_sigla
+			AND cursa_prof_nusp = ofer_prof_nusp);
 BEGIN
-	IF (SELECT count(*) from oferecimento WHERE
-		ofer_prof_nusp = cursa_prof_nusp AND
-		ofer_disciplina_sigla = cursa_disciplina_sigla) = 1
-	THEN
+	IF (disciplina_ok = 1 AND planeja_ok = 1 AND oferecimento_ok = 1) THEN
 		INSERT INTO cursa VALUES ($1,$2,$3,$4,$5);
 		RETURN 1;
-	ELSE
-		RETURN -1;
+	ELSE RETURN -1;
 	END IF;
 END;
 $$ LANGUAGE plpgsql;

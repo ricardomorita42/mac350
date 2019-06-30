@@ -36,13 +36,15 @@ CREATE DOMAIN email AS citext
 \i MODULE_PEOPLE_FUNCTIONS.sql
 \i INTER_MOD_PEO_CUR_FUNCTIONS.sql
 
+/* A divisao do DML do DB modulo_pessoa foi feita em tres partes por que
+este necessita que os DMLs dos outros DBs sejam preenchidos para que este
+seja corretamente adicionado. Mas os outros DBs necessitam de partes do
+DML de modulo_pessoa, entao foi necessario carregar em partes o DML de
+modulo_pessoa. */
 \i MODULE_ACCESS_DML.sql
 \i MODULE_CURRICULUM_DML.sql
-/* INTER_MOD_ACC_PEO_DML.sql requires valid people to be run 
- so it'll be run inside MODULE_PEOPLE_DML.sql. The order is
- important because entries can only be added to pessoa.aluno,
- pessoa.professor and pessoa.admnistrador if they have a
- valid user account which requires a check into inter_ace_pes db.
- additionally, it adds an entry into acesso.us_pf.*/
 \i MODULE_PEOPLE_DML.sql
+\i INTER_MOD_ACC_PEO_DML.sql
+\i MODULE_PEOPLE_DML2.sql
 \i INTER_MOD_PEO_CUR_DML.sql
+\i MODULE_PEOPLE_DML3.sql
