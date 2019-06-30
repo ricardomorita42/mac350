@@ -63,6 +63,7 @@ CREATE FOREIGN TABLE disciplina(
 	SERVER curriculo_server
 	OPTIONS (schema_name 'public',table_name 'disciplina');
 
+-- Config para inter_mod_pes_cur
 CREATE SERVER pes_cur_server
 	FOREIGN DATA WRAPPER postgres_fdw
 	OPTIONS (host 'localhost', port '5432', dbname 'inter_mod_pes_cur');

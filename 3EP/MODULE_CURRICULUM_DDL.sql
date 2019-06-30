@@ -35,7 +35,6 @@ CREATE TABLE modulo (
 	CONSTRAINT pk_modulo PRIMARY KEY (modulo_nome),
 	CONSTRAINT fk_modulo FOREIGN KEY (modulo_trilha_nome)
 		REFERENCES trilha (trilha_nome)
-		ON DELETE CASCADE
 		ON UPDATE CASCADE
 );
 
@@ -90,6 +89,7 @@ CREATE TABLE dis_mod (
 CREATE TABLE trilha_extrareqs (
 	tril_extrareqs_trilha_nome	TEXT NOT NULL,
 	tril_extrareqs_requisito	TEXT NOT NULL,
+	tril_extrareqs_id			SERIAL,
 
 	CONSTRAINT pk_trilha_extrareqs 
 		PRIMARY KEY (tril_extrareqs_trilha_nome,tril_extrareqs_requisito),

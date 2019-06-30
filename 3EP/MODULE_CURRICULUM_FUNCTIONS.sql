@@ -1,10 +1,69 @@
 \c modulo_curriculo
 SET ROLE dba;
 
+CREATE EXTENSION postgres_fdw;
+
+-------- fdw config ------------
+-- Config para inter_mod_pes_cur
+CREATE SERVER pes_cur_server
+	FOREIGN DATA WRAPPER postgres_fdw
+	OPTIONS (host 'localhost', port '5432', dbname 'inter_mod_pes_cur');
+
+CREATE USER MAPPING FOR dba
+	SERVER pes_cur_server
+	OPTIONS (user 'dba', password 'dba1234');
+
+CREATE USER MAPPING FOR admin
+	SERVER pes_cur_server
+	OPTIONS (user 'admin', password 'admin');
+
+CREATE FOREIGN TABLE administra(
+	administra_nusp			INTEGER,
+	administra_curriculo_sigla	TEXT,
+	administra_inicio		date
+)
+	SERVER pes_cur_server
+	OPTIONS (schema_name 'public',table_name 'administra');
+
+CREATE FOREIGN TABLE planeja (
+	planeja_aluno_nusp		INTEGER,
+	planeja_disciplina_sigla	TEXT
+)
+	SERVER pes_cur_server
+	OPTIONS (schema_name 'public',table_name 'planeja');
+
+CREATE FOREIGN TABLE ministra(
+	ministra_prof_nusp			INTEGER,
+	ministra_disciplina_sigla		TEXT
+)
+	SERVER pes_cur_server
+	OPTIONS (schema_name 'public',table_name 'ministra');
+
+-- Config para modulo_pessoa
+CREATE SERVER pessoa_server
+	FOREIGN DATA WRAPPER postgres_fdw
+	OPTIONS (host 'localhost', port '5432', dbname 'modulo_pessoa');
+
+CREATE USER MAPPING FOR dba
+	SERVER pessoa_server 
+	OPTIONS (user 'dba', password 'dba1234');
+
+CREATE USER MAPPING FOR admin
+	SERVER pessoa_server 
+	OPTIONS (user 'admin', password 'admin');
+
+CREATE FOREIGN TABLE cursa (
+	cursa_aluno_nusp		INTEGER,
+	cursa_prof_nusp			INTEGER,
+	cursa_disciplina_sigla		TEXT
+)
+	SERVER pessoa_server
+	OPTIONS (schema_name 'public',table_name 'cursa');
+
 -------- CREATE TYPE FUNCTIONS ------------
 BEGIN;
 --Insere um curriculo novo.
-CREATE OR REPLACE FUNCTION insert_curriculum
+CREATE OR REPLACE FUNCTION insert_curriculo
 (curriculo_sigla text, curriculo_unidade text, curriculo_nome text, curriculo_cred_obrig int,
  curriculo_cred_opt_elet int, curriculo_opt_liv int)
 RETURNS INTEGER AS $$
@@ -14,9 +73,9 @@ BEGIN
 	RETURN 1;
 END;
 $$ LANGUAGE plpgsql;
-REVOKE ALL ON FUNCTION insert_curriculum(text,text,text,int,int,int)
+REVOKE ALL ON FUNCTION insert_curriculo(text,text,text,int,int,int)
 	FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION insert_curriculum(text,text,text,int,int,int)
+GRANT EXECUTE ON FUNCTION insert_curriculo(text,text,text,int,int,int)
 	TO dba,admin;
 COMMIT;
 
@@ -436,3 +495,412 @@ GRANT EXECUTE ON FUNCTION update_disc_biblio_descricao(text,text)
 COMMIT;
 
 -------- DELETE TYPE FUNCTIONS ------------
+BEGIN;
+/* Apaga um currículo.*/
+CREATE OR REPLACE FUNCTION delete_curriculo
+(sigla text)
+RETURNS INTEGER AS $$
+BEGIN
+	-- Elimina relação admin x curriculo
+	--tabela estrangeira
+	DELETE 	FROM administra
+		WHERE administra_curriculo_sigla = sigla;
+
+	-- Finalmente pode-se apagar o curriculo.
+	DELETE 	FROM curriculo 
+		WHERE curriculo_sigla = sigla;
+
+	RETURN 1;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION delete_curriculo(text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION delete_curriculo(text)
+	TO dba,admin;
+COMMIT;
+
+BEGIN;
+-- Apaga uma trilha
+CREATE OR REPLACE FUNCTION delete_trilha
+(nome text)
+RETURNS INTEGER AS $$
+BEGIN
+	-- Apagando relação trilha x mod
+	-- Modulo continua existindo mas nao aponta mais para a trilha
+	UPDATE	modulo 
+	SET 	modulo_trilha_nome = NULL
+	WHERE	modulo_trilha_nome = nome;
+
+	DELETE 	FROM trilha 
+		WHERE trilha_nome = nome;
+
+	RETURN 1;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION delete_trilha(text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION delete_trilha(text)
+	TO dba,admin;
+COMMIT;
+
+BEGIN;
+--Apaga um módulo
+CREATE OR REPLACE FUNCTION delete_modulo
+(nome text) 
+RETURNS INTEGER AS $$
+BEGIN
+	DELETE 	FROM modulo 
+		WHERE modulo_nome = nome;
+
+	RETURN 1;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION delete_modulo(text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION delete_modulo(text)
+	TO dba,admin;
+COMMIT;
+
+BEGIN;
+-- Apaga uma disciplina.
+CREATE OR REPLACE FUNCTION delete_disciplina
+(sigla text) 
+RETURNS INTEGER AS $$
+BEGIN
+	DELETE 	FROM disciplina
+		WHERE disciplina_sigla = sigla;
+
+	--tabela estrangeira
+	DELETE 	FROM planeja
+		WHERE planeja_disciplina_sigla = sigla;
+
+	--tabela estrangeira
+	DELETE 	FROM ministra
+		WHERE ministra_disciplina_sigla = sigla;
+
+	--tabela estrangeira
+	DELETE 	FROM cursa
+		WHERE cursa_disciplina_sigla = sigla;
+
+	RETURN 1;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION delete_disciplina(text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION delete_disciplina(text)
+	TO dba,admin;
+COMMIT;
+
+BEGIN;
+--Apaga uma relação entre disciplina e módulo.
+CREATE OR REPLACE FUNCTION delete_dis_mod
+(sigla text, modulo text) 
+RETURNS INTEGER AS $$
+BEGIN
+	DELETE 	FROM dis_mod 
+		WHERE	disc_mod_disciplina_sigla = sigla AND
+			disc_mod_modulo_nome = modulo;
+
+	RETURN 1;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION delete_dis_mod(text,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION delete_dis_mod(text,text)
+	TO dba,admin;
+COMMIT;
+
+BEGIN;
+--Apaga uma relação entre trilha e currículo.
+CREATE OR REPLACE FUNCTION delete_cur_tril
+(sigla text, nome text) 
+RETURNS INTEGER AS $$
+BEGIN
+	DELETE 	FROM cur_tril
+		WHERE 	cur_tril_trilha_nome = nome AND
+			cur_tril_curriculo_sigla = sigla;
+
+	RETURN 1;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION delete_cur_tril(text,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION delete_cur_tril(text,text)
+	TO dba,admin;
+COMMIT;
+
+BEGIN;
+-- Apaga uma bibliografia de uma disciplina.
+CREATE OR REPLACE FUNCTION delete_disc_biblio
+(sigla text) 
+RETURNS INTEGER AS $$
+BEGIN
+	DELETE 	FROM 	disciplina_biblio
+		WHERE 	disc_biblio_disciplina_sigla = sigla;
+
+	RETURN 1;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION delete_disc_biblio(text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION delete_disc_biblio(text)
+	TO dba,admin;
+COMMIT;
+
+BEGIN;
+--Apaga um extra requisito de uma trilha.
+CREATE OR REPLACE FUNCTION delete_trilha_requisito
+(trilha text, requisito text) 
+RETURNS INTEGER AS $$
+BEGIN
+	DELETE 	FROM 	trilha_extrareqs
+		WHERE 	tril_extrareqs_trilha_nome = trilha AND
+			tril_extrareqs_requisito = requisito;
+
+	RETURN 1;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION delete_trilha_requisito(text,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION delete_trilha_requisito(text,text)
+	TO dba,admin;
+COMMIT;
+
+BEGIN;
+--Apaga um extra requisito de uma trilha usando id.
+CREATE OR REPLACE FUNCTION delete_trilha_requisito_by_id
+(id INTEGER) 
+RETURNS INTEGER AS $$
+BEGIN
+	DELETE 	FROM 	trilha_extrareqs
+		WHERE 	tril_extrareqs_id = id;
+
+	RETURN 1;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION delete_trilha_requisito_by_id(INTEGER)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION delete_trilha_requisito_by_id(INTEGER)
+	TO dba,admin;
+COMMIT;
+
+BEGIN;
+--Apaga um extra requisito de uma disciplina.
+CREATE OR REPLACE FUNCTION delete_disciplina_requisito
+(sigla text, requisito text) 
+RETURNS INTEGER AS $$
+BEGIN
+	DELETE 	FROM 	disciplina_requisitos
+		WHERE 	disc_reqs_disciplina_sigla = sigla AND
+			disc_reqs_disciplina_requisito = requisito;
+
+	RETURN 1;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION delete_disciplina_requisito(text,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION delete_disciplina_requisito(text,text)
+	TO dba,admin;
+COMMIT;
+
+-------- RETRIEVAL TYPE FUNCTIONS ------------
+BEGIN;
+-- retorna todos os curriculos
+CREATE OR REPLACE FUNCTION return_all_curriculos()
+RETURNS TABLE(	
+	curriculo_sigla			TEXT,
+	curriculo_unidade		TEXT,
+	curriculo_nome			TEXT,
+	curriculo_cred_obrig		INTEGER,
+	curriculo_cred_opt_elet		INTEGER,
+	curriculo_cred_opt_liv		INTEGER
+)
+AS $$
+BEGIN
+	RETURN QUERY
+	SELECT * FROM curriculo;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION return_all_curriculos()
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION return_all_curriculos()
+	TO dba,admin;
+COMMIT;
+
+BEGIN;
+-- retorna todas as trilhas
+CREATE OR REPLACE FUNCTION return_all_trilhas()
+RETURNS TABLE(	
+	trilha_nome			TEXT,
+	trilha_descricao		TEXT
+)
+AS $$
+BEGIN
+	RETURN QUERY
+	SELECT * FROM trilha;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION return_all_trilhas()
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION return_all_trilhas()
+	TO dba,admin;
+COMMIT;
+
+BEGIN;
+-- retorna todos os modulos
+CREATE OR REPLACE FUNCTION return_all_modulos()
+RETURNS TABLE(	
+	modulo_nome			TEXT,
+	modulo_descricao		TEXT,
+	modulo_trilha_nome		TEXT
+)
+AS $$
+BEGIN
+	RETURN QUERY
+	SELECT * FROM modulo;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION return_all_modulos()
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION return_all_modulos()
+	TO dba,admin;
+COMMIT;
+
+BEGIN;
+-- retorna todas as disciplinas
+CREATE OR REPLACE FUNCTION return_all_disciplinas()
+RETURNS TABLE(	
+	disciplina_sigla		TEXT,
+	disciplina_unidade		TEXT,
+	disciplina_nome			TEXT,
+	disciplina_cred_aula		INTEGER,
+	disciplina_cred_trabalho	INTEGER
+)
+AS $$
+BEGIN
+	RETURN QUERY
+	SELECT * FROM disciplina;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION return_all_disciplinas()
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION return_all_disciplinas()
+	TO dba,admin;
+COMMIT;
+
+BEGIN;
+-- retorna todas os cur_tril 
+CREATE OR REPLACE FUNCTION return_all_cur_tril()
+RETURNS TABLE(	
+	cur_tril_curriculo_sigla	TEXT,
+	cur_tril_trilha_nome		TEXT
+)
+AS $$
+BEGIN
+	RETURN QUERY
+	SELECT * FROM cur_tril;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION return_all_cur_tril()
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION return_all_cur_tril()
+	TO dba,admin;
+COMMIT;
+
+BEGIN;
+-- retorna todas os dis_mod
+CREATE OR REPLACE FUNCTION return_all_dis_mod()
+RETURNS TABLE(	
+	disc_mod_disciplina_sigla	TEXT,
+	disc_mod_modulo_nome		TEXT
+)
+AS $$
+BEGIN
+	RETURN QUERY
+	SELECT * FROM dis_mod;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION return_all_dis_mod()
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION return_all_dis_mod()
+	TO dba,admin;
+COMMIT;
+
+BEGIN;
+-- retorna todas os tril_mod
+CREATE OR REPLACE FUNCTION return_all_tril_mod()
+RETURNS TABLE(	
+	tril_mod_trilha_nome		TEXT,
+	tril_mod_modulo_nome		TEXT
+)
+AS $$
+BEGIN
+	RETURN QUERY
+	SELECT modulo_trilha_nome, modulo_nome FROM modulo;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION return_all_tril_mod()
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION return_all_tril_mod()
+	TO dba,admin;
+COMMIT;
+
+BEGIN;
+-- retorna a bibliografia de uma matéria
+CREATE OR REPLACE FUNCTION return_disciplina_biblio(sigla TEXT)
+RETURNS TABLE(	
+	bibliografia TEXT
+)
+AS $$
+BEGIN
+	RETURN QUERY
+	SELECT 	disc_biblio_descricao 
+		FROM disciplina_biblio
+		WHERE disc_biblio_disciplina_sigla = sigla;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION return_disciplina_biblio(text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION return_disciplina_biblio(text)
+	TO dba,admin;
+COMMIT;
+
+BEGIN;
+-- retorna todas as disciplinas que são requisitos para uma outra disciplina
+CREATE OR REPLACE FUNCTION return_disciplina_requisitos(sigla TEXT)
+RETURNS TABLE(	
+	requisitos TEXT
+)
+AS $$
+BEGIN
+	RETURN QUERY
+	SELECT 	disc_reqs_disciplina_requisito
+		FROM disciplina_requisitos
+		WHERE disc_reqs_disciplina_sigla = sigla;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION return_disciplina_requisitos(text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION return_disciplina_requisitos(text)
+	TO dba,admin;
+COMMIT;
+
+BEGIN;
+-- retorna os requisitos de uma trilha
+CREATE OR REPLACE FUNCTION return_trilha_requisitos(sigla TEXT)
+RETURNS TABLE(	
+	requisitos TEXT
+)
+AS $$
+BEGIN
+	RETURN QUERY
+	SELECT 	tril_extrareqs_requisito
+		FROM trilha_extrareqs
+		WHERE tril_extrareqs_trilha_nome = sigla;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION return_trilha_requisitos(text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION return_trilha_requisitos(text)
+	TO dba,admin;
+COMMIT;

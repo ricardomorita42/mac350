@@ -403,7 +403,7 @@ GRANT EXECUTE ON FUNCTION return_all_services()
 COMMIT;
 
 BEGIN;
--- retorna todos os servicos do db 
+-- retorna todos os us_pf
 CREATE OR REPLACE FUNCTION return_all_us_pf()
 RETURNS TABLE(usuarios text, perfis text) AS $$
 BEGIN
@@ -418,7 +418,7 @@ GRANT EXECUTE ON FUNCTION return_all_us_pf()
 COMMIT;
 
 BEGIN;
--- retorna todos os servicos do db 
+-- retorna todos os pf_se 
 CREATE OR REPLACE FUNCTION return_all_pf_se()
 RETURNS TABLE(perfis text, servicos text) AS $$
 BEGIN

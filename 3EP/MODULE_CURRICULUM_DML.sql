@@ -2,16 +2,16 @@
 SET ROLE dba;
 
 ----!! Inserting curriculum !!----
-select * from insert_curriculum('BCC' ,'IME','Bacharelado em Ciencia da Computacao'		,111,52,24);
-select * from insert_curriculum('BMAT','IME','Bacharelado em Matematica'			,111,52,24);
-select * from insert_curriculum('BEST','IME','Bacharelado em Estatistica'			,121,40,20);
-select * from insert_curriculum('LIC' ,'IME','Licenciatura em Matematica'			,110,32,19);
-select * from insert_curriculum('BMA' ,'IME','Bacharelado em Matematica Aplicada '		,150,23,45);
-select * from insert_curriculum('BMAC','IME','Bacharelado em Matematica Aplicada Computacional'	,90 ,22,44);
-select * from insert_curriculum('BES' ,'IME','Bacharelado em Engenharia de Software'		,100,52,14);
-select * from insert_curriculum('BTI' ,'IME','Bacharelado em Tecnologia da Informacao'		,123,22,40);
-select * from insert_curriculum('BS'  ,'IME','Bacharelado em Sistemas'				,91 ,52,50);
-select * from insert_curriculum('BBC' ,'IME','Bacharelado em Biologia Computacional'		,141,22,64);
+select * from insert_curriculo('BCC' ,'IME','Bacharelado em Ciencia da Computacao'		,111,52,24);
+select * from insert_curriculo('BMAT','IME','Bacharelado em Matematica'				,111,52,24);
+select * from insert_curriculo('BEST','IME','Bacharelado em Estatistica'			,121,40,20);
+select * from insert_curriculo('LIC' ,'IME','Licenciatura em Matematica'			,110,32,19);
+select * from insert_curriculo('BMA' ,'IME','Bacharelado em Matematica Aplicada '		,150,23,45);
+select * from insert_curriculo('BMAC','IME','Bacharelado em Matematica Aplicada Computacional'	,90 ,22,44);
+select * from insert_curriculo('BES' ,'IME','Bacharelado em Engenharia de Software'		,100,52,14);
+select * from insert_curriculo('BTI' ,'IME','Bacharelado em Tecnologia da Informacao'		,123,22,40);
+select * from insert_curriculo('BS'  ,'IME','Bacharelado em Sistemas'				,91 ,52,50);
+select * from insert_curriculo('BBC' ,'IME','Bacharelado em Biologia Computacional'		,141,22,64);
 
 ----!! Inserting trilha !!----
 select * from insert_trilha('SIST'	,'Sistemas'			);
