@@ -47,7 +47,11 @@ BEGIN
 	END IF;
 
 	--raise notice 'Value %', idperf;
-	RETURN 1;
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION insert_user(int,text,text,text,text,text)
@@ -88,7 +92,11 @@ BEGIN
 		INSERT into pf_se VALUES ($1,$2);
 	END IF;
 
-	RETURN 1;
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION insert_service(text,text,text)
@@ -105,7 +113,12 @@ RETURNS INTEGER AS $$
 BEGIN
 	INSERT INTO us_pf
 	VALUES ($1,$2,current_date) ON CONFLICT DO NOTHING;
-	RETURN 1;
+
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION insert_user_into_role(text,text)

@@ -1,17 +1,17 @@
 \c modulo_pessoa
 SET ROLE DBA;
-select * from insert_into_role_student(227705861,'BCC');
+select * from insert_into_role_student(227705861,'BCC' );
 select * from insert_into_role_student(386930905,'BMAT');
-select * from insert_into_role_student(859852130,'BCC');
-select * from insert_into_role_student(310554114,'BCC');
-select * from insert_into_role_student(613923368,'BCC');
-select * from insert_into_role_student(311285463,'BCC');
-select * from insert_into_role_student(991002548,'BCC');
-select * from insert_into_role_student(158298846,'BCC');
-select * from insert_into_role_student(761213416,'BCC');
-select * from insert_into_role_student(702391605,'BCC');
-select * from insert_into_role_student(559853740,'BCC');
-select * from insert_into_role_student(994567006,'BCC');
+select * from insert_into_role_student(859852130,'BCC' );
+select * from insert_into_role_student(310554114,'BCC' );
+select * from insert_into_role_student(613923368,'BCC' );
+select * from insert_into_role_student(311285463,'BCC' );
+select * from insert_into_role_student(991002548,'BCC' );
+select * from insert_into_role_student(158298846,'BCC' );
+select * from insert_into_role_student(761213416,'BCC' );
+select * from insert_into_role_student(702391605,'BCC' );
+select * from insert_into_role_student(559853740,'BCC' );
+select * from insert_into_role_student(994567006,'BCC' );
 select * from insert_into_role_student(230057892,'BMAT');
 select * from insert_into_role_student(961065297,'BMAT');
 select * from insert_into_role_student(162109146,'BMAT');

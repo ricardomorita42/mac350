@@ -36,7 +36,7 @@ CREATE TABLE professor (
 	prof_nusp		INTEGER,
 	prof_unidade		TEXT NOT NULL,
 
-	CONSTRAINT pk_professor	PRIMARY KEY (prof_nusp,prof_unidade),
+	CONSTRAINT pk_professor	PRIMARY KEY (prof_nusp),
 	CONSTRAINT sk_professor UNIQUE (prof_nusp),
 	CONSTRAINT pf_professor FOREIGN KEY (prof_nusp)
        		REFERENCES pessoa (nusp)
@@ -49,7 +49,7 @@ CREATE TABLE administrador (
 	admin_nusp		INTEGER,
 	admin_unidade		TEXT NOT NULL,
 
-	CONSTRAINT pk_admin PRIMARY KEY (admin_nusp, admin_unidade),
+	CONSTRAINT pk_admin PRIMARY KEY (admin_nusp),
 	CONSTRAINT sk_admin UNIQUE (admin_nusp),
 	CONSTRAINT pf_admin FOREIGN KEY (admin_nusp)
        		REFERENCES pessoa (nusp)
@@ -61,6 +61,7 @@ CREATE TABLE administrador (
 --DROP TABLE IF EXISTS cursa CASCADE;
 CREATE TABLE cursa (
 	cursa_aluno_nusp		INTEGER NOT NULL,
+	cursa_aluno_curso		TEXT NOT NULL,
 	cursa_prof_nusp			INTEGER NOT NULL,
 	cursa_disciplina_sigla		TEXT NOT NULL,
 	cursa_data			date NOT NULL,
@@ -68,7 +69,9 @@ CREATE TABLE cursa (
 	cursa_presenca			NUMERIC NOT NULL,
 
 	CONSTRAINT pk_cursa 
-		PRIMARY KEY (cursa_aluno_nusp,cursa_prof_nusp,cursa_disciplina_sigla,cursa_data),
+		PRIMARY KEY (	cursa_aluno_nusp,cursa_aluno_curso,
+				cursa_prof_nusp, cursa_disciplina_sigla,
+				cursa_data),
 	CONSTRAINT fk_cursa1 FOREIGN KEY (cursa_aluno_nusp)
 		REFERENCES aluno (aluno_nusp)
 		ON DELETE CASCADE

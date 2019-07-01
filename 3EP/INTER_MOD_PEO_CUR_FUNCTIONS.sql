@@ -88,11 +88,13 @@ BEGIN
 		ELSE
 			INSERT INTO administra VALUES ($1,$2,$3);
 		END IF;
-
-	ELSE RETURN -1;
 	END IF;
 
-	RETURN 1;
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION insert_administra(int,text,date)
@@ -115,9 +117,13 @@ DECLARE
 BEGIN
 	IF (prof_ok = 1 AND disc_ok =1) THEN
 		INSERT INTO ministra VALUES ($1,$2);
-	ELSE RETURN -1;
 	END IF;
-	RETURN 1;
+
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION insert_ministra(int,text)
@@ -140,9 +146,13 @@ DECLARE
 BEGIN
 	IF (aluno_ok = 1 AND disc_ok = 1) THEN
 		INSERT INTO planeja VALUES ($1,$2);
-	ELSE RETURN -1;
 	END IF;
-	RETURN 1;
+
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION insert_planeja(int,text)
@@ -170,10 +180,13 @@ BEGIN
 			administra_curriculo_sigla = new_curriculo
 		WHERE	administra_nusp = old_nusp AND
 			administra_curriculo_sigla = old_curriculo;
-	ELSE RETURN -1;
 	END IF;
 
-	RETURN 1;
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION update_administra(int,text,int,text)
@@ -217,10 +230,13 @@ BEGIN
 			ministra_disciplina_sigla = new_disciplina
 		WHERE	ministra_prof_nusp = old_nusp AND
 			ministra_disciplina_sigla = old_disciplina;
-	ELSE RETURN -1;
 	END IF;
 
-	RETURN 1;
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION update_ministra(int,text,int,text)
@@ -247,10 +263,13 @@ BEGIN
 			planeja_disciplina_sigla = new_disciplina
 		WHERE	planeja_aluno_nusp = old_nusp AND
 			planeja_disciplina_sigla = old_disciplina;
-	ELSE RETURN -1;
 	END IF;
 
-	RETURN 1;
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION update_planeja(int,text,int,text)

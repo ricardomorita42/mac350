@@ -15,12 +15,19 @@ DROP FUNCTION insert_into_role_admin;
 DROP FUNCTION insert_cursa;
 DROP FUNCTION insert_oferecimento;
 
+DROP FUNCTION update_pessoa_nusp;
 DROP FUNCTION update_pessoa_nome;
 DROP FUNCTION update_pessoa_datanasc;
 DROP FUNCTION update_pessoa_sexo;
 DROP FUNCTION update_aluno_curso;
 DROP FUNCTION update_prof_unidade;
+DROP FUNCTION update_oferecimento;
 DROP FUNCTION update_ofer_data;
 DROP FUNCTION update_cursa_nota;
 DROP FUNCTION update_cursa_presenca;
 DROP FUNCTION update_planeja_disciplina;
+
+DROP FUNCTION delete_pessoa;
+DROP FUNCTION delete_aluno;
+DROP FUNCTION delete_professor;
+DROP FUNCTION delete_administrador;

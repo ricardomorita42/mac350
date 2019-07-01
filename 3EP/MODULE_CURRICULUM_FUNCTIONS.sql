@@ -215,9 +215,12 @@ BEGIN
 		UPDATE modulo
 		SET modulo_trilha_nome = new_trilha
 		WHERE modulo_nome = mod_nome;
+	END IF;
 
+	IF FOUND THEN
 		RETURN 1;
-	ELSE RETURN -1;
+	ELSE
+		RETURN -1;
 	END IF;
 END;
 $$ LANGUAGE plpgsql;

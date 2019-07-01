@@ -55,6 +55,18 @@ CREATE USER MAPPING FOR dba
 	SERVER curriculo_server
 	OPTIONS (user 'dba', password 'dba1234');
 
+CREATE USER MAPPING FOR admin
+	SERVER curriculo_server
+	OPTIONS (user 'admin', password 'admin');
+
+CREATE USER MAPPING FOR professor
+	SERVER curriculo_server
+	OPTIONS (user 'prof', password 'prof');
+
+CREATE USER MAPPING FOR aluno
+	SERVER curriculo_server
+	OPTIONS (user 'aluno', password 'aluno');
+
 CREATE FOREIGN TABLE disciplina(
 	disciplina_sigla		TEXT,
 	disciplina_unidade		TEXT,
@@ -146,10 +158,13 @@ BEGIN
 		INSERT INTO us_pf 
 			VALUES (var_login,'student',current_date)
 			ON CONFLICT DO NOTHING;
-
-	ELSE RETURN -1;
 	END IF;
-	RETURN 1;
+
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION insert_into_role_student(int,text)
@@ -191,10 +206,13 @@ BEGIN
 		INSERT INTO us_pf 
 			VALUES (var_login,'teacher',current_date)
 			ON CONFLICT DO NOTHING;
-
-	ELSE RETURN -1;
 	END IF;
-	RETURN 1;
+
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION insert_into_role_teacher(int,text)
@@ -236,10 +254,13 @@ BEGIN
 		INSERT INTO us_pf 
 			VALUES (var_login,'admin',current_date)
 			ON CONFLICT DO NOTHING;
-
-	ELSE RETURN -1;
 	END IF;
-	RETURN 1;
+
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION insert_into_role_admin(int,text)
@@ -250,7 +271,8 @@ COMMIT;
 
 BEGIN;
 /* Cria um oferecimento de uma disciplina por um professor.
-Checamos se a este oferecimento está na tabela ministra.*/
+Checamos se a este oferecimento está na tabela ministra. Também se verifica
+se a disciplina existe.*/
 CREATE OR REPLACE FUNCTION insert_oferecimento
 (ofer_prof_nusp int, ofer_disciplina_sigla text, ofer_ministra_data date default NULL)
 RETURNS INTEGER AS $$
@@ -260,8 +282,12 @@ DECLARE
 	       		FROM 	ministra
 			WHERE 	ministra_prof_nusp  = ofer_prof_nusp AND
 				ministra_disciplina_sigla = ofer_disciplina_sigla);
+	disciplina_ok INTEGER := (
+		SELECT count(*)
+	       		FROM 	disciplina	
+			WHERE 	disciplina_sigla = ofer_disciplina_sigla);
 BEGIN
-	IF (ministra_ok = 1) THEN
+	IF (ministra_ok = 1 AND disciplina_ok = 1) THEN
 		IF $3 IS NULL THEN
 			INSERT INTO oferecimento VALUES ($1,$2,current_date);
 		ELSE
@@ -288,7 +314,7 @@ Primeiro verifica-se se a disciplina existe. Depois, se o aluno tem esta materia
 no planejamento. Depois é necessária uma checagem em oferecimento se 
 o professor e a disciplina estao sendo oferecidos. */
 CREATE OR REPLACE FUNCTION insert_cursa
-(cursa_aluno_nusp int, cursa_prof_nusp int, cursa_disciplina_sigla text,
+(cursa_aluno_nusp int, cursa_aluno_curso text, cursa_prof_nusp int, cursa_disciplina_sigla text,
 cursa_data date, cursa_nota numeric, cursa_presenca numeric)
 RETURNS INTEGER AS $$
 DECLARE
@@ -306,15 +332,19 @@ DECLARE
 			AND cursa_prof_nusp = ofer_prof_nusp);
 BEGIN
 	IF (disciplina_ok = 1 AND planeja_ok = 1 AND oferecimento_ok = 1) THEN
-		INSERT INTO cursa VALUES ($1,$2,$3,$4,$5,$6);
+		INSERT INTO cursa VALUES ($1,$2,$3,$4,$5,$6,$7);
+	END IF;
+
+	IF FOUND THEN
 		RETURN 1;
-	ELSE RETURN -1;
+	ELSE
+		RETURN -1;
 	END IF;
 END;
 $$ LANGUAGE plpgsql;
-REVOKE ALL ON FUNCTION insert_cursa(int,int,text,date,numeric,numeric)
+REVOKE ALL ON FUNCTION insert_cursa(int,text,int,text,date,numeric,numeric)
 	FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION insert_cursa(int,int,text,date,numeric,numeric)
+GRANT EXECUTE ON FUNCTION insert_cursa(int,text,int,text,date,numeric,numeric)
 	TO dba;
 COMMIT;
 
@@ -341,24 +371,28 @@ BEGIN
 		WHERE 	pe_us_nusp = old_nusp;
 	END IF;
 
+	--se a pessoa é aluna, atualiza nusp em planeja
 	if (aluno_ok = 1) THEN
 		UPDATE  planeja
 		SET 	planeja_aluno_nusp = new_nusp
 		WHERE 	planeja_aluno_nusp = old_nusp;
 	END IF;
 
+	--se pessoa é professora, atualiza nusp em ministra
 	if (prof_ok = 1) THEN
 		UPDATE  ministra
 		SET 	ministra_prof_nusp = new_nusp
 		WHERE 	ministra_prof_nusp = old_nusp;
 	END IF;
 
+	--se pessoa é admin, atualiza nusp em administra
 	if (admin_ok = 1) THEN
 		UPDATE  administra
 		SET 	administra_nusp	= new_nusp
 		WHERE 	administra_nusp = old_nusp;
 	END IF;
 
+	--atualiza o nusp da pessoa
 	UPDATE  pessoa 
 	SET 	nusp = new_nusp
 	WHERE 	nusp = old_nusp;
@@ -427,41 +461,6 @@ GRANT EXECUTE ON FUNCTION update_pessoa_sexo(int,varchar(1))
 COMMIT;
 
 BEGIN;
---Atualiza o nusp ligado a um aluno
-CREATE OR REPLACE FUNCTION update_aluno_nusp
-(old_nusp int, new_nusp int)
-RETURNS INTEGER AS $$
-DECLARE
-	planeja_ok INTEGER := (	SELECT count(*) FROM planeja
-				WHERE planeja_aluno_nusp = old_nusp);
-	nusp_ok INTEGER := (	SELECT count(*) FROM pessoa
-				WHERE nusp = new_nusp);
-BEGIN
-	-- foreign table nao checa pessoa, entao temos que checar.
-	IF (planeja_ok = 1 AND nusp_ok = 1) THEN
-		UPDATE planeja
-		SET planeja_aluno_nusp = new_nusp
-		WHERE planeja_aluno_nusp = old_nusp;
-	END IF;
-	
-	UPDATE 	aluno
-	SET 	aluno_nusp= new_nusp
-	WHERE 	aluno_nusp = old_nusp;
-
-	IF FOUND THEN
-		RETURN 1;
-	ELSE
-		RETURN -1;
-	END IF;
-	END;
-$$ LANGUAGE plpgsql;
-REVOKE ALL ON FUNCTION update_aluno_nusp(int,int)
-	FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION update_aluno_nusp(int,int)
-	TO dba;
-COMMIT;
-
-BEGIN;
 --Atualiza o curso ligado a um aluno
 CREATE OR REPLACE FUNCTION update_aluno_curso
 (INOUT nusp int, INOUT new_curso text)
@@ -478,41 +477,6 @@ GRANT EXECUTE ON FUNCTION update_aluno_curso(int,text)
 COMMIT;
 
 BEGIN;
---Atualiza o nusp ligado a um professor
-CREATE OR REPLACE FUNCTION update_prof_nusp
-(old_nusp int, new_nusp int)
-RETURNS INTEGER AS $$
-DECLARE
-	ministra_ok INTEGER := (SELECT count(*) FROM ministra
-				WHERE ministra_prof_nusp = old_nusp);
-	nusp_ok INTEGER := (	SELECT count(*) FROM pessoa
-				WHERE nusp = new_nusp);
-BEGIN
-	-- foreign table nao checa pessoa, entao temos que checar.
-	IF (ministra_ok = 1 AND nusp_ok = 1) THEN
-		UPDATE 	ministra
-		SET 	ministra_prof_nusp = new_nusp
-		WHERE 	ministra_prof_nusp = old_nusp;
-	END IF;
-	
-	UPDATE 	professor
-	SET 	prof_nusp = new_nusp
-	WHERE	prof_nusp = old_nusp;
-
-	IF FOUND THEN
-		RETURN 1;
-	ELSE
-		RETURN -1;
-	END IF;
-	END;
-$$ LANGUAGE plpgsql;
-REVOKE ALL ON FUNCTION update_prof_nusp(int,int)
-	FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION update_prof_nusp(int,int)
-	TO dba;
-COMMIT;
-
-BEGIN;
 --Atualiza a unidade ligada à um professor
 CREATE OR REPLACE FUNCTION update_prof_unidade
 (INOUT nusp int, INOUT new_unidade text)
@@ -526,41 +490,6 @@ REVOKE ALL ON FUNCTION update_prof_unidade(int,text)
 	FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION update_prof_unidade(int,text)
 	TO dba,professor;
-COMMIT;
-
-BEGIN;
---Atualiza o nusp ligado a um admin
-CREATE OR REPLACE FUNCTION update_admin_nusp
-(old_nusp int, new_nusp int)
-RETURNS INTEGER AS $$
-DECLARE
-	administra_ok INTEGER := (SELECT count(*) FROM administra
-				WHERE administra_nusp = old_nusp);
-	nusp_ok INTEGER := (	SELECT count(*) FROM pessoa
-				WHERE nusp = new_nusp);
-BEGIN
-	-- foreign table nao checa pessoa, entao temos que checar.
-	IF (administra_ok = 1 AND nusp_ok = 1) THEN
-		UPDATE 	administra
-		SET 	administra_nusp = new_nusp
-		WHERE 	administra_nusp = old_nusp;
-	END IF;
-	
-	UPDATE 	administrador
-	SET 	admin_nusp = new_nusp
-	WHERE 	admin_nusp = old_nusp;
-
-	IF FOUND THEN
-		RETURN 1;
-	ELSE
-		RETURN -1;
-	END IF;
-	END;
-$$ LANGUAGE plpgsql;
-REVOKE ALL ON FUNCTION update_admin_nusp(int,int)
-	FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION update_admin_nusp(int,int)
-	TO dba;
 COMMIT;
 
 BEGIN;
@@ -601,40 +530,44 @@ COMMIT;
 BEGIN;
 -- Atualiza uma nota em cursa. 
 CREATE OR REPLACE FUNCTION update_cursa_nota
-(INOUT al_nusp int, INOUT prof_nusp int, INOUT disc_sigla text,
-INOUT new_nota NUMERIC)
+(INOUT al_nusp int, INOUT al_curso text, INOUT prof_nusp int,
+INOUT disc_sigla text,INOUT data date, INOUT new_nota NUMERIC)
 AS $$
 	UPDATE cursa 
 	SET cursa_nota = new_nota
 	WHERE 	cursa_aluno_nusp = al_nusp AND
+		cursa_aluno_curso = al_curso AND
 		cursa_prof_nusp = prof_nusp AND
+		cursa_data = data AND
 	       	cursa_disciplina_sigla = disc_sigla	
-	RETURNING cursa_aluno_nusp,cursa_prof_nusp,
-		cursa_disciplina_sigla, new_nota
+	RETURNING cursa_aluno_nusp,cursa_aluno_curso,cursa_prof_nusp,
+		cursa_disciplina_sigla, cursa_data, cursa_nota
 $$ LANGUAGE sql;
-REVOKE ALL ON FUNCTION update_cursa_nota(int,int,text,numeric)
+REVOKE ALL ON FUNCTION update_cursa_nota(int,text,int,text,date,numeric)
 	FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION update_cursa_nota(int,int,text,numeric)
+GRANT EXECUTE ON FUNCTION update_cursa_nota(int,text,int,text,date,numeric)
 	TO dba,professor;
 COMMIT;
 
 BEGIN;
 -- Atualiza uma presença em cursa. 
 CREATE OR REPLACE FUNCTION update_cursa_presenca
-(INOUT al_nusp int, INOUT prof_nusp int, INOUT disc_sigla text,
-INOUT new_presenca NUMERIC)
+(INOUT al_nusp int, INOUT al_curso text, INOUT prof_nusp int,
+INOUT disc_sigla text,INOUT data date, INOUT new_presenca NUMERIC)
 AS $$
 	UPDATE cursa 
 	SET cursa_presenca = new_presenca
 	WHERE 	cursa_aluno_nusp = al_nusp AND
+		cursa_aluno_curso = al_curso AND
 		cursa_prof_nusp = prof_nusp AND
+		cursa_data = data AND
 	       	cursa_disciplina_sigla = disc_sigla	
-	RETURNING cursa_aluno_nusp,cursa_prof_nusp,
-		cursa_disciplina_sigla, new_presenca
+	RETURNING cursa_aluno_nusp,cursa_aluno_curso,cursa_prof_nusp,
+		cursa_disciplina_sigla, cursa_data, cursa_presenca
 $$ LANGUAGE sql;
-REVOKE ALL ON FUNCTION update_cursa_presenca(int,int,text,numeric)
+REVOKE ALL ON FUNCTION update_cursa_presenca(int,text,int,text,date,numeric)
 	FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION update_cursa_presenca(int,int,text,numeric)
+GRANT EXECUTE ON FUNCTION update_cursa_presenca(int,text,int,text,date,numeric)
 	TO dba,professor;
 COMMIT;
 
@@ -645,15 +578,24 @@ CREATE OR REPLACE FUNCTION update_oferecimento
  new_nusp int, new_disciplina text)
 RETURNS INTEGER AS $$
 DECLARE
-	/*Checando se novo nusp e disciplina esta em ministra.
-	Lembrando que oferecimento é feito baseado no que está
-	em ministra, independente do fato de que a disciplina
-	é valida. */
+	/*Checando se novo nusp e disciplina esta em ministra e 
+	se a disciplina é valida */
 	ministra_ok INTEGER := (SELECT count(*) FROM ministra
 				WHERE 	ministra_prof_nusp = new_nusp AND
 					ministra_disciplina_sigla = new_disciplina);
+
+	/* Teoricamente se existe entrada em ministra entao new_usp e new_disciplina
+	 sao validos. Mas por hábito vou checar se existem pois lidando com foreign
+	 tables o SGDB não consegue garantir integridade.*/
+	disciplina_ok INTEGER := (
+		SELECT count(*) FROM disciplina 
+		WHERE disciplina_sigla = new_disciplina);
+
+	professor_ok INTEGER := (
+		SELECT count(*) FROM professor
+		WHERE prof_nusp = new_nusp);
 BEGIN
-	IF (ministra_ok = 1) THEN 
+	IF (ministra_ok = 1 AND disciplina_ok = 1) THEN 
 		UPDATE oferecimento
 		SET 	ofer_prof_nusp = new_nusp,
 			ofer_disciplina_sigla = new_disciplina
@@ -675,7 +617,7 @@ GRANT EXECUTE ON FUNCTION update_oferecimento(int,text,int,text)
 COMMIT;
 
 BEGIN;
--- Atualiza um oferecimento
+-- Atualiza a data de um oferecimento
 CREATE OR REPLACE FUNCTION update_oferecimento_data
 (nusp int, disciplina text, new_data date)
 RETURNS INTEGER AS $$
@@ -697,28 +639,57 @@ REVOKE ALL ON FUNCTION update_oferecimento(int,text,int,text)
 GRANT EXECUTE ON FUNCTION update_oferecimento(int,text,int,text)
 	TO dba,professor;
 COMMIT;
+
 -------- DELETE TYPE FUNCTIONS ------------
 BEGIN;
 /*Apaga uma pessoa. A ligação entre pessoa e usuário 
 também vai para o vazio, além de reverter o usuário
 para que ela tenha só o perfil de guest.*/
-CREATE OR REPLACE FUNCTION delete_from_pessoa
+CREATE OR REPLACE FUNCTION delete_pessoa
 (num_usp int)
 RETURNS INTEGER AS $$
 DECLARE
-	pe_us_ok INTEGER := (	SELECT count(*) FROM remote_ace_pes
-				WHERE num_usp = ace_pes_nusp);
+	pe_us_ok INTEGER := (	SELECT count(*) FROM pe_us
+				WHERE pe_us_nusp = num_usp);
+	aluno_ok INTEGER := (	SELECT count(*) FROM aluno
+				WHERE aluno_nusp = num_usp);
+	prof_ok INTEGER := (	SELECT count(*) FROM professor
+				WHERE prof_nusp = num_usp);
+	admin_ok INTEGER := (	SELECT count(*) FROM administrador
+				WHERE admin_nusp = num_usp);
 	var_login text;
 	request text;
 BEGIN
 	--Checa se pessoa tem conta de usuario
 	IF (pe_us_ok = 1) THEN
 		--descobre o login deste usuário
-		SELECT  ace_pes_login 
-			FROM remote_ace_pes
-			WHERE ace_pes_nusp = num_usp
+		SELECT  pe_us_user_login 
+			FROM pe_us
+			WHERE pe_us_nusp = num_usp
 			INTO var_login;
+		--apagar perfis de aluno, admin ou professor do usuario
+		DELETE	FROM us_pf
+			WHERE us_pf_user_login = var_login AND (
+			us_pf_perfil_nome = 'student' OR
+			us_pf_perfil_nome = 'teacher' OR
+			us_pf_perfil_nome = 'admin');
+	END IF;
+	--se a pessoa é aluna, deleta nusp em planeja
+	if (aluno_ok = 1) THEN
+		DELETE FROM  planeja
+		WHERE 	planeja_aluno_nusp = num_usp;
+	END IF;
 
+	--se pessoa é professora, deleta nusp em ministra
+	if (prof_ok = 1) THEN
+		DELETE FROM ministra
+		WHERE 	ministra_prof_nusp = num_usp;
+	END IF;
+
+	--se pessoa é admin, deleta nusp em administra
+	if (admin_ok = 1) THEN
+		DELETE FROM administra
+		WHERE 	administra_nusp = num_usp;
 	END IF;
 	-- cascade nas outras tabelas de pessoa
 	DELETE FROM pessoa WHERE nusp = num_usp;
@@ -730,19 +701,39 @@ BEGIN
 	END IF;
 END;
 $$ LANGUAGE plpgsql;
-REVOKE ALL ON FUNCTION delete_from_pessoa(int)
+REVOKE ALL ON FUNCTION delete_pessoa(int)
 	FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION delete_from_pessoa(int)
+GRANT EXECUTE ON FUNCTION delete_pessoa(int)
 	TO dba;
 COMMIT;
 
 BEGIN;
 /* Apaga a entrada em aluno ligado à uma pessoa. As relações em
-cursa e planeja também se vão.*/
-CREATE OR REPLACE FUNCTION delete_from_aluno
+cursa e planeja também se vão, além do perfil student do usuario.*/
+CREATE OR REPLACE FUNCTION delete_aluno
 (num_usp int, curso text)
 RETURNS INTEGER AS $$
+DECLARE
+	pe_us_ok INTEGER := (	SELECT count(*) FROM pe_us
+				WHERE pe_us_nusp = num_usp);
+	var_login text;
 BEGIN
+	IF (pe_us_ok = 1) THEN
+		--descobre o login deste usuário
+		SELECT  pe_us_user_login 
+			FROM pe_us
+			WHERE pe_us_nusp = num_usp
+			INTO var_login;
+		--apagar perfil de aluno do usuario
+		DELETE	FROM us_pf
+			WHERE us_pf_user_login = var_login AND
+			us_pf_perfil_nome = 'student';
+	END IF;
+
+	--Apaga os planeja deste aluno
+	DELETE FROM planeja
+	WHERE 	planeja_aluno_nusp = num_usp;
+
 	DELETE 	FROM aluno
 		WHERE 	aluno_nusp = num_usp AND
 			aluno_curso = curso;
@@ -754,19 +745,40 @@ BEGIN
 	END IF;
 END;
 $$ LANGUAGE plpgsql;
-REVOKE ALL ON FUNCTION delete_from_aluno(int,text)
+REVOKE ALL ON FUNCTION delete_aluno(int,text)
 	FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION delete_from_aluno(int,text)
+GRANT EXECUTE ON FUNCTION delete_aluno(int,text)
 	TO dba;
 COMMIT;
 
 BEGIN;
 /* Apaga a entrada em professor ligado à uma pessoa. As relações
 em ministra e oferecimento também se vão. */
-CREATE OR REPLACE FUNCTION delete_from_professor
+CREATE OR REPLACE FUNCTION delete_professor
 (num_usp int, unidade text)
 RETURNS INTEGER AS $$
+DECLARE
+	pe_us_ok INTEGER := (	SELECT count(*) FROM pe_us
+				WHERE pe_us_nusp = num_usp);
+	var_login text;
 BEGIN
+	IF (pe_us_ok = 1) THEN
+		--descobre o login deste usuário
+		SELECT  pe_us_user_login 
+			FROM pe_us
+			WHERE pe_us_nusp = num_usp
+			INTO var_login;
+		--apagar perfil de professor do usuario
+		DELETE	FROM us_pf
+			WHERE us_pf_user_login = var_login AND
+			us_pf_perfil_nome = 'teacher';
+	END IF;
+
+	--Apaga os ministra deste professor
+	DELETE FROM ministra 
+	WHERE 	ministra_prof_nusp = num_usp;
+
+	--Apaga o professor
 	DELETE 	FROM professor
 		WHERE 	prof_nusp = num_usp AND
 			prof_unidade = unidade;
@@ -778,20 +790,41 @@ BEGIN
 	END IF;
 END;
 $$ LANGUAGE plpgsql;
-REVOKE ALL ON FUNCTION delete_from_professor(int,text)
+REVOKE ALL ON FUNCTION delete_professor(int,text)
 	FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION delete_from_professor(int,text)
+GRANT EXECUTE ON FUNCTION delete_professor(int,text)
 	TO dba;
 COMMIT;
 
 BEGIN;
 /* Apaga a entrada em adminstrador ligado à uma pessoa. As relações
 em ministra e oferecimento também se vão. */
-CREATE OR REPLACE FUNCTION delete_from_administrador
+CREATE OR REPLACE FUNCTION delete_administrador
 (num_usp int, unidade text)
 RETURNS INTEGER AS $$
+DECLARE
+	pe_us_ok INTEGER := (	SELECT count(*) FROM pe_us
+				WHERE pe_us_nusp = num_usp);
+	var_login text;
 BEGIN
-	DELETE 	FROM administrador
+	IF (pe_us_ok = 1) THEN
+		--descobre o login deste usuário
+		SELECT  pe_us_user_login 
+			FROM pe_us
+			WHERE pe_us_nusp = num_usp
+			INTO var_login;
+		--apagar perfil de professor do usuario
+		DELETE	FROM us_pf
+			WHERE us_pf_user_login = var_login AND
+			us_pf_perfil_nome = 'admin';
+	END IF;
+
+	--Apaga os administra deste admin
+	DELETE FROM administra 
+	WHERE 	administra_nusp = num_usp;
+
+	--Apaga o admin
+	DELETE 	FROM admin
 		WHERE 	admin_nusp = num_usp AND
 			admin_unidade = unidade;
 
@@ -802,8 +835,62 @@ BEGIN
 	END IF;
 END;
 $$ LANGUAGE plpgsql;
-REVOKE ALL ON FUNCTION delete_from_administrador(int,text)
+REVOKE ALL ON FUNCTION delete_administrador(int,text)
 	FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION delete_from_administrador(int,text)
+GRANT EXECUTE ON FUNCTION delete_administrador(int,text)
 	TO dba;
 COMMIT;
+
+BEGIN;
+-- Apaga um oferecimento de uma disciplina por um professor numa certa data
+-- Nao mexe em cursa porque senao o aluno fica perdendo disciplinas
+CREATE OR REPLACE FUNCTION delete_oferecimento
+(num_usp int, sigla text, data date) 
+RETURNS INTEGER AS $$
+BEGIN
+	DELETE 	FROM oferecimento
+		WHERE 	ofer_disciplina_sigla = sigla AND
+			ofer_prof_nusp = num_usp AND
+			ofer_ministra_data = data;
+
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION delete_oferecimento(int,text,date)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION delete_oferecimento(int,text,date)
+	TO dba;
+COMMIT;
+
+BEGIN;
+-- Apaga um cursa
+CREATE OR REPLACE FUNCTION delete_cursa
+(al_nusp int, al_curso text, prof_nusp int, disc_sigla text,
+ data date)
+RETURNS INTEGER AS $$
+BEGIN
+	DELETE 	FROM cursa
+		WHERE 	cursa_aluno_nusp = al_nusp AND
+			cursa_aluno_curso = al_curso AND
+			cursa_prof_nusp  = prof_nusp AND
+			cursa_disciplina_sigla= disc_sigla AND
+			cursa_data = data;
+
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION delete_cursa(int,text,int,text,date)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION delete_cursa(int,text,int,text,date)
+	TO dba;
+COMMIT;
+
+-------- RETRIEVAL TYPE FUNCTIONS ------------

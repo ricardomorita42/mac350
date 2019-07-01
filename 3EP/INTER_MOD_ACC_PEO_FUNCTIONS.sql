@@ -52,10 +52,13 @@ BEGIN
 	IF (usuario_ok =1 AND pessoa_ok = 1) THEN
 		INSERT INTO pe_us
 		VALUES ($1,$2);
-	ELSE RETURN -1;
 	END IF;
 
-	RETURN 1;
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION insert_pe_us(int,text)
@@ -85,11 +88,13 @@ BEGIN
 			pe_us_user_login = new_login
 		WHERE	pe_us_nusp = old_nusp OR
 			pe_us_user_login = old_login;
+	END IF;
+
+	IF FOUND THEN
+		RETURN 1;
 	ELSE
 		RETURN -1;
 	END IF;
-
-	RETURN 1;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION update_pe_us(int,text,int,text)
