@@ -63,11 +63,12 @@ CREATE TABLE cursa (
 	cursa_aluno_nusp		INTEGER NOT NULL,
 	cursa_prof_nusp			INTEGER NOT NULL,
 	cursa_disciplina_sigla		TEXT NOT NULL,
+	cursa_data			date NOT NULL,
 	cursa_nota			NUMERIC NOT NULL,
 	cursa_presenca			NUMERIC NOT NULL,
 
 	CONSTRAINT pk_cursa 
-		PRIMARY KEY (cursa_aluno_nusp,cursa_prof_nusp,cursa_disciplina_sigla),
+		PRIMARY KEY (cursa_aluno_nusp,cursa_prof_nusp,cursa_disciplina_sigla,cursa_data),
 	CONSTRAINT fk_cursa1 FOREIGN KEY (cursa_aluno_nusp)
 		REFERENCES aluno (aluno_nusp)
 		ON DELETE CASCADE
@@ -86,7 +87,7 @@ CREATE TABLE oferecimento(
 	ofer_disciplina_sigla		TEXT NOT NULL,
 	ofer_ministra_data		date NOT NULL,
 
-	CONSTRAINT pk_ofer PRIMARY KEY (ofer_prof_nusp, ofer_disciplina_sigla),
+	CONSTRAINT pk_ofer PRIMARY KEY (ofer_prof_nusp, ofer_disciplina_sigla,ofer_ministra_data),
 	CONSTRAINT fk_ofer FOREIGN KEY (ofer_prof_nusp)
 		REFERENCES professor (prof_nusp)
 		ON DELETE CASCADE

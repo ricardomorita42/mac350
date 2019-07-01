@@ -79,6 +79,20 @@ CREATE FOREIGN TABLE planeja (
 	SERVER pes_cur_server
 	OPTIONS (schema_name 'public',table_name 'planeja');
 
+CREATE FOREIGN TABLE ministra (
+	ministra_prof_nusp		INTEGER,
+	ministra_disciplina_sigla	TEXT
+)
+	SERVER pes_cur_server
+	OPTIONS (schema_name 'public',table_name 'ministra');
+
+CREATE FOREIGN TABLE administra (
+	administra_nusp			INTEGER,
+	administra_curriculo_sigla	TEXT
+)
+	SERVER pes_cur_server
+	OPTIONS (schema_name 'public',table_name 'administra');
+
 -------- CREATE TYPE FUNCTIONS ------------
 BEGIN;
 --adicionado por um superadmin ou alguém da graduacao
@@ -235,25 +249,31 @@ GRANT EXECUTE ON FUNCTION insert_into_role_admin(int,text)
 COMMIT;
 
 BEGIN;
-/* Cria um oferecimento de uma disciplina por um professor. Caso uma data não seja
- adicionada, usa-se a data atual como ministra_data. */
+/* Cria um oferecimento de uma disciplina por um professor.
+Checamos se a este oferecimento está na tabela ministra.*/
 CREATE OR REPLACE FUNCTION insert_oferecimento
 (ofer_prof_nusp int, ofer_disciplina_sigla text, ofer_ministra_data date default NULL)
 RETURNS INTEGER AS $$
 DECLARE
-	disciplina_ok INTEGER := (SELECT count(*) FROM disciplina 
-				         WHERE ofer_disciplina_sigla = disciplina_sigla);
+	ministra_ok INTEGER := (
+		SELECT count(*)
+	       		FROM 	ministra
+			WHERE 	ministra_prof_nusp  = ofer_prof_nusp AND
+				ministra_disciplina_sigla = ofer_disciplina_sigla);
 BEGIN
-	IF (disciplina_ok = 1) THEN
+	IF (ministra_ok = 1) THEN
 		IF $3 IS NULL THEN
 			INSERT INTO oferecimento VALUES ($1,$2,current_date);
 		ELSE
 			INSERT INTO oferecimento VALUES ($1,$2,$3);
 		END IF;
-	ELSE RETURN -1;
 	END IF;
 
-	RETURN 1;
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION insert_oferecimento(int,text,date)
@@ -269,7 +289,7 @@ no planejamento. Depois é necessária uma checagem em oferecimento se
 o professor e a disciplina estao sendo oferecidos. */
 CREATE OR REPLACE FUNCTION insert_cursa
 (cursa_aluno_nusp int, cursa_prof_nusp int, cursa_disciplina_sigla text,
-cursa_nota numeric, cursa_presenca numeric)
+cursa_data date, cursa_nota numeric, cursa_presenca numeric)
 RETURNS INTEGER AS $$
 DECLARE
 	disciplina_ok INTEGER := (
@@ -286,19 +306,76 @@ DECLARE
 			AND cursa_prof_nusp = ofer_prof_nusp);
 BEGIN
 	IF (disciplina_ok = 1 AND planeja_ok = 1 AND oferecimento_ok = 1) THEN
-		INSERT INTO cursa VALUES ($1,$2,$3,$4,$5);
+		INSERT INTO cursa VALUES ($1,$2,$3,$4,$5,$6);
 		RETURN 1;
 	ELSE RETURN -1;
 	END IF;
 END;
 $$ LANGUAGE plpgsql;
-REVOKE ALL ON FUNCTION insert_cursa(int,int,text,numeric,numeric)
+REVOKE ALL ON FUNCTION insert_cursa(int,int,text,date,numeric,numeric)
 	FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION insert_cursa(int,int,text,numeric,numeric)
+GRANT EXECUTE ON FUNCTION insert_cursa(int,int,text,date,numeric,numeric)
 	TO dba;
 COMMIT;
 
 -------- UPDATE TYPE FUNCTIONS ------------
+BEGIN;
+-- Atualiza um numero usp
+CREATE OR REPLACE FUNCTION update_pessoa_nusp
+(old_nusp int, new_nusp int)
+RETURNS INTEGER AS $$
+DECLARE
+	pe_us_ok INTEGER := (	SELECT count(*) FROM pe_us 
+				WHERE pe_us_nusp = old_nusp);
+	aluno_ok INTEGER := (	SELECT count(*) FROM aluno
+				WHERE aluno_nusp = old_nusp);
+	prof_ok INTEGER := (	SELECT count(*) FROM professor
+				WHERE prof_nusp = old_nusp);
+	admin_ok INTEGER := (	SELECT count(*) FROM administrador
+				WHERE admin_nusp = old_nusp);
+BEGIN
+	--atualiza pe_us se o nusp antigo tinha uma conta
+	if (pe_us_ok = 1) THEN
+		UPDATE  pe_us
+		SET	pe_us_nusp = new_nusp
+		WHERE 	pe_us_nusp = old_nusp;
+	END IF;
+
+	if (aluno_ok = 1) THEN
+		UPDATE  planeja
+		SET 	planeja_aluno_nusp = new_nusp
+		WHERE 	planeja_aluno_nusp = old_nusp;
+	END IF;
+
+	if (prof_ok = 1) THEN
+		UPDATE  ministra
+		SET 	ministra_prof_nusp = new_nusp
+		WHERE 	ministra_prof_nusp = old_nusp;
+	END IF;
+
+	if (admin_ok = 1) THEN
+		UPDATE  administra
+		SET 	administra_nusp	= new_nusp
+		WHERE 	administra_nusp = old_nusp;
+	END IF;
+
+	UPDATE  pessoa 
+	SET 	nusp = new_nusp
+	WHERE 	nusp = old_nusp;
+
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION update_pessoa_nusp(int,int)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION update_pessoa_nusp(int,int)
+	TO dba;
+COMMIT;
+
 BEGIN;
 --Dado um numero usp, atualiza pnome e snome.
 CREATE OR REPLACE FUNCTION update_pessoa_nome
@@ -350,6 +427,41 @@ GRANT EXECUTE ON FUNCTION update_pessoa_sexo(int,varchar(1))
 COMMIT;
 
 BEGIN;
+--Atualiza o nusp ligado a um aluno
+CREATE OR REPLACE FUNCTION update_aluno_nusp
+(old_nusp int, new_nusp int)
+RETURNS INTEGER AS $$
+DECLARE
+	planeja_ok INTEGER := (	SELECT count(*) FROM planeja
+				WHERE planeja_aluno_nusp = old_nusp);
+	nusp_ok INTEGER := (	SELECT count(*) FROM pessoa
+				WHERE nusp = new_nusp);
+BEGIN
+	-- foreign table nao checa pessoa, entao temos que checar.
+	IF (planeja_ok = 1 AND nusp_ok = 1) THEN
+		UPDATE planeja
+		SET planeja_aluno_nusp = new_nusp
+		WHERE planeja_aluno_nusp = old_nusp;
+	END IF;
+	
+	UPDATE 	aluno
+	SET 	aluno_nusp= new_nusp
+	WHERE 	aluno_nusp = old_nusp;
+
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
+	END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION update_aluno_nusp(int,int)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION update_aluno_nusp(int,int)
+	TO dba;
+COMMIT;
+
+BEGIN;
 --Atualiza o curso ligado a um aluno
 CREATE OR REPLACE FUNCTION update_aluno_curso
 (INOUT nusp int, INOUT new_curso text)
@@ -366,6 +478,41 @@ GRANT EXECUTE ON FUNCTION update_aluno_curso(int,text)
 COMMIT;
 
 BEGIN;
+--Atualiza o nusp ligado a um professor
+CREATE OR REPLACE FUNCTION update_prof_nusp
+(old_nusp int, new_nusp int)
+RETURNS INTEGER AS $$
+DECLARE
+	ministra_ok INTEGER := (SELECT count(*) FROM ministra
+				WHERE ministra_prof_nusp = old_nusp);
+	nusp_ok INTEGER := (	SELECT count(*) FROM pessoa
+				WHERE nusp = new_nusp);
+BEGIN
+	-- foreign table nao checa pessoa, entao temos que checar.
+	IF (ministra_ok = 1 AND nusp_ok = 1) THEN
+		UPDATE 	ministra
+		SET 	ministra_prof_nusp = new_nusp
+		WHERE 	ministra_prof_nusp = old_nusp;
+	END IF;
+	
+	UPDATE 	professor
+	SET 	prof_nusp = new_nusp
+	WHERE	prof_nusp = old_nusp;
+
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
+	END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION update_prof_nusp(int,int)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION update_prof_nusp(int,int)
+	TO dba;
+COMMIT;
+
+BEGIN;
 --Atualiza a unidade ligada à um professor
 CREATE OR REPLACE FUNCTION update_prof_unidade
 (INOUT nusp int, INOUT new_unidade text)
@@ -379,6 +526,41 @@ REVOKE ALL ON FUNCTION update_prof_unidade(int,text)
 	FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION update_prof_unidade(int,text)
 	TO dba,professor;
+COMMIT;
+
+BEGIN;
+--Atualiza o nusp ligado a um admin
+CREATE OR REPLACE FUNCTION update_admin_nusp
+(old_nusp int, new_nusp int)
+RETURNS INTEGER AS $$
+DECLARE
+	administra_ok INTEGER := (SELECT count(*) FROM administra
+				WHERE administra_nusp = old_nusp);
+	nusp_ok INTEGER := (	SELECT count(*) FROM pessoa
+				WHERE nusp = new_nusp);
+BEGIN
+	-- foreign table nao checa pessoa, entao temos que checar.
+	IF (administra_ok = 1 AND nusp_ok = 1) THEN
+		UPDATE 	administra
+		SET 	administra_nusp = new_nusp
+		WHERE 	administra_nusp = old_nusp;
+	END IF;
+	
+	UPDATE 	administrador
+	SET 	admin_nusp = new_nusp
+	WHERE 	admin_nusp = old_nusp;
+
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
+	END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION update_admin_nusp(int,int)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION update_admin_nusp(int,int)
+	TO dba;
 COMMIT;
 
 BEGIN;
@@ -462,12 +644,22 @@ CREATE OR REPLACE FUNCTION update_oferecimento
 (old_nusp int, old_disciplina text,
  new_nusp int, new_disciplina text)
 RETURNS INTEGER AS $$
+DECLARE
+	/*Checando se novo nusp e disciplina esta em ministra.
+	Lembrando que oferecimento é feito baseado no que está
+	em ministra, independente do fato de que a disciplina
+	é valida. */
+	ministra_ok INTEGER := (SELECT count(*) FROM ministra
+				WHERE 	ministra_prof_nusp = new_nusp AND
+					ministra_disciplina_sigla = new_disciplina);
 BEGIN
-	UPDATE oferecimento
-	SET 	ofer_prof_nusp = new_nusp,
-		ofer_disciplina_sigla = new_disciplina
-	WHERE 	ofer_prof_nusp = old_nusp AND
-		ofer_disciplina_sigla = old_disciplina;
+	IF (ministra_ok = 1) THEN 
+		UPDATE oferecimento
+		SET 	ofer_prof_nusp = new_nusp,
+			ofer_disciplina_sigla = new_disciplina
+		WHERE 	ofer_prof_nusp = old_nusp AND
+			ofer_disciplina_sigla = old_disciplina;
+	END IF;
 
 	IF FOUND THEN
 		RETURN 1;
