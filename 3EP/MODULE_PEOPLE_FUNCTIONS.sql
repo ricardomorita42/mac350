@@ -509,25 +509,6 @@ GRANT EXECUTE ON FUNCTION update_admin_unidade(int,text)
 COMMIT;
 
 BEGIN;
-/* Atualiza data do oferecimento de uma disciplina.
-Caso se deseje atualizar nusp do professor ou codigo da
-disciplina, deve-se inserir uma nova disciplina. */
-CREATE OR REPLACE FUNCTION update_ofer_data
-(INOUT nusp int, INOUT disc_sigla text, INOUT new_data date)
-AS $$
-	UPDATE oferecimento
-	SET ofer_ministra_data = new_data
-	WHERE 	ofer_prof_nusp = nusp AND
-		ofer_disciplina_sigla = disc_sigla
-	RETURNING ofer_prof_nusp,ofer_disciplina_sigla,new_data
-$$ LANGUAGE sql;
-REVOKE ALL ON FUNCTION update_ofer_data(int,text,date)
-	FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION update_ofer_data(int,text,date)
-	TO dba,professor;
-COMMIT;
-
-BEGIN;
 -- Atualiza uma nota em cursa. 
 CREATE OR REPLACE FUNCTION update_cursa_nota
 (INOUT al_nusp int, INOUT al_curso text, INOUT prof_nusp int,
@@ -634,9 +615,9 @@ BEGIN
 	END IF;
 END;
 $$ LANGUAGE plpgsql;
-REVOKE ALL ON FUNCTION update_oferecimento(int,text,int,text)
+REVOKE ALL ON FUNCTION update_oferecimento_data(int,text,date)
 	FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION update_oferecimento(int,text,int,text)
+GRANT EXECUTE ON FUNCTION update_oferecimento_data(int,text,date)
 	TO dba,professor;
 COMMIT;
 
@@ -894,3 +875,327 @@ GRANT EXECUTE ON FUNCTION delete_cursa(int,text,int,text,date)
 COMMIT;
 
 -------- RETRIEVAL TYPE FUNCTIONS ------------
+BEGIN;
+-- retorna todos as pessoas
+CREATE OR REPLACE FUNCTION return_all_pessoas()
+RETURNS TABLE(	
+	nusp			INTEGER,
+	cpf			VARCHAR(14),
+	pnome			TEXT,
+	snome			TEXT,
+	datanasc		date,
+	sexo			VARCHAR(1)
+)
+AS $$
+BEGIN
+	RETURN QUERY
+	SELECT * FROM pessoa ;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION return_all_pessoas()
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION return_all_pessoas()
+	TO dba,admin;
+COMMIT;
+
+BEGIN;
+-- retorna uma pessoa com o nusp dado
+CREATE OR REPLACE FUNCTION return_pessoa_with_nusp(num_usp int)
+RETURNS TABLE(	
+	numero_usp		INTEGER,
+	cpf			VARCHAR(14),
+	pnome			TEXT,
+	snome			TEXT,
+	datanasc		date,
+	sexo			VARCHAR(1)
+)
+AS $$
+BEGIN
+	RETURN QUERY
+	SELECT * FROM pessoa
+	WHERE nusp = num_usp;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION return_pessoa_with_nusp(int)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION return_pessoa_with_nusp(int)
+	TO dba,guest;
+COMMIT;
+
+BEGIN;
+-- retorna todos os alunos
+CREATE OR REPLACE FUNCTION return_all_alunos()
+RETURNS TABLE(	
+	nusp		INTEGER,
+	curso		TEXT
+)
+AS $$
+BEGIN
+	RETURN QUERY
+	SELECT * FROM aluno;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION return_all_alunos()
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION return_all_alunos()
+	TO dba,admin,professor;
+COMMIT;
+
+BEGIN;
+-- retorna alunos com o mesmo nusp (podem ter cursos diferentes)
+CREATE OR REPLACE FUNCTION return_aluno(num_usp int)
+RETURNS TABLE(	
+	nusp		INTEGER,
+	curso		TEXT
+)
+AS $$
+BEGIN
+	RETURN QUERY
+	SELECT * FROM aluno
+	WHERE aluno_nusp = num_usp;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION return_aluno(int)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION return_aluno(int)
+	TO dba,admin,professor,aluno;
+COMMIT;
+
+BEGIN;
+-- retorna todos os professores
+CREATE OR REPLACE FUNCTION return_all_professores()
+RETURNS TABLE(	
+	nusp		INTEGER,
+	unidade		TEXT
+)
+AS $$
+BEGIN
+	RETURN QUERY
+	SELECT * FROM professor;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION return_all_professores()
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION return_all_professores()
+	TO dba,admin,professor;
+COMMIT;
+
+BEGIN;
+-- retorna todos um professor com o nusp dado
+CREATE OR REPLACE FUNCTION return_prof(num_usp int)
+RETURNS TABLE(	
+	nusp		INTEGER,
+	unidade		TEXT
+)
+AS $$
+BEGIN
+	RETURN QUERY
+	SELECT * FROM professor
+	WHERE prof_nusp = num_usp;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION return_prof(int)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION return_prof(int)
+	TO dba,admin,professor;
+COMMIT;
+
+BEGIN;
+-- retorna todos os administradores
+CREATE OR REPLACE FUNCTION return_all_administradores()
+RETURNS TABLE(	
+	nusp		INTEGER,
+	unidade		TEXT
+)
+AS $$
+BEGIN
+	RETURN QUERY
+	SELECT * FROM administrador;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION return_all_administradores()
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION return_all_administradores()
+	TO dba,admin;
+COMMIT;
+
+BEGIN;
+-- retorna o administrador com o nusp dado
+CREATE OR REPLACE FUNCTION return_admin(num_usp int)
+RETURNS TABLE(	
+	nusp		INTEGER,
+	unidade		TEXT
+)
+AS $$
+BEGIN
+	RETURN QUERY
+	SELECT * FROM administrador
+	WHERE admin_nusp = num_usp;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION return_admin(int)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION return_admin(int)
+	TO dba,admin;
+COMMIT;
+
+BEGIN;
+-- retorna todos os cursas 
+CREATE OR REPLACE FUNCTION return_all_cursas()
+RETURNS TABLE(	
+	aluno_nusp		INTEGER,
+	aluno_curso		TEXT,
+	prof_nusp		INTEGER,
+	disciplina_sigla	TEXT,
+	data			date,
+	nota			NUMERIC,
+	presenca		NUMERIC
+)
+AS $$
+BEGIN
+	RETURN QUERY
+	SELECT * FROM cursa;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION return_all_cursas()
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION return_all_cursas()
+	TO dba,admin;
+COMMIT;
+
+BEGIN;
+-- retorna todos os cursas de um aluno
+CREATE OR REPLACE FUNCTION return_all_cursas_of_aluno(num_usp int)
+RETURNS TABLE(	
+	aluno_nusp		INTEGER,
+	aluno_curso		TEXT,
+	prof_nusp		INTEGER,
+	disciplina_sigla	TEXT,
+	data			date,
+	nota			NUMERIC,
+	presenca		NUMERIC
+)
+AS $$
+BEGIN
+	RETURN QUERY
+	SELECT * FROM cursa
+	WHERE cursa_aluno_nusp = num_usp;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION return_all_cursas_of_aluno(int)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION return_all_cursas_of_aluno(int)
+	TO dba,admin,professor,aluno;
+COMMIT;
+
+BEGIN;
+-- retorna todos os cursas de um professor
+CREATE OR REPLACE FUNCTION return_all_cursas_of_prof(num_usp int)
+RETURNS TABLE(	
+	aluno_nusp		INTEGER,
+	aluno_curso		TEXT,
+	prof_nusp		INTEGER,
+	disciplina_sigla	TEXT,
+	data			date,
+	nota			NUMERIC,
+	presenca		NUMERIC
+)
+AS $$
+BEGIN
+	RETURN QUERY
+	SELECT * FROM cursa
+	WHERE cursa_prof_nusp = num_usp;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION return_all_cursas_of_prof(int)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION return_all_cursas_of_prof(int)
+	TO dba,admin,professor;
+COMMIT;
+
+BEGIN;
+-- retorna todos os cursas de um professor
+CREATE OR REPLACE FUNCTION return_all_cursas_of_disciplina(disciplina text)
+RETURNS TABLE(	
+	aluno_nusp		INTEGER,
+	aluno_curso		TEXT,
+	prof_nusp		INTEGER,
+	disciplina_sigla	TEXT,
+	data			date,
+	nota			NUMERIC,
+	presenca		NUMERIC
+)
+AS $$
+BEGIN
+	RETURN QUERY
+	SELECT * FROM cursa
+	WHERE cursa_disciplina_sigla = disciplina;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION return_all_cursas_of_disciplina(text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION return_all_cursas_of_disciplina(text)
+	TO dba,admin,professor,aluno;
+COMMIT;
+
+BEGIN;
+-- retorna todos os oferecimentos
+CREATE OR REPLACE FUNCTION return_all_oferecimentos()
+RETURNS TABLE(	
+	prof_nusp		INTEGER,
+	disciplina_sigla	TEXT,
+	ministra_data		date
+)
+AS $$
+BEGIN
+	RETURN QUERY
+	SELECT * FROM oferecimento;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION return_all_oferecimentos()
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION return_all_oferecimentos()
+	TO dba,professor,admin,aluno;
+COMMIT;
+
+BEGIN;
+-- retorna todos os oferecimentos de um professor
+CREATE OR REPLACE FUNCTION return_all_oferecimentos_of_prof(num_usp int)
+RETURNS TABLE(	
+	prof_nusp		INTEGER,
+	disciplina_sigla	TEXT,
+	ministra_data		date
+)
+AS $$
+BEGIN
+	RETURN QUERY
+	SELECT * FROM oferecimento
+	WHERE ofer_prof_nusp = num_usp;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION return_all_oferecimentos_of_prof(int)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION return_all_oferecimentos_of_prof(int)
+	TO dba,professor,admin,aluno;
+COMMIT;
+
+BEGIN;
+-- retorna todos os oferecimentos de uma disciplina
+CREATE OR REPLACE FUNCTION return_all_oferecimentos_of_disciplina(disciplina text)
+RETURNS TABLE(	
+	prof_nusp		INTEGER,
+	disciplina_sigla	TEXT,
+	ministra_data		date
+)
+AS $$
+BEGIN
+	RETURN QUERY
+	SELECT * FROM oferecimento
+	WHERE ofer_disciplina_sigla = disciplina;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION return_all_oferecimentos_of_disciplina(text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION return_all_oferecimentos_of_disciplina(text)
+	TO dba,professor,admin,aluno;
+COMMIT;
