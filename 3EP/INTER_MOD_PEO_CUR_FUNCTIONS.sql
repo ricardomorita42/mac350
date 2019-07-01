@@ -270,7 +270,11 @@ BEGIN
 	WHERE	administra_nusp = nusp AND
 		administra_curriculo_sigla = curriculo;
 
-	RETURN 1;
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION delete_administra(int,text)
@@ -289,7 +293,11 @@ BEGIN
 	WHERE	ministra_prof_nusp = nusp AND
 		ministra_disciplina_sigla = disciplina;
 
-	RETURN 1;
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION delete_ministra(int,text)
@@ -308,7 +316,11 @@ BEGIN
 	WHERE	planeja_aluno_nusp = nusp AND
 		planeja_disciplina_sigla = disciplina;
 
-	RETURN 1;
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION delete_planeja(int,text)

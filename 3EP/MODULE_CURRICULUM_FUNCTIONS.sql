@@ -70,7 +70,11 @@ RETURNS INTEGER AS $$
 BEGIN
 	INSERT into curriculo VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT DO NOTHING;
 
-	RETURN 1;
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION insert_curriculo(text,text,text,int,int,int)
@@ -87,7 +91,11 @@ RETURNS INTEGER AS $$
 BEGIN
 	INSERT INTO trilha VALUES ($1,$2) ON CONFLICT DO NOTHING;
 
-	RETURN 1;
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION insert_trilha(text,text)
@@ -105,7 +113,11 @@ RETURNS INTEGER AS $$
 BEGIN
 	INSERT INTO modulo VALUES ($1,$2,$3) ON CONFLICT DO NOTHING;
 
-	RETURN 1;
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION insert_modulo(text,text,text)
@@ -123,7 +135,11 @@ RETURNS INTEGER AS $$
 BEGIN
 	INSERT INTO disciplina VALUES ($1,$2,$3,$4,$5) ON CONFLICT DO NOTHING;
 
-	RETURN 1;
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION insert_disciplina(text,text,text,int,int)
@@ -141,7 +157,11 @@ BEGIN
 	INSERT 	INTO cur_tril
 		VALUES ($1,$2) ON CONFLICT DO NOTHING;
 
-	RETURN 1;
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION insert_cur_tril(text,text)
@@ -159,7 +179,11 @@ BEGIN
 	INSERT 	INTO dis_mod
 		VALUES ($1,$2) ON CONFLICT DO NOTHING;
 
-	RETURN 1;
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION insert_dis_mod(text,text)
@@ -510,7 +534,11 @@ BEGIN
 	DELETE 	FROM curriculo 
 		WHERE curriculo_sigla = sigla;
 
-	RETURN 1;
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION delete_curriculo(text)
@@ -534,7 +562,11 @@ BEGIN
 	DELETE 	FROM trilha 
 		WHERE trilha_nome = nome;
 
-	RETURN 1;
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION delete_trilha(text)
@@ -552,7 +584,11 @@ BEGIN
 	DELETE 	FROM modulo 
 		WHERE modulo_nome = nome;
 
-	RETURN 1;
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION delete_modulo(text)
@@ -582,7 +618,11 @@ BEGIN
 	DELETE 	FROM cursa
 		WHERE cursa_disciplina_sigla = sigla;
 
-	RETURN 1;
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION delete_disciplina(text)
@@ -601,7 +641,11 @@ BEGIN
 		WHERE	disc_mod_disciplina_sigla = sigla AND
 			disc_mod_modulo_nome = modulo;
 
-	RETURN 1;
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION delete_dis_mod(text,text)
@@ -620,7 +664,11 @@ BEGIN
 		WHERE 	cur_tril_trilha_nome = nome AND
 			cur_tril_curriculo_sigla = sigla;
 
-	RETURN 1;
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION delete_cur_tril(text,text)
@@ -638,7 +686,11 @@ BEGIN
 	DELETE 	FROM 	disciplina_biblio
 		WHERE 	disc_biblio_disciplina_sigla = sigla;
 
-	RETURN 1;
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION delete_disc_biblio(text)
@@ -657,7 +709,11 @@ BEGIN
 		WHERE 	tril_extrareqs_trilha_nome = trilha AND
 			tril_extrareqs_requisito = requisito;
 
-	RETURN 1;
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION delete_trilha_requisito(text,text)
@@ -675,7 +731,11 @@ BEGIN
 	DELETE 	FROM 	trilha_extrareqs
 		WHERE 	tril_extrareqs_id = id;
 
-	RETURN 1;
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION delete_trilha_requisito_by_id(INTEGER)
@@ -694,7 +754,11 @@ BEGIN
 		WHERE 	disc_reqs_disciplina_sigla = sigla AND
 			disc_reqs_disciplina_requisito = requisito;
 
-	RETURN 1;
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION delete_disciplina_requisito(text,text)

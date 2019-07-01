@@ -107,7 +107,11 @@ BEGIN
 	DELETE FROM pe_us
 	WHERE pe_us_nusp = nusp;	
 
-	RETURN 1;
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION delete_pe_us_with_nusp(int)
@@ -125,7 +129,11 @@ BEGIN
 	DELETE FROM pe_us
 	WHERE pe_us_user_login = login;	
 
-	RETURN 1;
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION delete_pe_us_with_login(text)

@@ -264,7 +264,11 @@ BEGIN
 	DELETE FROM usuario
 	WHERE user_login = login;
 
-	RETURN 1;
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION delete_user(text)
@@ -288,7 +292,11 @@ BEGIN
 	DELETE FROM pf_se
 	WHERE pf_se_perfil_nome = nome;	
 
-	RETURN 1;
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION delete_role(text)
@@ -309,7 +317,11 @@ BEGIN
 	DELETE FROM service 
 	WHERE service_nome = nome;
 
-	RETURN 1;
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION delete_service(text)
@@ -328,7 +340,11 @@ BEGIN
 	WHERE	us_pf_user_login = login AND
 		us_pf_perfil_nome = perfil;
 
-	RETURN 1;
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION delete_rel_us_pf(text,text)
@@ -347,7 +363,11 @@ BEGIN
 	WHERE	pf_se_perfil_nome  = perfil AND
 		pf_se_service_nome = service;
 
-	RETURN 1;
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION delete_rel_pf_se(text,text)

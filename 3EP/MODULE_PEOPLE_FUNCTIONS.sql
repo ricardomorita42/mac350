@@ -456,6 +456,55 @@ GRANT EXECUTE ON FUNCTION update_cursa_presenca(int,int,text,numeric)
 	TO dba,professor;
 COMMIT;
 
+BEGIN;
+-- Atualiza um oferecimento
+CREATE OR REPLACE FUNCTION update_oferecimento
+(old_nusp int, old_disciplina text,
+ new_nusp int, new_disciplina text)
+RETURNS INTEGER AS $$
+BEGIN
+	UPDATE oferecimento
+	SET 	ofer_prof_nusp = new_nusp,
+		ofer_disciplina_sigla = new_disciplina
+	WHERE 	ofer_prof_nusp = old_nusp AND
+		ofer_disciplina_sigla = old_disciplina;
+
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION update_oferecimento(int,text,int,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION update_oferecimento(int,text,int,text)
+	TO dba,professor;
+COMMIT;
+
+BEGIN;
+-- Atualiza um oferecimento
+CREATE OR REPLACE FUNCTION update_oferecimento_data
+(nusp int, disciplina text, new_data date)
+RETURNS INTEGER AS $$
+BEGIN
+	UPDATE oferecimento
+	SET 	ofer_ministra_data = new_data
+	WHERE 	ofer_prof_nusp = nusp AND
+		ofer_disciplina_sigla = disciplina;
+
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
+END;
+$$ LANGUAGE plpgsql;
+REVOKE ALL ON FUNCTION update_oferecimento(int,text,int,text)
+	FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION update_oferecimento(int,text,int,text)
+	TO dba,professor;
+COMMIT;
 -------- DELETE TYPE FUNCTIONS ------------
 BEGIN;
 /*Apaga uma pessoa. A ligação entre pessoa e usuário 
@@ -482,7 +531,11 @@ BEGIN
 	-- cascade nas outras tabelas de pessoa
 	DELETE FROM pessoa WHERE nusp = num_usp;
 
-	RETURN 1;
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION delete_from_pessoa(int)
@@ -502,7 +555,11 @@ BEGIN
 		WHERE 	aluno_nusp = num_usp AND
 			aluno_curso = curso;
 
-	RETURN 1;
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION delete_from_aluno(int,text)
@@ -522,7 +579,11 @@ BEGIN
 		WHERE 	prof_nusp = num_usp AND
 			prof_unidade = unidade;
 
-	RETURN 1;
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION delete_from_professor(int,text)
@@ -542,7 +603,11 @@ BEGIN
 		WHERE 	admin_nusp = num_usp AND
 			admin_unidade = unidade;
 
-	RETURN 1;
+	IF FOUND THEN
+		RETURN 1;
+	ELSE
+		RETURN -1;
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION delete_from_administrador(int,text)
