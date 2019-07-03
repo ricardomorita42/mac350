@@ -143,10 +143,6 @@ DECLARE
 BEGIN
 	--Existe um pe_us deste nusp?
 	IF (pe_us_ok = 1) THEN
-		--insere em aluno 
-		INSERT INTO aluno
-		VALUES (nusp,curso);
-
 		--descobre o login deste usuário
 		SELECT  pe_us_user_login 
 			FROM pe_us
@@ -159,6 +155,10 @@ BEGIN
 			VALUES (var_login,'student',current_date)
 			ON CONFLICT DO NOTHING;
 	END IF;
+
+	--insere em aluno 
+	INSERT INTO aluno
+	VALUES (nusp,curso);
 
 	IF FOUND THEN
 		RETURN 1;
@@ -190,10 +190,6 @@ DECLARE
 BEGIN
 	--Existe um pe_us deste nusp?
 	IF (pe_us_ok = 1) THEN
-		--insere em professor
-		INSERT INTO professor 
-		VALUES (nusp,unidade);
-
 		--descobre o login deste usuário
 		SELECT  pe_us_user_login 
 			FROM pe_us
@@ -207,6 +203,10 @@ BEGIN
 			VALUES (var_login,'teacher',current_date)
 			ON CONFLICT DO NOTHING;
 	END IF;
+
+	--insere em professor
+	INSERT INTO professor 
+	VALUES (nusp,unidade);
 
 	IF FOUND THEN
 		RETURN 1;
@@ -238,9 +238,6 @@ DECLARE
 BEGIN
 	--Existe um pe_us deste nusp?
 	IF (pe_us_ok = 1) THEN
-		--insere em administrador
-		INSERT INTO administrador
-		VALUES (nusp,unidade);
 
 		--descobre o login deste usuário
 		SELECT  pe_us_user_login 
@@ -255,6 +252,10 @@ BEGIN
 			VALUES (var_login,'admin',current_date)
 			ON CONFLICT DO NOTHING;
 	END IF;
+
+	--insere em administrador
+	INSERT INTO administrador
+	VALUES (nusp,unidade);
 
 	IF FOUND THEN
 		RETURN 1;
