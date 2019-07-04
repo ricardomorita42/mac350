@@ -5,8 +5,8 @@ CREATE EXTENSION IF NOT EXISTS citext;
 
 --DROP TABLE IF EXISTS pessoa CASCADE;
 CREATE TABLE pessoa (
-	nusp				SERIAL NOT NULL,
-	cpf				VARCHAR(14) NOT NULL,
+	nusp				INTEGER NOT NULL,
+	cpf					VARCHAR(14) NOT NULL,
 	pnome				TEXT NOT NULL,
 	snome				TEXT NOT NULL,
 	datanasc			date NOT NULL,

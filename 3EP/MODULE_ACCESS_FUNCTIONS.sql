@@ -14,7 +14,7 @@ CREATE USER MAPPING FOR dba
 	OPTIONS (user 'dba', password 'dba1234');
 
 CREATE FOREIGN TABLE pe_us (
-	pe_us_nusp		SERIAL,
+	pe_us_nusp		INTEGER,
 	pe_us_user_login 	TEXT
 )
 	SERVER ace_pes_server

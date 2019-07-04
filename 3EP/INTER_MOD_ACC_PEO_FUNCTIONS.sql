@@ -32,7 +32,7 @@ CREATE USER MAPPING FOR dba
 	OPTIONS (user 'dba', password 'dba1234');
 
 CREATE FOREIGN TABLE pessoa (
-	nusp		SERIAL
+	nusp		INTEGER
 )
 	SERVER pessoa_server
 	OPTIONS (schema_name 'public',table_name 'pessoa');
@@ -102,6 +102,7 @@ REVOKE ALL ON FUNCTION update_pe_us(int,text,int,text)
 GRANT EXECUTE ON FUNCTION update_pe_us(int,text,int,text)
 	TO dba;
 COMMIT;
+
 -------- DELETE TYPE FUNCTIONS ------------
 BEGIN;
 -- apaga pe_us, isto nao tem efeitos colaterais

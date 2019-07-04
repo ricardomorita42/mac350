@@ -10,7 +10,7 @@ CREATE DOMAIN email AS citext
 CREATE TABLE usuario(
 	user_login			TEXT NOT NULL,
 	user_email			email NOT NULL,
-	user_password			TEXT NOT NULL,	
+	user_password		TEXT NOT NULL,	
 
 	CONSTRAINT pk_user PRIMARY KEY (user_login),
 	CONSTRAINT sk1_user UNIQUE (user_login),
