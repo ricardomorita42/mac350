@@ -26,3 +26,7 @@ CREATE TABLE ministra(
 
 	CONSTRAINT pk_ministra PRIMARY KEY (ministra_prof_nusp, ministra_disciplina_sigla)
 );
+
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO aluno;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO admin;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO professor;
