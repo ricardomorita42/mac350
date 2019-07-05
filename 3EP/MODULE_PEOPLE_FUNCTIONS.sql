@@ -154,11 +154,12 @@ BEGIN
 		INSERT INTO us_pf 
 			VALUES (var_login,'student',current_date)
 			ON CONFLICT DO NOTHING;
+
+		--insere em aluno 
+		INSERT INTO aluno
+		VALUES (nusp,curso);
 	END IF;
 
-	--insere em aluno 
-	INSERT INTO aluno
-	VALUES (nusp,curso);
 
 	IF FOUND THEN
 		RETURN 1;
@@ -202,11 +203,12 @@ BEGIN
 		INSERT INTO us_pf 
 			VALUES (var_login,'teacher',current_date)
 			ON CONFLICT DO NOTHING;
+
+		--insere em professor
+		INSERT INTO professor 
+		VALUES (nusp,unidade);
 	END IF;
 
-	--insere em professor
-	INSERT INTO professor 
-	VALUES (nusp,unidade);
 
 	IF FOUND THEN
 		RETURN 1;
@@ -251,11 +253,12 @@ BEGIN
 		INSERT INTO us_pf 
 			VALUES (var_login,'admin',current_date)
 			ON CONFLICT DO NOTHING;
+
+		--insere em administrador
+		INSERT INTO administrador
+		VALUES (nusp,unidade);
 	END IF;
 
-	--insere em administrador
-	INSERT INTO administrador
-	VALUES (nusp,unidade);
 
 	IF FOUND THEN
 		RETURN 1;

@@ -28,7 +28,7 @@ Também envia solicitação para criar relação entre usuário e pessoa pelo
 IM inter_ace_pes.
 */
 CREATE OR REPLACE FUNCTION insert_user
-(nusp int, curso_ou_unidade text, nickname text, email text, password text, role text)
+(nickname text, email text, password text, role text)
 RETURNS INTEGER AS $$
 DECLARE
 	role_ok INTEGER := (SELECT count(*) FROM perfil
@@ -54,9 +54,9 @@ BEGIN
 	END IF;
 END;
 $$ LANGUAGE plpgsql;
-REVOKE ALL ON FUNCTION insert_user(int,text,text,text,text,text)
+REVOKE ALL ON FUNCTION insert_user(text,text,text,text)
 	FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION insert_user(int,text,text,text,text,text)
+GRANT EXECUTE ON FUNCTION insert_user(text,text,text,text)
 	TO guest;
 COMMIT;
 
@@ -215,18 +215,32 @@ COMMIT;
 
 BEGIN;
 --Atualiza uma determinada relação us_pf.
---Esta funcao me parece bem perigosa.
 CREATE OR REPLACE FUNCTION update_us_pf
-(IN old_user_login text, IN old_perf_nome text,
- INOUT new_user_login text, INOUT new_perf_nome text)
-AS $$
-	UPDATE us_pf
-	SET	us_pf_user_login = new_user_login,
-		us_pf_perfil_nome = new_perf_nome
-	WHERE	us_pf_user_login = old_user_login AND
-		us_pf_perfil_nome = old_perf_nome
-	RETURNING us_pf_user_login, us_pf_perfil_nome
-$$ LANGUAGE sql;
+(old_user_login text, old_perf_nome text,
+ new_user_login text, new_perf_nome text)
+RETURNS INTEGER AS $$
+DECLARE
+	perfil_ok INTEGER := (SELECT count(*) FROM perfil
+			    WHERE perfil_nome = new_perf_nome);
+	usuario_ok INTEGER := (SELECT count(*) FROM usuario
+			    WHERE user_login = new_user_login);
+BEGIN
+	IF (perfil_ok = 1 AND usuario_ok = 1) THEN
+		UPDATE us_pf
+		SET	us_pf_user_login = new_user_login,
+			us_pf_perfil_nome = new_perf_nome
+		WHERE	us_pf_user_login = old_user_login AND
+			us_pf_perfil_nome = old_perf_nome;
+		IF FOUND THEN
+			RETURN 1;
+		ELSE
+			RETURN -1;
+		END IF;
+	END IF;
+
+	RETURN -1;
+END;
+$$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION update_us_pf(text,text,text,text)
 	FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION update_us_pf(text,text,text,text)
@@ -235,18 +249,31 @@ COMMIT;
 
 BEGIN;
 --Atualiza uma determinada relação pf_se.
---Esta funcao me parece bem perigosa.
 CREATE OR REPLACE FUNCTION update_pf_se
-(IN old_perf_nome text, IN old_serv_nome text,
- INOUT new_perf_nome text, INOUT new_serv_nome text)
-AS $$
-	UPDATE pf_se 
-	SET	pf_se_perfil_nome =  new_perf_nome,
-		pf_se_service_nome = new_serv_nome
-	WHERE	pf_se_perfil_nome = old_perf_nome AND
-		pf_se_service_nome = old_serv_nome
-	RETURNING pf_se_perfil_nome, pf_se_service_nome
-$$ LANGUAGE sql;
+(old_perf_nome text, old_serv_nome text,
+ new_perf_nome text, new_serv_nome text)
+RETURNS INTEGER AS $$
+DECLARE
+	perfil_ok INTEGER := (SELECT count(*) FROM perfil
+			    WHERE perfil_nome = new_perf_nome);
+	servico_ok INTEGER := (SELECT count(*) FROM service
+			    WHERE service_nome = new_serv_nome);
+BEGIN
+	IF (perfil_ok = 1 AND servico_ok = 1) THEN
+		UPDATE pf_se 
+		SET	pf_se_perfil_nome =  new_perf_nome,
+			pf_se_service_nome = new_serv_nome
+		WHERE	pf_se_perfil_nome = old_perf_nome AND
+			pf_se_service_nome = old_serv_nome;
+
+		IF FOUND THEN RETURN 1;
+		ELSE RETURN -1;
+		END IF;
+
+	END IF;
+	RETURN -1;
+END;
+$$ LANGUAGE plpgsql;
 REVOKE ALL ON FUNCTION update_pf_se(text,text,text,text)
 	FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION update_pf_se(text,text,text,text)
